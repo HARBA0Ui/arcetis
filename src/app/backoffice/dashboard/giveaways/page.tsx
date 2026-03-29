@@ -51,7 +51,7 @@ function cleanFields(fields: EditableField[]) {
   return fields
     .filter((field) => field.label.trim())
     .map((field, index) => ({
-      id: slugify(field.id || field.label) || `field_${index + 1}`,
+      id: slugify(field.label) || slugify(field.id) || `field_${index + 1}`,
       label: field.label.trim(),
       placeholder: field.placeholder?.trim() || undefined,
       required: field.required ?? true,
@@ -406,9 +406,7 @@ export default function BackofficeGiveawaysPage() {
                           onChange={(event) =>
                             setFields((prev) =>
                               prev.map((item, itemIndex) =>
-                                itemIndex === index
-                                  ? { ...item, label: event.target.value, id: slugify(event.target.value) || item.id }
-                                  : item
+                                itemIndex === index ? { ...item, label: event.target.value } : item
                               )
                             )
                           }

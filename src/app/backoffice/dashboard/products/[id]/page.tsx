@@ -52,7 +52,7 @@ function cleanPlans(plans: EditablePlan[]) {
   return plans
     .filter((plan) => plan.label.trim())
     .map((plan, index) => ({
-      id: slugify(plan.id || plan.label) || `plan_${index + 1}`,
+      id: slugify(plan.label) || slugify(plan.id) || `plan_${index + 1}`,
       label: plan.label.trim(),
       pointsCost: Number(plan.pointsCost),
       ...(typeof plan.tndPrice === "number" && Number.isFinite(plan.tndPrice) ? { tndPrice: Number(plan.tndPrice) } : {})
@@ -63,7 +63,7 @@ function cleanFields(fields: EditableField[]) {
   return fields
     .filter((field) => field.label.trim())
     .map((field, index) => ({
-      id: slugify(field.id || field.label) || `field_${index + 1}`,
+      id: slugify(field.label) || slugify(field.id) || `field_${index + 1}`,
       label: field.label.trim(),
       placeholder: field.placeholder?.trim() || undefined,
       required: field.required ?? true,
@@ -103,6 +103,9 @@ export default function BackofficeProductDetailsPage() {
       return;
     }
 
+    // This page edits a fetched product record, so we intentionally hydrate the local draft
+    // whenever a different reward payload arrives from the server.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm({
       title: reward.data.title,
       description: reward.data.description,
@@ -113,7 +116,9 @@ export default function BackofficeProductDetailsPage() {
       stock: reward.data.stock,
       imageUrl: reward.data.imageUrl ?? ""
     });
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPlans(reward.data.plans?.length ? reward.data.plans : [createPlan(1)]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDeliveryFields(reward.data.deliveryFields ?? []);
   }, [reward.data]);
 
@@ -261,7 +266,7 @@ export default function BackofficeProductDetailsPage() {
                 <div className="space-y-3">
                   {plans.map((plan, index) => (
                     <div key={`${plan.id}-${index}`} className="grid gap-3 rounded-xl border border-border/70 bg-background/60 p-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_auto]">
-                      <Input placeholder="Plan label" value={plan.label} onChange={(event) => setPlans((prev) => prev.map((item, itemIndex) => itemIndex === index ? { ...item, label: event.target.value, id: slugify(event.target.value) || item.id } : item))} />
+                      <Input placeholder="Plan label" value={plan.label} onChange={(event) => setPlans((prev) => prev.map((item, itemIndex) => itemIndex === index ? { ...item, label: event.target.value } : item))} />
                       <Input type="number" min={1} placeholder="Points" value={plan.pointsCost} onChange={(event) => setPlans((prev) => prev.map((item, itemIndex) => itemIndex === index ? { ...item, pointsCost: Number(event.target.value) } : item))} />
                       <Input type="number" min={0} step="0.01" placeholder="TND" value={plan.tndPrice ?? ""} onChange={(event) => setPlans((prev) => prev.map((item, itemIndex) => itemIndex === index ? { ...item, tndPrice: event.target.value ? Number(event.target.value) : undefined } : item))} />
                       <Button type="button" variant="outline" className="h-10 w-10 p-0" onClick={() => setPlans((prev) => prev.filter((_, itemIndex) => itemIndex !== index))}><Trash2 className="h-4 w-4" /></Button>
@@ -281,7 +286,7 @@ export default function BackofficeProductDetailsPage() {
                 <div className="space-y-3">
                   {deliveryFields.map((field, index) => (
                     <div key={`${field.id}-${index}`} className="grid gap-3 rounded-xl border border-border/70 bg-background/60 p-3 md:grid-cols-[1fr_1fr_0.9fr_0.9fr_auto_auto]">
-                      <Input placeholder="Label" value={field.label} onChange={(event) => setDeliveryFields((prev) => prev.map((item, itemIndex) => itemIndex === index ? { ...item, label: event.target.value, id: slugify(event.target.value) || item.id } : item))} />
+                      <Input placeholder="Label" value={field.label} onChange={(event) => setDeliveryFields((prev) => prev.map((item, itemIndex) => itemIndex === index ? { ...item, label: event.target.value } : item))} />
                       <Input placeholder="Placeholder" value={field.placeholder ?? ""} onChange={(event) => setDeliveryFields((prev) => prev.map((item, itemIndex) => itemIndex === index ? { ...item, placeholder: event.target.value } : item))} />
                       <Select
                         value={field.type ?? "TEXT"}

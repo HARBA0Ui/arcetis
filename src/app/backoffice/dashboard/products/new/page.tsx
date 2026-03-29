@@ -54,7 +54,7 @@ function cleanPlans(plans: EditablePlan[]) {
   return plans
     .filter((plan) => plan.label.trim())
     .map((plan, index) => ({
-      id: slugify(plan.id || plan.label) || `plan_${index + 1}`,
+      id: slugify(plan.label) || slugify(plan.id) || `plan_${index + 1}`,
       label: plan.label.trim(),
       pointsCost: Number(plan.pointsCost),
       ...(typeof plan.tndPrice === "number" && Number.isFinite(plan.tndPrice) ? { tndPrice: Number(plan.tndPrice) } : {})
@@ -65,7 +65,7 @@ function cleanFields(fields: EditableField[]) {
   return fields
     .filter((field) => field.label.trim())
     .map((field, index) => ({
-      id: slugify(field.id || field.label) || `field_${index + 1}`,
+      id: slugify(field.label) || slugify(field.id) || `field_${index + 1}`,
       label: field.label.trim(),
       placeholder: field.placeholder?.trim() || undefined,
       required: field.required ?? true,
@@ -275,9 +275,7 @@ export default function BackofficeCreateProductPage() {
                       onChange={(event) =>
                         setPlans((prev) =>
                           prev.map((item, itemIndex) =>
-                            itemIndex === index
-                              ? { ...item, label: event.target.value, id: slugify(event.target.value) || item.id }
-                              : item
+                            itemIndex === index ? { ...item, label: event.target.value } : item
                           )
                         )
                       }
@@ -354,9 +352,7 @@ export default function BackofficeCreateProductPage() {
                       onChange={(event) =>
                         setDeliveryFields((prev) =>
                           prev.map((item, itemIndex) =>
-                            itemIndex === index
-                              ? { ...item, label: event.target.value, id: slugify(event.target.value) || item.id }
-                              : item
+                            itemIndex === index ? { ...item, label: event.target.value } : item
                           )
                         )
                       }
