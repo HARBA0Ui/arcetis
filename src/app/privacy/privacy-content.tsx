@@ -19,8 +19,8 @@ export function PrivacyContent() {
         }
       : {
           eyebrow: "Privacy Policy",
-          title: "How Arcetis handles member data",
-          intro: "This page explains the categories of information Arcetis uses to operate accounts, run tasks, issue rewards, review proof submissions, and protect the platform from abuse.",
+          title: "Privacy Policy",
+          intro: "This page summarizes the general practices that support accounts, platform security, and the operation of Arcetis services.",
           collect: "Information we collect",
           use: "How we use it",
           storage: "Storage and retention",

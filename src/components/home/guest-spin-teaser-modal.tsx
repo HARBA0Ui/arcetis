@@ -66,9 +66,9 @@ export function GuestSpinTeaserModal() {
   }
 
   return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/72 px-4 py-6 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[90] flex items-end justify-center bg-black/72 px-3 py-3 backdrop-blur-sm sm:items-center sm:px-4 sm:py-6">
       <div className="absolute inset-0" onClick={() => setIsOpen(false)} aria-hidden="true" />
-      <div className="relative z-[1] w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(8,8,8,0.96),rgba(19,19,19,0.98)_52%,rgba(64,36,11,0.92))] text-white shadow-[0_40px_130px_-48px_rgba(0,0,0,0.95)]">
+      <div className="relative z-[1] max-h-[calc(100vh-1.5rem)] w-full max-w-5xl overflow-y-auto rounded-[1.75rem] border border-white/10 bg-[linear-gradient(145deg,rgba(8,8,8,0.96),rgba(19,19,19,0.98)_52%,rgba(64,36,11,0.92))] text-white shadow-[0_40px_130px_-48px_rgba(0,0,0,0.95)] sm:max-h-[calc(100vh-3rem)] sm:rounded-[2rem]">
         <button
           type="button"
           onClick={() => setIsOpen(false)}
@@ -78,18 +78,18 @@ export function GuestSpinTeaserModal() {
           <X className="h-4 w-4" />
         </button>
 
-        <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(300px,0.78fr)] lg:items-center">
+        <div className="grid gap-6 p-4 sm:p-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(300px,0.78fr)] lg:items-center">
           <div>
             <Badge className="border-white/10 bg-white/12 text-white hover:bg-white/12">
               {copy.badge}
             </Badge>
-            <h2 className="mt-5 max-w-[14ch] text-4xl font-semibold tracking-tight sm:text-5xl">
+            <h2 className="mt-4 max-w-[16ch] text-3xl font-semibold tracking-tight sm:mt-5 sm:max-w-[14ch] sm:text-5xl">
               {copy.title}
             </h2>
-            <p className="mt-4 max-w-xl text-base leading-7 text-white/72">{copy.description}</p>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-white/72 sm:mt-4 sm:text-base sm:leading-7">{copy.description}</p>
 
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Button asChild size="lg" className="rounded-full px-7">
+            <div className="mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row sm:flex-wrap">
+              <Button asChild size="lg" className="w-full rounded-full px-7 sm:w-auto">
                 <Link href="/login?redirect=%2Fspin">
                   {copy.spinNow}
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -99,7 +99,7 @@ export function GuestSpinTeaserModal() {
                 asChild
                 size="lg"
                 variant="outline"
-                className="rounded-full border-white/12 bg-white/6 px-7 text-white hover:bg-white/12 hover:text-white"
+                className="w-full rounded-full border-white/12 bg-white/6 px-7 text-white hover:bg-white/12 hover:text-white sm:w-auto"
               >
                 <Link href="/register?redirect=%2Fspin">{copy.createAccount}</Link>
               </Button>
@@ -107,8 +107,8 @@ export function GuestSpinTeaserModal() {
           </div>
 
           <div className="relative flex justify-center">
-            <div className="absolute inset-x-10 top-8 h-44 rounded-full bg-[radial-gradient(circle,rgba(255,146,64,0.3),rgba(255,146,64,0))] blur-3xl" />
-            <div className="rounded-[2rem] border border-white/10 bg-white/6 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur">
+            <div className="absolute inset-x-6 top-8 h-36 rounded-full bg-[radial-gradient(circle,rgba(255,146,64,0.3),rgba(255,146,64,0))] blur-3xl sm:inset-x-10 sm:h-44" />
+            <div className="w-full max-w-[21rem] rounded-[1.6rem] border border-white/10 bg-white/6 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur sm:max-w-none sm:rounded-[2rem] sm:p-4">
               <div className="mb-4 flex items-center justify-between gap-3 rounded-[1.2rem] border border-white/10 bg-black/18 px-4 py-3">
                 <div>
                   <p className="text-sm font-medium">Arcetis</p>

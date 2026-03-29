@@ -33,8 +33,7 @@ export function ContactContent() {
           instagram: "Instagram",
           instagramText: "Follow updates, reach out through social, and learn more about the Arcetis shop.",
           promotions: "Promotions",
-          promotionsText: "For campaigns and sponsor requests, members can also use the in-app promotion request form after sign-in.",
-          promotionsLink: "Email the promotions team",
+          promotionsText: "Campaign and sponsor discussions are reviewed directly with the Arcetis team.",
           expectations: "Response expectations",
           e1: "Support requests should normally receive an initial response within two business days.",
           e2: "Promotion requests may require additional review before pricing, launch timing, or campaign details can be confirmed.",
@@ -62,7 +61,6 @@ export function ContactContent() {
           <CardHeader><CardTitle>{copy.promotions}</CardTitle></CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground">
             <p>{copy.promotionsText}</p>
-            <a className="font-medium text-foreground underline-offset-4 hover:underline" href="mailto:arcetis002@gmail.com">{copy.promotionsLink}</a>
           </CardContent>
         </Card>
       </div>

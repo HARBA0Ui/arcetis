@@ -18,10 +18,10 @@ import { useLogout, useMe } from "@/hooks/useAuth";
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
+  { href: "/rewards", label: "Shop", icon: CircleDollarSign },
   { href: "/tasks", label: "Tasks", icon: Sparkles },
   { href: "/spin", label: "Spin", icon: Gift },
   { href: "/giveaways", label: "Giveaways", icon: PartyPopper },
-  { href: "/rewards", label: "Rewards", icon: CircleDollarSign },
   { href: "/referrals", label: "Referrals", icon: Users2 }
 ];
 

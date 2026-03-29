@@ -534,8 +534,8 @@ export function useReviewGiveawayEntry() {
       return response.data.entry;
     },
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["admin-giveaways"] });
-      queryClient.invalidateQueries({ queryKey: ["admin-giveaway-details", variables.giveawayId] });
+      queryClient.invalidateQueries({ queryKey: ["admin-giveaways"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: ["admin-giveaway-details", variables.giveawayId], refetchType: "active" });
     }
   });
 }
@@ -603,8 +603,8 @@ export function useReviewQuestSubmission() {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-quest-submissions"] });
-      queryClient.invalidateQueries({ queryKey: ["quests"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-quest-submissions"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: ["quests"], refetchType: "active" });
       queryClient.invalidateQueries({ queryKey: ["admin-dashboard-stats"] });
     }
   });
@@ -626,8 +626,8 @@ export function useReviewSponsorRequest() {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-sponsor-requests"] });
-      queryClient.invalidateQueries({ queryKey: ["quests"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-sponsor-requests"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: ["quests"], refetchType: "active" });
       queryClient.invalidateQueries({ queryKey: ["admin-dashboard-stats"] });
     }
   });
@@ -645,8 +645,8 @@ export function useUpdateRedemption() {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-redemptions"] });
-      queryClient.invalidateQueries({ queryKey: ["rewards"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-redemptions"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: ["rewards"], refetchType: "active" });
       queryClient.invalidateQueries({ queryKey: ["admin-dashboard-stats"] });
     }
   });
@@ -661,7 +661,7 @@ export function useUpdatePlatformConfig() {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-config"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-config"], refetchType: "active" });
     }
   });
 }
