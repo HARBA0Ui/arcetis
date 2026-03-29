@@ -72,7 +72,7 @@ export function setTwoFactorChallengeCookie(response: NextResponse, request: Nex
     httpOnly: true,
     sameSite: "strict",
     secure: isSecureRequest(request),
-    path: "/backoffice",
+    path: "/",
     maxAge: 60 * 10
   });
 }
@@ -84,7 +84,7 @@ export function clearTwoFactorChallengeCookie(response: NextResponse, request: N
     httpOnly: true,
     sameSite: "strict",
     secure: isSecureRequest(request),
-    path: "/backoffice",
+    path: "/",
     maxAge: 0
   });
 }

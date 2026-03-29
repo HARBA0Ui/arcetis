@@ -98,7 +98,13 @@ import {
   setSessionCookie,
   setTwoFactorChallengeCookie
 } from "@/server/utils/auth-cookies";
-import { assertThrottle, clearThrottle, registerFailedAttempt } from "@/server/services/authThrottle.service";
+import {
+  activateThrottleCooldown,
+  assertThrottle,
+  clearThrottle,
+  registerFailedAttempt
+} from "@/server/services/authThrottle.service";
+import { verifyTwoFactorChallengeToken } from "@/server/utils/jwt";
 import {
   adminCollectionQuerySchema,
   adminRedemptionsQuerySchema,
@@ -139,6 +145,7 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+const BACKOFFICE_CODE_RESEND_COOLDOWN_SECONDS = 60;
 
 type RouteContext = {
   params: Promise<{
@@ -652,13 +659,19 @@ async function handlePost(request: NextRequest, path: string[]) {
       }
 
       if (result.requiresTwoFactor) {
+        const resendCooldownKey = `auth:2fa:resend:user:${result.user.id}`;
         const response = NextResponse.json({
           requiresTwoFactor: true,
-          user: result.user
+          user: result.user,
+          delivery: result.delivery,
+          previewCode: result.previewCode,
+          expiresInMinutes: result.expiresInMinutes,
+          resendAvailableInSeconds: BACKOFFICE_CODE_RESEND_COOLDOWN_SECONDS
         });
 
         setTwoFactorChallengeCookie(response, request, result.challengeToken);
         clearSessionCookie(response, request, "backoffice");
+        await activateThrottleCooldown(resendCooldownKey, BACKOFFICE_CODE_RESEND_COOLDOWN_SECONDS);
         return response;
       }
 
@@ -737,16 +750,24 @@ async function handlePost(request: NextRequest, path: string[]) {
   if (isAppSessionRoute(path) && path[1] === "2fa" && path[2] === "resend" && path.length === 3) {
     const challengeToken = getTwoFactorChallengeTokenFromCookie(request);
     const ip = getRequestClientIp(request);
-    const throttleKey = `auth:2fa:resend:ip:${ip}`;
+    const failureThrottleKey = `auth:2fa:resend:ip:${ip}`;
 
     if (!challengeToken) {
       throw new ApiError(401, "Verification code session has expired");
     }
 
-    await assertThrottle(throttleKey, {
+    const challenge = verifyTwoFactorChallengeToken(challengeToken);
+    const resendCooldownKey = `auth:2fa:resend:user:${challenge.userId}`;
+
+    await assertThrottle(failureThrottleKey, {
       maxAttempts: 5,
       windowMinutes: 10,
       blockMinutes: 15
+    });
+    await assertThrottle(resendCooldownKey, {
+      maxAttempts: 1,
+      windowMinutes: 1,
+      blockMinutes: 1
     });
 
     try {
@@ -755,14 +776,16 @@ async function handlePost(request: NextRequest, path: string[]) {
         ok: true,
         delivery: result.delivery,
         previewCode: result.previewCode,
-        expiresInMinutes: result.expiresInMinutes
+        expiresInMinutes: result.expiresInMinutes,
+        resendAvailableInSeconds: BACKOFFICE_CODE_RESEND_COOLDOWN_SECONDS
       });
 
       setTwoFactorChallengeCookie(response, request, result.challengeToken);
-      await clearThrottle(throttleKey);
+      await clearThrottle(failureThrottleKey);
+      await activateThrottleCooldown(resendCooldownKey, BACKOFFICE_CODE_RESEND_COOLDOWN_SECONDS);
       return response;
     } catch (error) {
-      await registerFailedAttempt(throttleKey, {
+      await registerFailedAttempt(failureThrottleKey, {
         maxAttempts: 5,
         windowMinutes: 10,
         blockMinutes: 15

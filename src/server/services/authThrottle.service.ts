@@ -81,3 +81,25 @@ export async function clearThrottle(key: string) {
     where: { key }
   });
 }
+
+export async function activateThrottleCooldown(key: string, cooldownSeconds: number) {
+  const now = new Date();
+  const blockedUntil = new Date(now.getTime() + cooldownSeconds * 1000);
+
+  await prisma.authThrottle.upsert({
+    where: { key },
+    update: {
+      attempts: 1,
+      windowStartedAt: now,
+      lastAttemptAt: now,
+      blockedUntil
+    },
+    create: {
+      key,
+      attempts: 1,
+      windowStartedAt: now,
+      lastAttemptAt: now,
+      blockedUntil
+    }
+  });
+}

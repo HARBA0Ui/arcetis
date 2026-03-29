@@ -12,6 +12,7 @@ type AuthResponse = {
   delivery?: "smtp" | "preview";
   previewCode?: string;
   expiresInMinutes?: number;
+  resendAvailableInSeconds?: number;
 };
 
 const adminMeQueryKey = ["backoffice-me"] as const;
@@ -100,6 +101,7 @@ export function useResendLoginCode() {
         delivery: "smtp" | "preview";
         previewCode?: string;
         expiresInMinutes?: number;
+        resendAvailableInSeconds?: number;
       }>("/session/2fa/resend");
       return response.data;
     }

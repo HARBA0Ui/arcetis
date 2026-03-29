@@ -15,6 +15,14 @@ import { useLogin, useMe, useResendLoginCode, useVerifyTwoFactor } from "@/backo
 import { getLoginErrorMessage, getTwoFactorErrorMessage } from "@/lib/auth-feedback";
 import { getSafeBackofficeRedirectPath } from "@/lib/navigation";
 
+const INITIAL_RESEND_COOLDOWN_SECONDS = 60;
+
+function formatCooldown(seconds: number) {
+  const minutes = Math.floor(seconds / 60);
+  const remainder = seconds % 60;
+  return `${minutes}:${remainder.toString().padStart(2, "0")}`;
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -30,6 +38,7 @@ export default function LoginPage() {
   const [delivery, setDelivery] = useState<"smtp" | "preview" | null>(null);
   const [previewCode, setPreviewCode] = useState("");
   const [verificationEmail, setVerificationEmail] = useState("");
+  const [resendCooldownSeconds, setResendCooldownSeconds] = useState(0);
   const toast = useToast();
   const redirectPath = getSafeBackofficeRedirectPath(
     searchParams.get("redirect")
@@ -41,6 +50,18 @@ export default function LoginPage() {
       router.replace(redirectPath);
     }
   }, [me, redirectPath, requiresTwoFactor, router, startNavigation]);
+
+  useEffect(() => {
+    if (resendCooldownSeconds <= 0) {
+      return undefined;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setResendCooldownSeconds((current) => Math.max(0, current - 1));
+    }, 1000);
+
+    return () => window.clearTimeout(timeout);
+  }, [resendCooldownSeconds]);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -54,6 +75,7 @@ export default function LoginPage() {
         setDelivery(result.delivery ?? null);
         setPreviewCode(result.previewCode ?? "");
         setVerificationEmail(result.user.email);
+        setResendCooldownSeconds(result.resendAvailableInSeconds ?? INITIAL_RESEND_COOLDOWN_SECONDS);
         toast.success(
           result.delivery === "preview" ? "Use the local preview code" : "Check your email",
           result.delivery === "preview"
@@ -136,9 +158,11 @@ export default function LoginPage() {
                   <Input
                     id="two-factor-code"
                     value={twoFactorCode}
-                    onChange={(event) => setTwoFactorCode(event.target.value)}
+                    onChange={(event) => setTwoFactorCode(event.target.value.replace(/\D+/g, "").slice(0, 6))}
                     placeholder="123456"
                     autoComplete="one-time-code"
+                    inputMode="numeric"
+                    maxLength={6}
                     required
                   />
                 </div>
@@ -151,12 +175,15 @@ export default function LoginPage() {
                   type="button"
                   variant="outline"
                   className="w-full"
-                  disabled={resendLoginCode.isPending}
+                  disabled={resendLoginCode.isPending || resendCooldownSeconds > 0}
                   onClick={async () => {
                     try {
                       const result = await resendLoginCode.mutateAsync();
                       setDelivery(result.delivery);
                       setPreviewCode(result.previewCode ?? "");
+                      setResendCooldownSeconds(
+                        result.resendAvailableInSeconds ?? INITIAL_RESEND_COOLDOWN_SECONDS
+                      );
                       toast.success(
                         result.delivery === "preview" ? "Preview code refreshed" : "New code sent",
                         result.delivery === "preview"
@@ -168,7 +195,11 @@ export default function LoginPage() {
                     }
                   }}
                 >
-                  {resendLoginCode.isPending ? "Sending..." : "Send a new code"}
+                  {resendLoginCode.isPending
+                    ? "Sending..."
+                    : resendCooldownSeconds > 0
+                      ? `Send a new code in ${formatCooldown(resendCooldownSeconds)}`
+                      : "Send a new code"}
                 </Button>
 
                 <Button
@@ -180,6 +211,7 @@ export default function LoginPage() {
                     setTwoFactorCode("");
                     setDelivery(null);
                     setPreviewCode("");
+                    setResendCooldownSeconds(0);
                   }}
                 >
                   Back
