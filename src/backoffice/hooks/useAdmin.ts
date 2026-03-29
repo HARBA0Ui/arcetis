@@ -44,6 +44,91 @@ function normalizeCollectionParams<T extends Record<string, unknown>>(params?: T
   return Object.fromEntries(entries);
 }
 
+function upsertCollectionItem<T extends { id: string }>(items: T[], nextItem: T) {
+  const existingIndex = items.findIndex((item) => item.id === nextItem.id);
+
+  if (existingIndex === -1) {
+    return [nextItem, ...items];
+  }
+
+  return items.map((item) => (item.id === nextItem.id ? nextItem : item));
+}
+
+function removeCollectionItem<T extends { id: string }>(items: T[], itemId: string) {
+  return items.filter((item) => item.id !== itemId);
+}
+
+function upsertPaginatedCache<T extends { id: string }>(
+  queryClient: ReturnType<typeof useQueryClient>,
+  queryKey: readonly unknown[],
+  nextItem: T
+) {
+  queryClient.setQueriesData<PaginatedResult<T>>({ queryKey }, (previous) => {
+    if (!previous) {
+      return previous;
+    }
+
+    const hadItem = previous.items.some((item) => item.id === nextItem.id);
+    const total = hadItem ? previous.total : previous.total + 1;
+
+    return {
+      ...previous,
+      items: upsertCollectionItem(previous.items, nextItem),
+      total,
+      totalPages: Math.max(1, Math.ceil(total / previous.pageSize))
+    };
+  });
+}
+
+function removeFromPaginatedCache<T extends { id: string }>(
+  queryClient: ReturnType<typeof useQueryClient>,
+  queryKey: readonly unknown[],
+  itemId: string
+) {
+  queryClient.setQueriesData<PaginatedResult<T>>({ queryKey }, (previous) => {
+    if (!previous || !previous.items.some((item) => item.id === itemId)) {
+      return previous;
+    }
+
+    const total = Math.max(previous.total - 1, 0);
+
+    return {
+      ...previous,
+      items: removeCollectionItem(previous.items, itemId),
+      total,
+      totalPages: Math.max(1, Math.ceil(Math.max(total, 1) / previous.pageSize))
+    };
+  });
+}
+
+function upsertArrayCache<T extends { id: string }>(
+  queryClient: ReturnType<typeof useQueryClient>,
+  queryKey: readonly unknown[],
+  nextItem: T
+) {
+  queryClient.setQueriesData<T[]>({ queryKey }, (previous) => {
+    if (!previous) {
+      return previous;
+    }
+
+    return upsertCollectionItem(previous, nextItem);
+  });
+}
+
+function removeFromArrayCache<T extends { id: string }>(
+  queryClient: ReturnType<typeof useQueryClient>,
+  queryKey: readonly unknown[],
+  itemId: string
+) {
+  queryClient.setQueriesData<T[]>({ queryKey }, (previous) => {
+    if (!previous) {
+      return previous;
+    }
+
+    return removeCollectionItem(previous, itemId);
+  });
+}
+
 export function useAdminUsers(params: AdminCollectionParams = {}) {
   return useQuery({
     queryKey: ["admin-users", params],
@@ -201,11 +286,12 @@ export function useCreateQuest() {
       maxCompletions?: number;
       minLevel?: number;
     }) => {
-      const response = await api.post("/admin/quest", payload);
+      const response = await api.post<{ quest: Quest }>("/admin/quest", payload);
       return response.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["quests"] });
+    onSuccess: (data) => {
+      upsertArrayCache(queryClient, ["quests"], data.quest);
+      queryClient.invalidateQueries({ queryKey: ["quests"], refetchType: "active" });
       queryClient.invalidateQueries({ queryKey: ["admin-dashboard-stats"] });
     }
   });
@@ -230,14 +316,16 @@ export function useUpdateQuest() {
       minLevel?: number;
     }) => {
       const { id, ...data } = payload;
-      const response = await api.patch(`/admin/quest/${id}`, data);
+      const response = await api.patch<{ quest: QuestDetails }>(`/admin/quest/${id}`, data);
       return response.data;
     },
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["quests"] });
+    onSuccess: (data, variables) => {
+      upsertArrayCache(queryClient, ["quests"], data.quest);
+      queryClient.invalidateQueries({ queryKey: ["quests"], refetchType: "active" });
       queryClient.invalidateQueries({ queryKey: ["quest"] });
       queryClient.invalidateQueries({ queryKey: ["admin-dashboard-stats"] });
-      queryClient.invalidateQueries({ queryKey: ["admin-quest-details", variables.id] });
+      queryClient.setQueryData(["admin-quest-details", variables.id], data.quest);
+      queryClient.invalidateQueries({ queryKey: ["admin-quest-details", variables.id], refetchType: "active" });
     }
   });
 }
@@ -312,9 +400,11 @@ export function useCreateReward() {
       const response = await api.post<{ reward: Reward }>("/admin/reward", payload);
       return response.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["rewards"] });
-      queryClient.invalidateQueries({ queryKey: ["admin-rewards"] });
+    onSuccess: (data) => {
+      upsertArrayCache(queryClient, ["rewards"], data.reward);
+      upsertPaginatedCache(queryClient, ["admin-rewards"], data.reward);
+      queryClient.invalidateQueries({ queryKey: ["rewards"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: ["admin-rewards"], refetchType: "active" });
       queryClient.invalidateQueries({ queryKey: ["admin-dashboard-stats"] });
     }
   });
@@ -350,14 +440,17 @@ export function useUpdateReward() {
       stock?: number;
     }) => {
       const { id, ...data } = payload;
-      const response = await api.patch(`/admin/reward/${id}`, data);
+      const response = await api.patch<{ reward: RewardDetails }>(`/admin/reward/${id}`, data);
       return response.data;
     },
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["admin-rewards"] });
-      queryClient.invalidateQueries({ queryKey: ["rewards"] });
+    onSuccess: (data, variables) => {
+      upsertPaginatedCache(queryClient, ["admin-rewards"], data.reward);
+      upsertArrayCache(queryClient, ["rewards"], data.reward);
+      queryClient.setQueryData(["admin-reward-details", variables.id], data.reward);
+      queryClient.invalidateQueries({ queryKey: ["admin-rewards"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: ["rewards"], refetchType: "active" });
       queryClient.invalidateQueries({ queryKey: ["admin-dashboard-stats"] });
-      queryClient.invalidateQueries({ queryKey: ["admin-reward-details", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["admin-reward-details", variables.id], refetchType: "active" });
     }
   });
 }
@@ -386,8 +479,9 @@ export function useCreateGiveaway() {
       const response = await api.post<{ giveaway: Giveaway }>("/admin/giveaway", payload);
       return response.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-giveaways"] });
+    onSuccess: (data) => {
+      upsertPaginatedCache(queryClient, ["admin-giveaways"], data.giveaway);
+      queryClient.invalidateQueries({ queryKey: ["admin-giveaways"], refetchType: "active" });
     }
   });
 }
@@ -404,8 +498,12 @@ export function useUpdateGiveaway() {
       return response.data.giveaway;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["admin-giveaways"] });
-      queryClient.invalidateQueries({ queryKey: ["admin-giveaway-details", data.id] });
+      upsertPaginatedCache(queryClient, ["admin-giveaways"], data);
+      queryClient.setQueryData(["admin-giveaway-details", data.id], (previous: GiveawayDetails | undefined) =>
+        previous ? { ...previous, ...data } : previous
+      );
+      queryClient.invalidateQueries({ queryKey: ["admin-giveaways"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: ["admin-giveaway-details", data.id], refetchType: "active" });
     }
   });
 }
@@ -450,9 +548,12 @@ export function useDeleteReward() {
       const response = await api.delete(`/admin/reward/${rewardId}`);
       return response.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-rewards"] });
-      queryClient.invalidateQueries({ queryKey: ["rewards"] });
+    onSuccess: (_data, rewardId) => {
+      removeFromPaginatedCache(queryClient, ["admin-rewards"], rewardId);
+      removeFromArrayCache(queryClient, ["rewards"], rewardId);
+      queryClient.removeQueries({ queryKey: ["admin-reward-details", rewardId] });
+      queryClient.invalidateQueries({ queryKey: ["admin-rewards"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: ["rewards"], refetchType: "active" });
       queryClient.invalidateQueries({ queryKey: ["admin-dashboard-stats"] });
     }
   });
@@ -478,8 +579,9 @@ export function useCreateAdminUser() {
       const response = await api.post<{ user: User }>("/admin/users/admin", payload);
       return response.data.user;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+    onSuccess: (user) => {
+      upsertPaginatedCache(queryClient, ["admin-users"], user);
+      queryClient.invalidateQueries({ queryKey: ["admin-users"], refetchType: "active" });
       queryClient.invalidateQueries({ queryKey: ["admin-dashboard-stats"] });
     }
   });

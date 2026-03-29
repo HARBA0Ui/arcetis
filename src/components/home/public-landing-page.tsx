@@ -242,7 +242,7 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
                 {copy.spotlightDescription}
               </p>
             </div>
-            <Button asChild variant="outline" className="rounded-full">
+            <Button asChild variant="outline" className="w-full rounded-full sm:w-auto">
               <Link href={rewardsRedirect}>
                 {copy.exploreRewards}
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -353,14 +353,14 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
             <h2 className="mt-5 max-w-xl text-3xl font-semibold tracking-tight sm:text-4xl">{copy.ctaTitle}</h2>
             <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">{copy.ctaDescription}</p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg" className="rounded-full px-7">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Button asChild size="lg" className="w-full rounded-full px-7 sm:w-auto">
                 <Link href="/login">
                   {copy.signIn}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="rounded-full px-7">
+              <Button asChild size="lg" variant="outline" className="w-full rounded-full px-7 sm:w-auto">
                 <Link href="/register">{copy.createAccount}</Link>
               </Button>
             </div>

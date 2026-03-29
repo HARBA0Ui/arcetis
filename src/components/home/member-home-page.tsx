@@ -471,6 +471,8 @@ export function MemberHomePage() {
     const seenLevel = storedLevel ? Number(storedLevel) : null;
 
     if (pending && pending.currentLevel === currentLevel && pending.currentLevel > pending.previousLevel) {
+      // The level-up modal intentionally hydrates from pending local storage state after auth redirects.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLevelUpState(pending);
       clearPendingLevelUp();
       window.localStorage.setItem(storageKey, String(currentLevel));
@@ -483,6 +485,8 @@ export function MemberHomePage() {
     }
 
     if (currentLevel > seenLevel) {
+      // This keeps newly crossed level thresholds visible when the user returns to home.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLevelUpState({
         previousLevel: seenLevel,
         currentLevel,
@@ -860,7 +864,7 @@ export function MemberHomePage() {
                 {getLocalizedRewardTargetSummary(rewardTarget, copy, language)}
               </p>
 
-              <div className="mt-5 grid grid-cols-3 gap-3">
+              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div className="rounded-[1rem] border border-border/60 bg-background/80 p-3">
                   <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{copy.target}</p>
                   <p className="mt-1 font-semibold">{formatCompactNumber(rewardTarget.reward.pointsCost)} {copy.pointsUnit}</p>
@@ -945,7 +949,7 @@ export function MemberHomePage() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="rounded-[1rem] border border-border/60 bg-background/80 p-3">
                     <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Winners</p>
                     <p className="mt-1 font-semibold">

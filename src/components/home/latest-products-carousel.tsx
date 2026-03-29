@@ -538,7 +538,7 @@ export function LatestProductsCarousel({
                 </div>
 
                 <div className={cn(isCompact ? "mt-4" : "mt-8")}>
-                  <div className={cn("grid grid-cols-3", isCompact ? "gap-2" : "gap-3")}>
+                  <div className={cn("grid grid-cols-1 sm:grid-cols-3", isCompact ? "gap-2" : "gap-3")}>
                     <div className={cn("rounded-[1.15rem] border border-white/10 bg-white/[0.05]", isCompact ? "p-3" : "p-4")}>
                       <p className="text-[11px] uppercase tracking-[0.24em] text-white/48">{copy.cost}</p>
                       <p className={cn("mt-2 font-semibold", isCompact ? "text-base leading-tight" : "text-lg")}>{formatCompactNumber(reward.pointsCost)} pts</p>

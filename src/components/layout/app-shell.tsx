@@ -113,19 +113,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen overflow-x-hidden pb-12">
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/85 backdrop-blur-xl supports-[backdrop-filter]:bg-background/72">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-4">
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center">
           <Link href="/" className="mr-2 shrink-0">
             <ArcetisLogo className="h-16 md:h-20" />
           </Link>
 
-          <nav className="flex flex-1 flex-wrap items-center gap-2">
+          <nav className="-mx-1 flex flex-1 items-center gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 aria-current={isActiveRoute(pathname, item.href) ? "page" : undefined}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full border border-transparent px-3 py-2 text-sm transition-all",
+                  "inline-flex shrink-0 items-center gap-1.5 rounded-full border border-transparent px-3 py-2 text-sm transition-all",
                   isActiveRoute(pathname, item.href)
                     ? "border-border/70 bg-card/85 text-foreground shadow-sm"
                     : "text-muted-foreground hover:border-border/60 hover:bg-muted/55 hover:text-foreground"
@@ -137,7 +137,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex w-full items-center justify-end gap-2 sm:ml-auto sm:w-auto">
             <ThemeToggle iconOnly className="h-12 w-12 rounded-2xl border-border/80 bg-card text-foreground" />
             <NotificationCenter />
             <UserMenu user={user ?? undefined} onLogout={() => void handleLogout()} />

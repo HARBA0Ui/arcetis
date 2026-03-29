@@ -50,19 +50,19 @@ export function MarketingHeader() {
 
   return (
     <header className="rounded-[2rem] border border-border/70 bg-background/78 px-4 py-4 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.65)] backdrop-blur xl:px-6">
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <Link href="/" className="shrink-0">
           <ArcetisLogo className="h-12 md:h-16" />
         </Link>
 
-        <nav className="flex flex-1 flex-wrap items-center gap-2">
+        <nav className="-mx-1 flex flex-1 items-center gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               aria-current={isActiveRoute(pathname, link.href) ? "page" : undefined}
               className={cn(
-                "inline-flex items-center rounded-full border px-4 py-2 text-sm font-medium transition-all",
+                "inline-flex shrink-0 items-center rounded-full border px-4 py-2 text-sm font-medium transition-all",
                 isActiveRoute(pathname, link.href)
                   ? "border-border/70 bg-card/85 text-foreground shadow-sm"
                   : "border-border/40 bg-background/60 text-muted-foreground hover:border-border/70 hover:bg-card/70 hover:text-foreground"
@@ -73,12 +73,12 @@ export function MarketingHeader() {
           ))}
         </nav>
 
-        <div className="ml-auto flex flex-wrap items-center gap-2">
+        <div className="flex w-full flex-wrap items-center gap-2 sm:ml-auto sm:w-auto sm:justify-end">
           <ThemeToggle iconOnly className="rounded-full border-border/70 bg-background/70" />
-          <Button asChild variant="ghost" className="rounded-full px-5">
+          <Button asChild variant="ghost" className="min-w-[8.5rem] flex-1 rounded-full px-5 sm:min-w-0 sm:flex-none">
             <Link href="/login">{copy.signIn}</Link>
           </Button>
-          <Button asChild className="rounded-full px-5">
+          <Button asChild className="min-w-[8.5rem] flex-1 rounded-full px-5 sm:min-w-0 sm:flex-none">
             <Link href="/register">{copy.createAccount}</Link>
           </Button>
         </div>
