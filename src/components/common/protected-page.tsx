@@ -11,9 +11,13 @@ import { useMe } from "@/hooks/useAuth";
 export function ProtectedPage({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { startNavigation } = useNavigationProgress();
-  const { data: user, isLoading, isError, error } = useMe();
   const hasToken = !!useAuthToken();
-  const shouldRedirect = !hasToken || (!isLoading && !user && (!isError || isSessionError(error, { includeNotFound: true })));
+  const { data: user, isLoading, isError, error, isFetched } = useMe({ bootstrap: !hasToken });
+  const hasVerifiedSession = hasToken || !!user;
+  const shouldRedirect =
+    !hasVerifiedSession &&
+    isFetched &&
+    (!isError || isSessionError(error, { includeNotFound: true }));
 
   useEffect(() => {
     if (shouldRedirect) {
@@ -22,10 +26,10 @@ export function ProtectedPage({ children }: { children: React.ReactNode }) {
     }
   }, [router, shouldRedirect, startNavigation]);
 
-  if (!hasToken) {
+  if (!hasVerifiedSession && !isFetched) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-10">
-        <LogoLoader message="Redirecting to sign in..." compact />
+        <LogoLoader message="Loading your Arcetis workspace..." compact />
       </div>
     );
   }
@@ -38,7 +42,7 @@ export function ProtectedPage({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!user) {
+  if (!hasVerifiedSession) {
     if (isError && !isSessionError(error, { includeNotFound: true })) {
       return (
         <div className="mx-auto max-w-6xl px-4 py-10">

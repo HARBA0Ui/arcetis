@@ -76,12 +76,13 @@ async function fetchCurrentUser() {
   return response.data.user;
 }
 
-export function useMe() {
+export function useMe(options?: { bootstrap?: boolean }) {
   const token = useAuthToken();
   const queryClient = useQueryClient();
+  const shouldBootstrap = !!options?.bootstrap;
 
   useEffect(() => {
-    if (!token) {
+    if (!token && !shouldBootstrap) {
       return;
     }
 
@@ -91,12 +92,20 @@ export function useMe() {
     }
 
     queryClient.setQueryData(meQueryKey, (current: User | undefined) => current ?? storedUser);
-  }, [queryClient, token]);
+  }, [queryClient, shouldBootstrap, token]);
 
   return useQuery({
     queryKey: meQueryKey,
-    queryFn: fetchCurrentUser,
-    enabled: !!token,
+    queryFn: async () => {
+      const user = await fetchCurrentUser();
+
+      if (!token) {
+        setToken();
+      }
+
+      return user;
+    },
+    enabled: !!token || shouldBootstrap,
     staleTime: 5 * 60 * 1000,
     retry: false
   });

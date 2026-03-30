@@ -227,7 +227,7 @@ export default function TaskDetailPage() {
                   title={quest.title}
                   category={quest.category}
                   imageUrl={quest.imageUrl}
-                  className="h-28 w-full sm:h-28 sm:w-36"
+                  className="aspect-square w-full max-w-[11rem] shrink-0 self-start sm:max-w-[12rem]"
                 />
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
@@ -505,7 +505,7 @@ export default function TaskDetailPage() {
         <Card className="max-w-4xl">
           <CardContent className="space-y-4 p-6">
             <div className="flex flex-col gap-4 sm:flex-row">
-              <Skeleton className="h-28 w-full rounded-xl sm:w-36" />
+              <Skeleton className="aspect-square w-full max-w-[11rem] rounded-xl sm:max-w-[12rem]" />
               <div className="flex-1 space-y-3">
                 <Skeleton className="h-6 w-44" />
                 <Skeleton className="h-4 w-full" />

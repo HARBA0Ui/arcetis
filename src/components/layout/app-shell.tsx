@@ -48,11 +48,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { startNavigation } = useNavigationProgress();
   const logout = useLogout();
   const sessionHint = useAuthToken();
-  const { data: user, error, isError, isFetched } = useMe();
+  const { data: user, error, isError, isFetched } = useMe({ bootstrap: !sessionHint });
   const prefetchedRoutesRef = useRef(false);
   const logoutTarget = pathname === "/" ? "/" : "/login";
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const mobileNavItems = navItems.filter((item) => item.href !== "/");
+  const hasVerifiedSession = !!sessionHint || !!user;
 
   function handleHomeNavigation(event: MouseEvent<HTMLAnchorElement>) {
     setIsMobileNavOpen(false);
@@ -72,7 +73,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    if (sessionHint) return;
+    if (hasVerifiedSession || !isFetched) return;
+    if (isError && !isSessionError(error, { includeNotFound: true })) return;
 
     void (async () => {
       startNavigation(logoutTarget);
@@ -85,7 +87,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       router.replace(logoutTarget);
     })();
-  }, [logout, logoutTarget, pathname, router, sessionHint, startNavigation]);
+  }, [error, hasVerifiedSession, isError, isFetched, logout, logoutTarget, pathname, router, startNavigation]);
 
   useEffect(() => {
     if (!sessionHint) return;
@@ -138,7 +140,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     };
   }, [router, sessionHint]);
 
-  if (!sessionHint) {
+  if (!hasVerifiedSession && !isFetched) {
+    return <ProtectedShellLoading message="Refreshing your session..." />;
+  }
+
+  if (!hasVerifiedSession && isError && !isSessionError(error, { includeNotFound: true })) {
+    return <ProtectedShellLoading message="We could not verify your session right now." />;
+  }
+
+  if (!hasVerifiedSession) {
     return <ProtectedShellLoading message="Refreshing your session..." />;
   }
 
