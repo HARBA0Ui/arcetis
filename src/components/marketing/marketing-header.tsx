@@ -23,6 +23,7 @@ export function MarketingHeader() {
   const pathname = usePathname();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const { language } = useLanguage();
+  const shopLabel = "Shop";
   const copy =
     language === "ar"
       ? {
@@ -46,6 +47,7 @@ export function MarketingHeader() {
 
   const links = [
     { href: "/", label: copy.home },
+    { href: "/#shop-preview", label: shopLabel },
     { href: "/about", label: copy.about },
     { href: "/contact", label: copy.contact },
     { href: "/privacy", label: copy.privacy },

@@ -15,6 +15,7 @@ import {
   X
 } from "lucide-react";
 import { DeferredSection } from "@/components/common/deferred-section";
+import { MobileShopPreview } from "@/components/home/mobile-shop-preview";
 import { SyncBanner } from "@/components/common/sync-banner";
 import { LatestProductsCarousel, type HomeCarouselIntroSlide } from "@/components/home/latest-products-carousel";
 import { useLanguage } from "@/components/i18n/language-provider";
@@ -381,9 +382,13 @@ export function MemberHomePage() {
           ? copy.dailySpinReady
           : copy.nextSpinIn(spinCountdown.shortLabel);
   const topThree = leaderboard.slice(0, 3);
-  const currentUserInTopThree = stats.data
-    ? topThree.some((entry) => entry.id === stats.data.user.id)
-    : false;
+  const currentRankDisplay = stats.data
+    ? currentLeaderboardRank ??
+      (() => {
+        const topThreeIndex = topThree.findIndex((entry) => entry.id === stats.data.user.id);
+        return topThreeIndex >= 0 ? topThreeIndex + 1 : null;
+      })()
+    : null;
   const levelUpUnlocks = useMemo(() => {
     if (!levelUpState) {
       return [];
@@ -713,15 +718,19 @@ export function MemberHomePage() {
               );
             })}
 
-            {!currentUserInTopThree && stats.data ? (
+            {stats.data && currentRankDisplay ? (
               <>
-                <div className="flex items-center justify-center py-1 text-sm tracking-[0.5em] text-muted-foreground">
-                  ...
-                </div>
+                {currentRankDisplay > 3 ? (
+                  <div className="flex items-center justify-center py-1 text-sm tracking-[0.5em] text-muted-foreground">
+                    ...
+                  </div>
+                ) : (
+                  <div className="border-t border-dashed border-border/60" />
+                )}
                 <div className="grid gap-3 rounded-[1.35rem] border border-primary/20 bg-primary/[0.06] px-4 py-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                   <div className="flex min-w-0 items-center gap-3">
                     <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-primary/20 bg-primary/[0.08] text-sm font-semibold text-foreground">
-                      #{currentLeaderboardRank}
+                      #{currentRankDisplay}
                     </div>
                     <div className="min-w-0">
                       <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
@@ -1006,7 +1015,19 @@ export function MemberHomePage() {
 
       <div className="space-y-6">
         <section className="[&>*]:min-w-0">
+          <MobileShopPreview
+            eyebrow={copy.nextAffordableReward}
+            title="Shop"
+            description={t("rewardsSubtitle")}
+            rewards={rewards.data ?? []}
+            headerHref="/rewards"
+            headerLabel={copy.introSecondary}
+            itemActionLabel={t("viewTarget")}
+            itemActionHref={(reward) => `/rewards/${reward.id}`}
+          />
+
           <LatestProductsCarousel
+            className="hidden sm:block"
             introSlide={introSlide}
             introAside={progressSnapshotPanel}
             rewards={rewards.data}

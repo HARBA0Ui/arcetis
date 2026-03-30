@@ -99,17 +99,6 @@ export default function RewardDetailPage() {
   const [isRedeemConfirmOpen, setRedeemConfirmOpen] = useState(false);
 
   useEffect(() => {
-    if (!reward) {
-      return;
-    }
-
-    const selected = getSelectedRewardPlan(reward, selectedPlanId);
-    if (selected && selected.id !== selectedPlanId) {
-      setSelectedPlanId(selected.id);
-    }
-  }, [reward, selectedPlanId]);
-
-  useEffect(() => {
     if (!isTndModalOpen) {
       return;
     }
@@ -178,7 +167,7 @@ export default function RewardDetailPage() {
             <Card className="overflow-hidden rounded-[2rem] border-border/70 bg-card/95">
               <CardContent className="p-5 sm:p-6 lg:p-7">
                 <div className="flex flex-col gap-5 md:flex-row md:items-start">
-                  <div className="w-full max-w-[220px] shrink-0">
+                  <div className="w-full max-w-[160px] shrink-0 sm:max-w-[220px]">
                     <RewardThumbnail
                       title={reward.title}
                       imageUrl={reward.imageUrl}

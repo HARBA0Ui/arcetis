@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Clock3, Coins, CreditCard, Search, ShieldCheck } from "lucide-react";
 import { DeferredSection } from "@/components/common/deferred-section";
@@ -63,14 +63,15 @@ export default function RewardsPage() {
   const rewardTarget = rewards.data && stats.data ? getNextRewardTarget(rewards.data, stats.data.user) : null;
   const isStatsBootstrapping = stats.isLoading && !stats.data;
   const isRewardsBootstrapping = rewardsCatalog.isLoading && !rewardsCatalog.data;
+  const currentPage = rewardsCatalog.data?.page ?? page;
+  const totalPages = rewardsCatalog.data?.totalPages ?? 1;
   const visiblePageNumbers = useMemo(() => {
-    const totalPages = rewardsCatalog.data?.totalPages ?? 1;
-    const start = Math.max(1, page - 2);
+    const start = Math.max(1, currentPage - 2);
     const end = Math.min(totalPages, start + 4);
     const adjustedStart = Math.max(1, end - 4);
 
     return Array.from({ length: end - adjustedStart + 1 }, (_, index) => adjustedStart + index);
-  }, [page, rewardsCatalog.data?.totalPages]);
+  }, [currentPage, totalPages]);
   const rewardsGridFallback = (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: REWARDS_PAGE_SIZE }).map((_, index) => (
@@ -95,16 +96,6 @@ export default function RewardsPage() {
       ))}
     </div>
   );
-
-  useEffect(() => {
-    setPage(1);
-  }, [deferredSearch]);
-
-  useEffect(() => {
-    if (rewardsCatalog.data && rewardsCatalog.data.page !== page) {
-      setPage(rewardsCatalog.data.page);
-    }
-  }, [page, rewardsCatalog.data]);
 
   return (
     <>
@@ -145,7 +136,7 @@ export default function RewardsPage() {
           <Card className="mb-6 overflow-hidden rounded-[2rem] border-[rgba(255,122,24,0.18)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(255,247,241,0.96))] shadow-[0_24px_70px_-52px_rgba(255,122,24,0.38)] dark:bg-[linear-gradient(180deg,_rgba(18,18,18,0.96),_rgba(10,10,10,0.98))]">
             <CardContent className="p-5 sm:p-6">
               <div className="flex flex-wrap items-center gap-5">
-                <div className="mx-auto w-full max-w-[176px] shrink-0 sm:mx-0">
+                <div className="mx-auto w-full max-w-[128px] shrink-0 sm:mx-0 sm:max-w-[176px]">
                   <RewardThumbnail title={rewardTarget.reward.title} imageUrl={rewardTarget.reward.imageUrl} className="aspect-square w-full" />
                 </div>
 
@@ -216,7 +207,10 @@ export default function RewardsPage() {
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(event) => {
+                setSearch(event.target.value);
+                setPage(1);
+              }}
               className="pl-10"
               placeholder={t("searchProducts")}
             />
@@ -226,7 +220,7 @@ export default function RewardsPage() {
               {t("results", { count: rewardsCatalog.data?.total ?? 0 })}
             </Badge>
             <Badge variant="outline">
-              {t("pageOf", { page: rewardsCatalog.data?.page ?? page, total: rewardsCatalog.data?.totalPages ?? 1 })}
+              {t("pageOf", { page: currentPage, total: totalPages })}
             </Badge>
           </div>
         </CardContent>
@@ -244,14 +238,20 @@ export default function RewardsPage() {
 
               return (
                 <Card key={reward.id} className={cn("flex h-full flex-col overflow-hidden rounded-[1.5rem] border-border/70 bg-card/95", isTargetReward && "border-[rgba(255,122,24,0.22)] shadow-[0_22px_70px_-46px_rgba(255,122,24,0.38)]")}>
-                  <RewardThumbnail title={reward.title} imageUrl={reward.imageUrl} className="aspect-square w-full rounded-none border-x-0 border-t-0 border-b" />
+                  <div className="px-4 pt-4 sm:px-0 sm:pt-0">
+                    <RewardThumbnail
+                      title={reward.title}
+                      imageUrl={reward.imageUrl}
+                      className="mx-auto aspect-square w-full max-w-[9.5rem] rounded-[1rem] border-border/60 shadow-[0_16px_36px_-28px_rgba(0,0,0,0.45)] sm:max-w-none sm:rounded-none sm:border-x-0 sm:border-t-0 sm:border-b sm:shadow-none"
+                    />
+                  </div>
                   <CardHeader>
                     <div className="flex flex-wrap items-center gap-2">
                       {isTargetReward ? <Badge className="rounded-full bg-[hsl(var(--arcetis-ember))] text-black hover:bg-[hsl(var(--arcetis-ember))]">{t("nextAffordableProduct")}</Badge> : null}
                       {reward.plans?.length ? <Badge variant="outline">{reward.plans.length} {t("plans").toLowerCase()}</Badge> : null}
                     </div>
-                    <CardTitle className="text-lg">{reward.title}</CardTitle>
-                    <CardDescription>{reward.description}</CardDescription>
+                    <CardTitle className="text-base sm:text-lg">{reward.title}</CardTitle>
+                    <CardDescription className="text-xs leading-5 sm:text-sm sm:leading-6">{reward.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="flex flex-1 flex-col space-y-3 text-sm">
                     <p className="inline-flex items-center gap-2 text-muted-foreground">
@@ -350,8 +350,8 @@ export default function RewardsPage() {
           <Button
             type="button"
             variant="outline"
-            disabled={page <= 1}
-            onClick={() => setPage((current) => Math.max(1, current - 1))}
+            disabled={currentPage <= 1}
+            onClick={() => setPage(Math.max(1, currentPage - 1))}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Previous
@@ -361,7 +361,7 @@ export default function RewardsPage() {
             <Button
               key={pageNumber}
               type="button"
-              variant={pageNumber === (rewardsCatalog.data?.page ?? page) ? "default" : "outline"}
+              variant={pageNumber === currentPage ? "default" : "outline"}
               className="min-w-10"
               onClick={() => setPage(pageNumber)}
             >
@@ -372,10 +372,8 @@ export default function RewardsPage() {
           <Button
             type="button"
             variant="outline"
-            disabled={page >= (rewardsCatalog.data?.totalPages ?? 1)}
-            onClick={() =>
-              setPage((current) => Math.min(rewardsCatalog.data?.totalPages ?? current, current + 1))
-            }
+            disabled={currentPage >= totalPages}
+            onClick={() => setPage(Math.min(totalPages, currentPage + 1))}
           >
             Next
             <ArrowRight className="ml-2 h-4 w-4" />

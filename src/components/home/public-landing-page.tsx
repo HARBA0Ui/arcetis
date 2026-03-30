@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ArrowRight, Flame, Gift, Sparkles, Star, Trophy, Zap } from "lucide-react";
 import { GuestSpinTeaserModal } from "@/components/home/guest-spin-teaser-modal";
+import { MobileShopPreview } from "@/components/home/mobile-shop-preview";
 import { useLanguage, type AppLanguage } from "@/components/i18n/language-provider";
 import { LatestProductsCarousel, type HomeCarouselIntroSlide } from "@/components/home/latest-products-carousel";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -199,7 +200,7 @@ function getLandingCopy(language: AppLanguage) {
 }
 
 export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const copy = getLandingCopy(language);
   const rewardsRedirect = `/login?redirect=${encodeURIComponent("/rewards")}`;
   const introSlide: HomeCarouselIntroSlide = {
@@ -233,8 +234,8 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
       <div className="mx-auto max-w-6xl">
         <MarketingHeader />
 
-        <section className="mt-6 space-y-4">
-          <div className="flex flex-wrap items-end justify-between gap-4">
+        <section id="shop-preview" className="mt-6 space-y-4">
+          <div className="hidden flex-wrap items-end justify-between gap-4 sm:flex">
             <div>
               <p className="text-xs uppercase tracking-[0.26em] text-muted-foreground">{copy.spotlightEyebrow}</p>
               <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">{copy.spotlightTitle}</h2>
@@ -250,7 +251,19 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
             </Button>
           </div>
 
+          <MobileShopPreview
+            eyebrow={copy.spotlightEyebrow}
+            title="Shop"
+            description={t("rewardsSubtitle")}
+            rewards={rewards}
+            headerHref="/register?redirect=%2Frewards"
+            headerLabel={copy.createAccount}
+            itemActionLabel={copy.signIn}
+            itemActionHref={(reward) => `/login?redirect=${encodeURIComponent(`/rewards/${reward.id}`)}`}
+          />
+
           <LatestProductsCarousel
+            className="hidden sm:block"
             introSlide={introSlide}
             rewards={rewards}
             primaryLinkMode="signin"
