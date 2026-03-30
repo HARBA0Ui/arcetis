@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
+import { Home, LogIn, Menu, Shield, UserPlus } from "lucide-react";
 import { ArcetisLogo } from "@/components/common/arcetis-logo";
 import { ThemeToggle } from "@/components/common/theme-toggle";
 import { useToast } from "@/components/common/toast-center";
+import { MobileNavSidebar } from "@/components/layout/mobile-nav-sidebar";
 import { useNavigationProgress } from "@/components/navigation/navigation-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,6 +41,7 @@ export default function LoginPage() {
   const [previewCode, setPreviewCode] = useState("");
   const [verificationEmail, setVerificationEmail] = useState("");
   const [resendCooldownSeconds, setResendCooldownSeconds] = useState(0);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const toast = useToast();
   const redirectPath = getSafeBackofficeRedirectPath(
     searchParams.get("redirect")
@@ -107,10 +110,75 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
-      <div className="absolute right-4 top-4">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 pb-10 pt-24 sm:py-10">
+      <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-3 sm:hidden">
+        <Link href="/backoffice/login" className="shrink-0">
+          <ArcetisLogo className="h-10" />
+        </Link>
+
+        <div className="flex items-center gap-2">
+          <ThemeToggle iconOnly className="h-10 w-10 border-border/80 bg-card text-foreground" />
+          <button
+            type="button"
+            onClick={() => setIsMobileNavOpen(true)}
+            aria-label="Open backoffice navigation"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-border/80 bg-card text-foreground transition-colors hover:bg-muted/70"
+          >
+            <Menu className="h-4.5 w-4.5" />
+          </button>
+        </div>
+      </div>
+
+      <div className="absolute right-4 top-4 hidden sm:block">
         <ThemeToggle />
       </div>
+
+      <MobileNavSidebar
+        open={isMobileNavOpen}
+        onClose={() => setIsMobileNavOpen(false)}
+        title="Backoffice"
+        subtitle="Use the admin entry links from one mobile sidebar instead of juggling top controls on the sign-in screen."
+        links={[
+          {
+            href: "/backoffice/login",
+            label: "Admin sign in",
+            icon: Shield,
+            active: true,
+            onNavigate: () => setIsMobileNavOpen(false)
+          },
+          {
+            href: "/login",
+            label: "Frontoffice sign in",
+            icon: LogIn,
+            onNavigate: () => setIsMobileNavOpen(false)
+          },
+          {
+            href: "/register",
+            label: "Create account",
+            icon: UserPlus,
+            onNavigate: () => setIsMobileNavOpen(false)
+          },
+          {
+            href: "/",
+            label: "Frontoffice home",
+            icon: Home,
+            onNavigate: () => setIsMobileNavOpen(false)
+          }
+        ]}
+        footer={
+          <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.05] p-4">
+            <div className="flex items-center gap-3">
+              <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06]">
+                <Shield className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white">Arcetis admin access</p>
+                <p className="text-xs text-white/60">Secure sign-in for the backoffice team.</p>
+              </div>
+            </div>
+          </div>
+        }
+      />
 
       <div className="w-full max-w-md space-y-6">
         <div className="flex justify-center">

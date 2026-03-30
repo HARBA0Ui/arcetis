@@ -224,7 +224,7 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden px-4 py-5 sm:px-6 lg:px-8">
+    <main className="relative min-h-screen overflow-hidden px-3 py-4 sm:px-6 lg:px-8">
       <GuestSpinTeaserModal />
       <div className="arcetis-landing-grid pointer-events-none absolute inset-0 -z-20" />
       <div className="arcetis-landing-orb absolute left-[-6rem] top-24 -z-10 h-64 w-64 rounded-full bg-[radial-gradient(circle,_rgba(255,179,71,0.26),_rgba(255,179,71,0))] blur-3xl" />
@@ -237,8 +237,8 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-xs uppercase tracking-[0.26em] text-muted-foreground">{copy.spotlightEyebrow}</p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight">{copy.spotlightTitle}</h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">{copy.spotlightTitle}</h2>
+              <p className="mt-2 max-w-2xl text-xs leading-5 text-muted-foreground sm:text-sm sm:leading-6">
                 {copy.spotlightDescription}
               </p>
             </div>
@@ -262,26 +262,26 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
 
         <section className="mt-6 grid gap-6 lg:grid-cols-[1.02fr_0.98fr]">
           <Card className="overflow-hidden rounded-[2rem] border-border/70 bg-card/88 shadow-[0_26px_90px_-56px_rgba(0,0,0,0.8)]">
-            <CardHeader className="border-b border-border/70 pb-5">
+            <CardHeader className="border-b border-border/70 pb-4 sm:pb-5">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">{copy.nextSession}</p>
-                  <CardTitle className="mt-2 text-2xl">{copy.nextSessionTitle}</CardTitle>
+                  <p className="text-xs font-medium text-muted-foreground sm:text-sm">{copy.nextSession}</p>
+                  <CardTitle className="mt-2 text-xl sm:text-2xl">{copy.nextSessionTitle}</CardTitle>
                 </div>
                 <Badge className="rounded-full bg-primary px-3 py-1 text-primary-foreground">{copy.live}</Badge>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4 p-6">
+            <CardContent className="space-y-4 p-4 sm:p-6">
               {copy.sessionPreview.map((item) => (
-                <div key={item.title} className="rounded-[1.4rem] border border-border/70 bg-background/70 p-4">
+                <div key={item.title} className="rounded-[1.4rem] border border-border/70 bg-background/70 p-3.5 sm:p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex gap-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border/70 bg-muted/60">
-                        <item.icon className="h-5 w-5" />
+                      <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-border/70 bg-muted/60 sm:h-11 sm:w-11">
+                        <item.icon className="h-4 w-4 sm:h-5 sm:w-5" />
                       </div>
                       <div>
-                        <p className="font-medium">{item.title}</p>
-                        <p className="mt-1 text-sm text-muted-foreground">{item.description}</p>
+                        <p className="text-sm font-medium sm:text-base">{item.title}</p>
+                        <p className="mt-1 text-xs leading-5 text-muted-foreground sm:text-sm">{item.description}</p>
                       </div>
                     </div>
                     <span className="whitespace-nowrap rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
@@ -291,13 +291,13 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
                 </div>
               ))}
 
-              <div className="rounded-[1.5rem] border border-amber-300/30 bg-[linear-gradient(145deg,_rgba(255,205,120,0.16),_rgba(255,255,255,0.03))] p-5">
+              <div className="rounded-[1.5rem] border border-amber-300/30 bg-[linear-gradient(145deg,_rgba(255,205,120,0.16),_rgba(255,255,255,0.03))] p-4 sm:p-5">
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-sm font-medium text-foreground">{copy.progressTitle}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">{copy.progressDescription}</p>
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground sm:text-sm">{copy.progressDescription}</p>
                   </div>
-                  <span className="text-2xl font-semibold tracking-tight">78%</span>
+                  <span className="text-xl font-semibold tracking-tight sm:text-2xl">78%</span>
                 </div>
                 <div className="mt-4 h-3 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
                   <div className="h-full w-[78%] rounded-full bg-[linear-gradient(90deg,_rgba(255,183,77,1),_rgba(255,115,0,0.92))]" />
@@ -307,15 +307,15 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
           </Card>
 
           <Card className="rounded-[2rem] border-border/70 bg-card/86 shadow-sm">
-            <CardContent className="grid gap-4 p-6 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+            <CardContent className="grid gap-4 p-4 sm:grid-cols-3 sm:p-6 lg:grid-cols-1 xl:grid-cols-3">
               {copy.pillars.map((item) => (
-                <div key={item.title} className="space-y-3 rounded-[1.5rem] border border-border/70 bg-background/65 p-4">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border/70 bg-muted/60">
-                    <item.icon className="h-5 w-5" />
+                <div key={item.title} className="space-y-3 rounded-[1.5rem] border border-border/70 bg-background/65 p-3.5 sm:p-4">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-border/70 bg-muted/60 sm:h-11 sm:w-11">
+                    <item.icon className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
                   <div>
-                    <p className="font-semibold">{item.title}</p>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.description}</p>
+                    <p className="text-sm font-semibold sm:text-base">{item.title}</p>
+                    <p className="mt-2 text-xs leading-5 text-muted-foreground sm:text-sm sm:leading-6">{item.description}</p>
                   </div>
                 </div>
               ))}
@@ -326,19 +326,19 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
         <section className="mt-6 grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
           <Card className="rounded-[2rem] border-border/70 bg-card/88 shadow-sm">
             <CardHeader>
-              <p className="text-sm font-medium uppercase tracking-[0.24em] text-muted-foreground">{copy.journeyEyebrow}</p>
-              <CardTitle className="text-3xl tracking-tight">{copy.journeyTitle}</CardTitle>
+              <p className="text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground sm:text-sm">{copy.journeyEyebrow}</p>
+              <CardTitle className="text-2xl tracking-tight sm:text-3xl">{copy.journeyTitle}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {copy.journey.map((item) => (
-                <div key={item.step} className="rounded-[1.5rem] border border-border/70 bg-background/68 p-5">
+                <div key={item.step} className="rounded-[1.5rem] border border-border/70 bg-background/68 p-4 sm:p-5">
                   <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-sm font-semibold text-primary-foreground">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary text-xs font-semibold text-primary-foreground sm:h-12 sm:w-12 sm:text-sm">
                       {item.step}
                     </div>
                     <div>
-                      <p className="text-lg font-semibold">{item.title}</p>
-                      <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.description}</p>
+                      <p className="text-base font-semibold sm:text-lg">{item.title}</p>
+                      <p className="mt-2 text-xs leading-5 text-muted-foreground sm:text-sm sm:leading-6">{item.description}</p>
                     </div>
                   </div>
                 </div>
@@ -346,12 +346,12 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
             </CardContent>
           </Card>
 
-          <div className="overflow-hidden rounded-[2rem] border border-border/70 bg-[linear-gradient(180deg,_rgba(255,255,255,0.76),_rgba(255,247,235,0.92))] p-7 shadow-[0_28px_90px_-58px_rgba(0,0,0,0.75)] dark:bg-[linear-gradient(180deg,_rgba(22,22,22,0.92),_rgba(10,10,10,0.98))] sm:p-8">
+          <div className="overflow-hidden rounded-[2rem] border border-border/70 bg-[linear-gradient(180deg,_rgba(255,255,255,0.76),_rgba(255,247,235,0.92))] p-5 shadow-[0_28px_90px_-58px_rgba(0,0,0,0.75)] dark:bg-[linear-gradient(180deg,_rgba(22,22,22,0.92),_rgba(10,10,10,0.98))] sm:p-8">
             <Badge variant="outline" className="rounded-full border-border/70 bg-background/70 px-3 py-1 text-[0.72rem] uppercase tracking-[0.22em]">
               {copy.ctaBadge}
             </Badge>
-            <h2 className="mt-5 max-w-xl text-3xl font-semibold tracking-tight sm:text-4xl">{copy.ctaTitle}</h2>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">{copy.ctaDescription}</p>
+            <h2 className="mt-5 max-w-xl text-2xl font-semibold tracking-tight sm:text-4xl">{copy.ctaTitle}</h2>
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">{copy.ctaDescription}</p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Button asChild size="lg" className="w-full rounded-full px-7 sm:w-auto">

@@ -280,17 +280,17 @@ export function LatestProductsCarousel({
   }, [autoplayMs, isPaused, slideList.length]);
 
   if (isLoading && !slideList.length) {
-    return <Skeleton className={cn("w-full rounded-[2rem]", isCompact ? "h-[25rem] sm:h-[26rem]" : "h-[29rem]")} />;
+    return <Skeleton className={cn("w-full rounded-[2rem]", isCompact ? "h-[23rem] sm:h-[26rem]" : "h-[24rem] sm:h-[29rem]")} />;
   }
 
   if (!slideList.length) {
     return (
-      <div className="rounded-[2rem] border border-border/70 bg-card/90 p-6 shadow-sm">
+      <div className="rounded-[2rem] border border-border/70 bg-card/90 p-4 shadow-sm sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.26em] text-muted-foreground">{copy.latestProducts}</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight">{copy.emptyTitle}</h2>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">{copy.emptyTitle}</h2>
+            <p className="mt-3 max-w-2xl text-xs leading-5 text-muted-foreground sm:text-sm sm:leading-6">
               {copy.emptyDescription}
             </p>
           </div>
@@ -358,7 +358,7 @@ export function LatestProductsCarousel({
       <div
         className={cn(
           "relative",
-          isCompact ? "h-full min-h-[23rem] sm:min-h-[24rem] xl:min-h-0" : "min-h-[32rem] md:min-h-[30rem]"
+          isCompact ? "h-full min-h-[21rem] sm:min-h-[24rem] xl:min-h-0" : "min-h-[27rem] sm:min-h-[32rem] md:min-h-[30rem]"
         )}
       >
         {slideList.map((slide, index) => {
@@ -372,7 +372,7 @@ export function LatestProductsCarousel({
                 key={slide.key}
                 className={cn(
                   "absolute inset-0 flex flex-col justify-between text-white transition-all duration-500 ease-out",
-                  isCompact ? "p-5 sm:p-6" : "px-7 py-10 sm:px-9 sm:py-11",
+                  isCompact ? "p-4 sm:p-6" : "px-5 py-7 sm:px-9 sm:py-11",
                   theme.shell,
                   isActive ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-8 opacity-0"
                 )}
@@ -397,7 +397,7 @@ export function LatestProductsCarousel({
                             ? "mt-4 max-w-[11ch] text-[2rem] leading-[0.94] sm:text-[2.3rem]"
                             : hasIntroAside
                               ? "mt-7 max-w-[8ch] text-4xl leading-[0.96] sm:text-[3.45rem]"
-                              : "mt-6 text-4xl sm:text-5xl lg:text-6xl"
+                              : "mt-5 text-[2.35rem] leading-[0.95] sm:text-5xl lg:text-6xl"
                         )}
                       >
                       {slide.intro.title}
@@ -409,7 +409,7 @@ export function LatestProductsCarousel({
                             ? "mt-3 max-w-[34rem] text-sm leading-6 sm:text-[0.95rem]"
                             : hasIntroAside
                               ? "mt-6 max-w-[26rem] text-[1.02rem] leading-7"
-                              : "mt-5 text-base leading-7 sm:text-lg"
+                              : "mt-4 text-sm leading-6 sm:text-lg"
                         )}
                       >
                         {slide.intro.description}
@@ -500,7 +500,7 @@ export function LatestProductsCarousel({
                 "absolute inset-0 grid text-white transition-all duration-500 ease-out",
                 isCompact
                   ? "gap-4 p-5 sm:grid-cols-[minmax(0,1fr)_minmax(150px,0.48fr)] sm:items-center sm:gap-5 sm:p-6 xl:grid-cols-[minmax(0,1fr)_minmax(176px,0.54fr)]"
-                  : "gap-8 px-6 py-8 sm:gap-10 sm:px-8 sm:py-9 lg:grid-cols-[minmax(0,1.08fr)_minmax(280px,0.92fr)] lg:items-center",
+                  : "gap-6 px-4 py-5 sm:gap-10 sm:px-8 sm:py-9 lg:grid-cols-[minmax(0,1.08fr)_minmax(280px,0.92fr)] lg:items-center",
                 carouselThemes[index % carouselThemes.length],
                 isActive ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-8 opacity-0"
               )}
@@ -522,7 +522,7 @@ export function LatestProductsCarousel({
                   <h2
                     className={cn(
                       "font-semibold tracking-tight",
-                      isCompact ? "mt-3 max-w-[10ch] text-[1.85rem] leading-[0.92] sm:text-[2.15rem]" : "mt-4 max-w-2xl text-3xl sm:text-4xl"
+                      isCompact ? "mt-3 max-w-[10ch] text-[1.85rem] leading-[0.92] sm:text-[2.15rem]" : "mt-3 max-w-2xl text-2xl leading-[0.95] sm:mt-4 sm:text-4xl"
                     )}
                   >
                     {reward.title}
@@ -530,30 +530,30 @@ export function LatestProductsCarousel({
                   <p
                     className={cn(
                       "text-white/72",
-                      isCompact ? "mt-3 max-w-[28rem] text-sm leading-6 line-clamp-2" : "mt-4 max-w-2xl text-sm leading-7 sm:text-base"
+                      isCompact ? "mt-3 max-w-[28rem] text-sm leading-6 line-clamp-2" : "mt-3 max-w-2xl text-xs leading-6 sm:mt-4 sm:text-base sm:leading-7"
                     )}
                   >
                     {reward.description}
                   </p>
                 </div>
 
-                <div className={cn(isCompact ? "mt-4" : "mt-8")}>
+                <div className={cn(isCompact ? "mt-4" : "mt-6 sm:mt-8")}>
                   <div className={cn("grid grid-cols-1 sm:grid-cols-3", isCompact ? "gap-2" : "gap-3")}>
-                    <div className={cn("rounded-[1.15rem] border border-white/10 bg-white/[0.05]", isCompact ? "p-3" : "p-4")}>
+                    <div className={cn("rounded-[1.15rem] border border-white/10 bg-white/[0.05]", isCompact ? "p-3" : "p-3 sm:p-4")}>
                       <p className="text-[11px] uppercase tracking-[0.24em] text-white/48">{copy.cost}</p>
-                      <p className={cn("mt-2 font-semibold", isCompact ? "text-base leading-tight" : "text-lg")}>{formatCompactNumber(reward.pointsCost)} pts</p>
+                      <p className={cn("mt-2 font-semibold", isCompact ? "text-base leading-tight" : "text-base leading-tight sm:text-lg")}>{formatCompactNumber(reward.pointsCost)} pts</p>
                     </div>
-                    <div className={cn("rounded-[1.15rem] border border-white/10 bg-white/[0.05]", isCompact ? "p-3" : "p-4")}>
+                    <div className={cn("rounded-[1.15rem] border border-white/10 bg-white/[0.05]", isCompact ? "p-3" : "p-3 sm:p-4")}>
                       <p className="text-[11px] uppercase tracking-[0.24em] text-white/48">{copy.level}</p>
-                      <p className={cn("mt-2 font-semibold", isCompact ? "text-base leading-tight" : "text-lg")}>Level {reward.minLevel}+</p>
+                      <p className={cn("mt-2 font-semibold", isCompact ? "text-base leading-tight" : "text-base leading-tight sm:text-lg")}>Level {reward.minLevel}+</p>
                     </div>
-                    <div className={cn("rounded-[1.15rem] border border-white/10 bg-white/[0.05]", isCompact ? "p-3" : "p-4")}>
+                    <div className={cn("rounded-[1.15rem] border border-white/10 bg-white/[0.05]", isCompact ? "p-3" : "p-3 sm:p-4")}>
                       <p className="text-[11px] uppercase tracking-[0.24em] text-white/48">{copy.plans}</p>
-                      <p className={cn("mt-2 font-semibold", isCompact ? "text-base leading-tight" : "text-lg")}>{reward.plans?.length ?? 1}</p>
+                      <p className={cn("mt-2 font-semibold", isCompact ? "text-base leading-tight" : "text-base leading-tight sm:text-lg")}>{reward.plans?.length ?? 1}</p>
                     </div>
                   </div>
 
-                  <div className={cn("flex flex-wrap items-center gap-2 text-white/68", isCompact ? "mt-4 text-sm leading-6" : "mt-5 text-sm")}>
+                  <div className={cn("flex flex-wrap items-center gap-2 text-white/68", isCompact ? "mt-4 text-sm leading-6" : "mt-4 text-[13px] leading-6 sm:mt-5 sm:text-sm")}>
                     <ShieldCheck className={cn("text-[hsl(var(--arcetis-ember))]", isCompact ? "h-3.5 w-3.5" : "h-4 w-4")} />
                     <span className={cn(isCompact ? "line-clamp-2 max-w-[28rem]" : "")}>{translatedDetail}</span>
                     {reward.minAccountAge > 0 ? (
@@ -568,7 +568,7 @@ export function LatestProductsCarousel({
                     <Button
                       asChild
                       size={isCompact ? "default" : "default"}
-                      className={cn("rounded-full bg-[hsl(var(--arcetis-ember))] text-black hover:bg-[rgba(255,122,24,0.92)]", isCompact ? "px-4.5" : "px-6")}
+                      className={cn("rounded-full bg-[hsl(var(--arcetis-ember))] text-black hover:bg-[rgba(255,122,24,0.92)]", isCompact ? "px-4.5" : "px-5 sm:px-6")}
                     >
                       <Link href={primaryHref}>
                         {copy.viewProduct}
@@ -579,7 +579,7 @@ export function LatestProductsCarousel({
                       asChild
                       variant="secondary"
                       size={isCompact ? "default" : "default"}
-                      className={cn("rounded-full border border-white/10 bg-white/[0.06] text-white hover:bg-white/[0.1]", isCompact ? "px-4.5" : "px-6")}
+                      className={cn("rounded-full border border-white/10 bg-white/[0.06] text-white hover:bg-white/[0.1]", isCompact ? "px-4.5" : "px-5 sm:px-6")}
                     >
                       <Link href={secondaryHref}>{secondaryLabel}</Link>
                     </Button>
@@ -590,7 +590,7 @@ export function LatestProductsCarousel({
               <div className={cn("relative items-center justify-center", isCompact ? "hidden sm:flex sm:self-stretch sm:justify-end" : "flex")}>
                 <div className={cn("absolute top-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,122,24,0.24),rgba(255,122,24,0))] blur-3xl", isCompact ? "inset-x-4 h-28 -translate-y-1/2" : "inset-x-8 h-48 -translate-y-1/2")} />
                 <div className={cn("absolute inset-y-8 right-4 hidden w-px bg-gradient-to-b from-transparent via-white/12 to-transparent", isCompact ? "sm:block" : "lg:block")} />
-                <div className={cn("relative w-full", isCompact ? "max-w-[9.75rem] lg:max-w-[10.75rem] xl:max-w-[11.5rem]" : "max-w-[24rem]")}>
+                <div className={cn("relative w-full", isCompact ? "max-w-[9.75rem] lg:max-w-[10.75rem] xl:max-w-[11.5rem]" : "max-w-[12rem] sm:max-w-[24rem]")}>
                   <div className={cn("absolute h-full w-full rounded-[1.7rem] border border-white/8 bg-white/[0.04]", isCompact ? "-left-2 -top-2" : "-left-4 -top-4")} />
                   <RewardThumbnail
                     title={reward.title}

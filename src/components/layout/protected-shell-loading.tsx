@@ -29,39 +29,53 @@ export function ProtectedShellLoading({ message }: { message: string }) {
   return (
     <div className="min-h-screen overflow-x-hidden pb-12">
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/85 backdrop-blur-xl supports-[backdrop-filter]:bg-background/72">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-4">
-          <Link href="/" className="mr-2 shrink-0">
-            <ArcetisLogo className="h-16 md:h-20" />
-          </Link>
+        <div className="mx-auto max-w-6xl px-3 py-3 sm:px-4 sm:py-4">
+          <div className="flex items-center justify-between gap-3 sm:hidden">
+            <Link href="/" className="shrink-0">
+              <ArcetisLogo className="h-11" />
+            </Link>
 
-          <nav className="flex flex-1 flex-wrap items-center gap-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={isActiveRoute(pathname, item.href) ? "page" : undefined}
-                className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full border border-transparent px-3 py-2 text-sm transition-all",
-                  isActiveRoute(pathname, item.href)
-                    ? "border-border/70 bg-card/85 text-foreground shadow-sm"
-                    : "text-muted-foreground hover:border-border/60 hover:bg-muted/55 hover:text-foreground"
-                )}
-              >
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+            <div className="flex items-center gap-2">
+              <ThemeToggle iconOnly className="h-10 w-10 rounded-2xl border-border/80 bg-card text-foreground" />
+              <NotificationCenter />
+              <Skeleton className="h-10 w-10 rounded-2xl" />
+            </div>
+          </div>
 
-          <div className="ml-auto flex items-center gap-2">
-            <ThemeToggle iconOnly className="h-12 w-12 rounded-2xl border-border/80 bg-card text-foreground" />
-            <NotificationCenter />
-            <Skeleton className="h-12 min-w-[12.25rem] rounded-full" />
+          <div className="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-3">
+            <Link href="/" className="mr-2 shrink-0">
+              <ArcetisLogo className="h-14 md:h-20" />
+            </Link>
+
+            <nav className="flex flex-1 flex-wrap items-center gap-2">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={isActiveRoute(pathname, item.href) ? "page" : undefined}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full border border-transparent px-3 py-2 text-sm transition-all",
+                    isActiveRoute(pathname, item.href)
+                      ? "border-border/70 bg-card/85 text-foreground shadow-sm"
+                      : "text-muted-foreground hover:border-border/60 hover:bg-muted/55 hover:text-foreground"
+                  )}
+                >
+                  <item.icon className="h-4 w-4" />
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+
+            <div className="ml-auto flex items-center gap-2">
+              <ThemeToggle iconOnly className="h-12 w-12 rounded-2xl border-border/80 bg-card text-foreground" />
+              <NotificationCenter />
+              <Skeleton className="h-12 min-w-[12.25rem] rounded-full" />
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="relative mx-auto max-w-6xl px-4 pt-8">
+      <main className="relative mx-auto max-w-6xl px-3 pt-6 sm:px-4 sm:pt-8">
         <RouteLoading label={message} />
       </main>
     </div>
