@@ -351,6 +351,27 @@ export async function updateReward(rewardId: string, data: Prisma.RewardUpdateIn
   });
 }
 
+export async function deleteQuest(questId: string) {
+  const existing = await prisma.quest.findUnique({
+    where: { id: questId },
+    select: { id: true }
+  });
+
+  if (!existing) {
+    throw new ApiError(404, "Quest not found");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.sponsorRequest.updateMany({
+      where: { publishedQuestId: questId },
+      data: { publishedQuestId: null }
+    });
+    await tx.questSubmission.deleteMany({ where: { questId } });
+    await tx.questCompletion.deleteMany({ where: { questId } });
+    await tx.quest.delete({ where: { id: questId } });
+  });
+}
+
 export async function deleteReward(rewardId: string) {
   await expirePendingRedemptions();
 

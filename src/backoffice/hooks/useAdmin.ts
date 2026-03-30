@@ -330,6 +330,27 @@ export function useUpdateQuest() {
   });
 }
 
+export function useDeleteQuest() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (questId: string) => {
+      const response = await api.delete(`/admin/quest/${questId}`);
+      return response.data;
+    },
+    onSuccess: (_data, questId) => {
+      removeFromArrayCache(queryClient, ["quests"], questId);
+      queryClient.removeQueries({ queryKey: ["admin-quest-details", questId] });
+      queryClient.removeQueries({ queryKey: ["quest", questId] });
+      queryClient.invalidateQueries({ queryKey: ["quests"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: ["quest"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-quest-submissions"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: ["quest-submissions"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-dashboard-stats"] });
+    }
+  });
+}
+
 export function useUploadQuestImage() {
   return useMutation({
     mutationFn: async (file: File) => {
@@ -536,6 +557,25 @@ export function useReviewGiveawayEntry() {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["admin-giveaways"], refetchType: "active" });
       queryClient.invalidateQueries({ queryKey: ["admin-giveaway-details", variables.giveawayId], refetchType: "active" });
+    }
+  });
+}
+
+export function useDeleteGiveaway() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (giveawayId: string) => {
+      const response = await api.delete(`/admin/giveaway/${giveawayId}`);
+      return response.data;
+    },
+    onSuccess: (_data, giveawayId) => {
+      removeFromPaginatedCache(queryClient, ["admin-giveaways"], giveawayId);
+      queryClient.removeQueries({ queryKey: ["admin-giveaway-details", giveawayId] });
+      queryClient.removeQueries({ queryKey: ["giveaway", giveawayId] });
+      queryClient.invalidateQueries({ queryKey: ["admin-giveaways"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: ["giveaways"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: ["my-giveaways"] });
     }
   });
 }

@@ -153,6 +153,14 @@ function normalizeDate(value?: Date | null) {
   return value ? value.toISOString() : null;
 }
 
+function getRemainingDurationDays(value?: Date | null) {
+  if (!value) {
+    return 7;
+  }
+
+  return Math.max(1, Math.ceil((value.getTime() - Date.now()) / DAY_IN_MS));
+}
+
 function normalizeGiveaway<T extends {
   inputFields?: Prisma.JsonValue | null;
   createdAt: Date;
@@ -174,7 +182,8 @@ function normalizeGiveaway<T extends {
     inputFields: normalizeStoredInputFields(giveaway.inputFields),
     createdAt: giveaway.createdAt.toISOString(),
     updatedAt: giveaway.updatedAt.toISOString(),
-    endsAt: normalizeDate(giveaway.endsAt)
+    endsAt: normalizeDate(giveaway.endsAt),
+    remainingDurationDays: getRemainingDurationDays(giveaway.endsAt)
   };
 }
 
@@ -725,6 +734,24 @@ export async function updateGiveaway(input: UpdateGiveawayInput) {
     });
 
     return normalizeGiveaway(giveaway);
+  });
+}
+
+export async function deleteGiveaway(giveawayId: string) {
+  await syncExpiredGiveaways();
+
+  const existing = await prisma.giveaway.findUnique({
+    where: { id: giveawayId },
+    select: { id: true }
+  });
+
+  if (!existing) {
+    throw new ApiError(404, "Giveaway not found");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.giveawayEntry.deleteMany({ where: { giveawayId } });
+    await tx.giveaway.delete({ where: { id: giveawayId } });
   });
 }
 

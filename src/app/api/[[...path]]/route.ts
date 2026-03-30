@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import {
   applyToGiveaway,
   createGiveaway,
+  deleteGiveaway,
   getAdminGiveawayById,
   getGiveawayById,
   listMyGiveawayEntries,
@@ -15,6 +16,7 @@ import {
   createAdminUser,
   createQuest,
   createReward,
+  deleteQuest,
   deleteReward,
   getAdminConfig,
   getAdminDashboardStats,
@@ -1181,6 +1183,18 @@ async function handleDelete(request: NextRequest, path: string[]) {
   if (path[0] === "admin" && path[1] === "reward" && path.length === 3) {
     await requireAdmin(request);
     await deleteReward(path[2]);
+    return NextResponse.json({ ok: true });
+  }
+
+  if (path[0] === "admin" && path[1] === "quest" && path.length === 3) {
+    await requireAdmin(request);
+    await deleteQuest(path[2]);
+    return NextResponse.json({ ok: true });
+  }
+
+  if (path[0] === "admin" && path[1] === "giveaway" && path.length === 3) {
+    await requireAdmin(request);
+    await deleteGiveaway(path[2]);
     return NextResponse.json({ ok: true });
   }
 

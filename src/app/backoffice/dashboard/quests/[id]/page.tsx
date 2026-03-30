@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
-import { useParams } from "next/navigation";
+import { FormEvent, useState } from "react";
+import { ArrowLeft, Trash2 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import { SectionHeader } from "@/backoffice/components/backoffice/section-header";
 import { LoadingCard } from "@/backoffice/components/backoffice/loading-card";
-import { useAdminQuestDetails, useUpdateQuest } from "@/backoffice/hooks/useAdmin";
+import { useAdminQuestDetails, useDeleteQuest, useUpdateQuest } from "@/backoffice/hooks/useAdmin";
 import { Spinner } from "@/components/common/spinner";
 import { useToast } from "@/components/common/toast-center";
+import { useNavigationProgress } from "@/components/navigation/navigation-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,43 +20,53 @@ import { normalizeAssetUrl } from "@/lib/assets";
 
 export default function BackofficeQuestDetailsPage() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const toast = useToast();
+  const { startNavigation } = useNavigationProgress();
   const questId = params?.id;
   const quest = useAdminQuestDetails(questId);
   const updateQuest = useUpdateQuest();
+  const deleteQuest = useDeleteQuest();
 
   const [form, setForm] = useState({
-    pointsReward: 0,
-    xpReward: 0
+    pointsReward: "",
+    xpReward: ""
   });
-
-  useEffect(() => {
-    if (!quest.data) {
-      return;
-    }
-
-    setForm({
-      pointsReward: quest.data.pointsReward,
-      xpReward: quest.data.xpReward
-    });
-  }, [quest.data]);
 
   async function submitUpdate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!questId) {
+    if (!questId || !quest.data) {
       return;
     }
+
+    const pointsReward = Number(form.pointsReward || quest.data.pointsReward);
+    const xpReward = Number(form.xpReward || quest.data.xpReward);
 
     try {
       await updateQuest.mutateAsync({
         id: questId,
-        pointsReward: form.pointsReward,
-        xpReward: form.xpReward
+        pointsReward,
+        xpReward
       });
       toast.success("Quest rewards updated", quest.data?.title ?? "Quest");
     } catch (error) {
       toast.error("Quest update failed", getApiError(error));
+    }
+  }
+
+  async function handleDelete() {
+    if (!quest.data || !questId || !window.confirm(`Delete ${quest.data.title}?`)) {
+      return;
+    }
+
+    try {
+      await deleteQuest.mutateAsync(questId);
+      toast.success("Quest deleted", quest.data.title);
+      startNavigation("/backoffice/dashboard/quests");
+      router.replace("/backoffice/dashboard/quests");
+    } catch (error) {
+      toast.error("Delete failed", getApiError(error));
     }
   }
 
@@ -170,9 +181,9 @@ export default function BackofficeQuestDetailsPage() {
                   id="edit-quest-points"
                   type="number"
                   min={1}
-                  value={form.pointsReward}
+                  value={form.pointsReward || String(quest.data.pointsReward)}
                   onChange={(event) =>
-                    setForm((prev) => ({ ...prev, pointsReward: Number(event.target.value) }))
+                    setForm((prev) => ({ ...prev, pointsReward: event.target.value }))
                   }
                 />
               </div>
@@ -183,8 +194,8 @@ export default function BackofficeQuestDetailsPage() {
                   id="edit-quest-xp"
                   type="number"
                   min={1}
-                  value={form.xpReward}
-                  onChange={(event) => setForm((prev) => ({ ...prev, xpReward: Number(event.target.value) }))}
+                  value={form.xpReward || String(quest.data.xpReward)}
+                  onChange={(event) => setForm((prev) => ({ ...prev, xpReward: event.target.value }))}
                 />
               </div>
 
@@ -197,16 +208,28 @@ export default function BackofficeQuestDetailsPage() {
                 </div>
               </div>
 
-              <Button disabled={updateQuest.isPending}>
-                {updateQuest.isPending ? (
-                  <span className="inline-flex items-center gap-2">
-                    <Spinner className="h-4 w-4" />
-                    Saving...
-                  </span>
-                ) : (
-                  "Save rewards"
-                )}
-              </Button>
+              <div className="flex flex-wrap gap-3">
+                <Button disabled={updateQuest.isPending}>
+                  {updateQuest.isPending ? (
+                    <span className="inline-flex items-center gap-2">
+                      <Spinner className="h-4 w-4" />
+                      Saving...
+                    </span>
+                  ) : (
+                    "Save rewards"
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="gap-2"
+                  disabled={deleteQuest.isPending}
+                  onClick={() => void handleDelete()}
+                >
+                  {deleteQuest.isPending ? <Spinner className="h-4 w-4" /> : <Trash2 className="h-4 w-4" />}
+                  Delete quest
+                </Button>
+              </div>
             </form>
           </CardContent>
         </Card>

@@ -1,17 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
-import { ArrowLeft, Clock3, ImageIcon, Search, Trophy, UserCircle2, XCircle } from "lucide-react";
+import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { ArrowLeft, Clock3, ImageIcon, Search, Trash2, Trophy, UserCircle2, XCircle } from "lucide-react";
 import { SectionHeader } from "@/backoffice/components/backoffice/section-header";
 import { LoadingCard } from "@/backoffice/components/backoffice/loading-card";
 import {
   useAdminGiveawayDetails,
+  useDeleteGiveaway,
   useReviewGiveawayEntry,
   useUpdateGiveaway
 } from "@/backoffice/hooks/useAdmin";
+import { Spinner } from "@/components/common/spinner";
 import { useToast } from "@/components/common/toast-center";
+import { useNavigationProgress } from "@/components/navigation/navigation-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,8 +25,6 @@ import { normalizeAssetUrl } from "@/lib/assets";
 import { getApiError } from "@/lib/api";
 import { formatDate, formatDateTime, formatNumber } from "@/lib/format";
 import type { GiveawayField, GiveawayEntryStatus } from "@/lib/types";
-
-const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
 function formatAccountAge(days?: number | null) {
   if (!days) {
@@ -46,29 +47,20 @@ function getStatusBadge(status: GiveawayEntryStatus) {
 
 export default function BackofficeGiveawayDetailPage() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const giveawayId = params?.id ?? "";
+  const { startNavigation } = useNavigationProgress();
   const giveaway = useAdminGiveawayDetails(giveawayId);
   const reviewEntry = useReviewGiveawayEntry();
   const updateGiveaway = useUpdateGiveaway();
+  const deleteGiveaway = useDeleteGiveaway();
   const toast = useToast();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | GiveawayEntryStatus>("all");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [proofOnly, setProofOnly] = useState(false);
-  const [durationDays, setDurationDays] = useState(7);
-
-  useEffect(() => {
-    if (!giveaway.data?.endsAt) {
-      setDurationDays(7);
-      return;
-    }
-
-    const remainingDays = Math.max(
-      1,
-      Math.ceil((new Date(giveaway.data.endsAt).getTime() - Date.now()) / DAY_IN_MS)
-    );
-    setDurationDays(remainingDays);
-  }, [giveaway.data?.endsAt, giveaway.data?.id]);
+  const [durationDaysInput, setDurationDaysInput] = useState("");
+  const durationDays = giveaway.data?.remainingDurationDays ?? 7;
 
   const fieldMap = new Map(
     (((giveaway.data?.inputFields as GiveawayField[] | null) ?? [])).map((field) => [field.id, field.label])
@@ -126,16 +118,19 @@ export default function BackofficeGiveawayDetailPage() {
       return;
     }
 
+    const nextDurationDays = Math.max(1, Math.min(365, Number(durationDaysInput || durationDays) || 1));
+
     try {
       await updateGiveaway.mutateAsync({
         id: giveaway.data.id,
-        durationDays,
+        durationDays: nextDurationDays,
         ...(giveaway.data.status === "CLOSED" ? { status: "ACTIVE" as const } : {})
       });
+      setDurationDaysInput("");
 
       toast.success(
         giveaway.data.status === "CLOSED" ? "Giveaway reopened" : "Duration updated",
-        `This giveaway will now run for ${formatNumber(durationDays)} day${durationDays === 1 ? "" : "s"} from now.`
+        `This giveaway will now run for ${formatNumber(nextDurationDays)} day${nextDurationDays === 1 ? "" : "s"} from now.`
       );
     } catch (error) {
       toast.error("Giveaway update failed", getApiError(error));
@@ -156,6 +151,21 @@ export default function BackofficeGiveawayDetailPage() {
       toast.success("Giveaway closed", "This giveaway is now closed on the frontoffice.");
     } catch (error) {
       toast.error("Close giveaway failed", getApiError(error));
+    }
+  }
+
+  async function handleDelete() {
+    if (!giveaway.data || !window.confirm(`Delete ${giveaway.data.title}?`)) {
+      return;
+    }
+
+    try {
+      await deleteGiveaway.mutateAsync(giveaway.data.id);
+      toast.success("Giveaway deleted", giveaway.data.title);
+      startNavigation("/backoffice/dashboard/giveaways");
+      router.replace("/backoffice/dashboard/giveaways");
+    } catch (error) {
+      toast.error("Delete failed", getApiError(error));
     }
   }
 
@@ -260,9 +270,9 @@ export default function BackofficeGiveawayDetailPage() {
                         type="number"
                         min={1}
                         max={365}
-                        value={durationDays}
+                        value={durationDaysInput || String(durationDays)}
                         onChange={(event) =>
-                          setDurationDays(Math.max(1, Math.min(365, Number(event.target.value) || 1)))
+                          setDurationDaysInput(event.target.value)
                         }
                       />
                       <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
@@ -291,6 +301,16 @@ export default function BackofficeGiveawayDetailPage() {
                 >
                   <XCircle className="mr-2 h-4 w-4" />
                   Close now
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="w-full justify-center gap-2"
+                  onClick={() => void handleDelete()}
+                  disabled={deleteGiveaway.isPending}
+                >
+                  {deleteGiveaway.isPending ? <Spinner className="h-4 w-4" /> : <Trash2 className="h-4 w-4" />}
+                  Delete giveaway
                 </Button>
               </CardContent>
             </Card>

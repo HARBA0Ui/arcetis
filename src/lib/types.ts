@@ -149,6 +149,7 @@ export type Giveaway = {
   requiresJustification: boolean;
   justificationLabel?: string | null;
   endsAt?: string | null;
+  remainingDurationDays?: number;
   createdAt: string;
   updatedAt: string;
   entryCount?: number;
