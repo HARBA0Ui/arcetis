@@ -113,6 +113,54 @@ function toPublicId(folder: string, filename: string) {
   return `${CLOUDINARY_FOLDER_PREFIX}/${folder}/${basename}`;
 }
 
+export function getManagedCloudinaryPublicId(imageUrl?: string | null, cloudName = env.CLOUDINARY_CLOUD_NAME) {
+  if (!imageUrl || !cloudName) {
+    return null;
+  }
+
+  let parsedUrl: URL;
+
+  try {
+    parsedUrl = new URL(imageUrl);
+  } catch {
+    return null;
+  }
+
+  if (parsedUrl.hostname !== "res.cloudinary.com") {
+    return null;
+  }
+
+  const segments = parsedUrl.pathname.split("/").filter(Boolean);
+
+  if (
+    segments.length < 5 ||
+    segments[0] !== cloudName ||
+    segments[1] !== "image" ||
+    segments[2] !== "upload"
+  ) {
+    return null;
+  }
+
+  const prefixIndex = segments.indexOf(CLOUDINARY_FOLDER_PREFIX);
+
+  if (prefixIndex === -1) {
+    return null;
+  }
+
+  const publicIdSegments = segments.slice(prefixIndex);
+
+  if (!publicIdSegments.length) {
+    return null;
+  }
+
+  const lastSegment = publicIdSegments[publicIdSegments.length - 1] ?? "";
+  const extensionIndex = lastSegment.lastIndexOf(".");
+  publicIdSegments[publicIdSegments.length - 1] =
+    extensionIndex === -1 ? lastSegment : lastSegment.slice(0, extensionIndex);
+
+  return publicIdSegments.join("/");
+}
+
 async function saveToCloudinary(
   folder: string,
   buffer: Buffer,
@@ -142,6 +190,38 @@ async function saveToCloudinary(
 
     stream.end(buffer);
   });
+}
+
+export async function deleteManagedImage(imageUrl?: string | null) {
+  const publicId = getManagedCloudinaryPublicId(imageUrl);
+
+  if (!publicId) {
+    return false;
+  }
+
+  try {
+    const uploader = getCloudinaryUploader();
+    const result = await uploader.destroy(publicId, {
+      resource_type: "image",
+      invalidate: true
+    });
+
+    return result.result === "ok" || result.result === "not found";
+  } catch (error) {
+    console.error("Cloudinary delete failed", error);
+    return false;
+  }
+}
+
+export async function deleteReplacedManagedImage(previousUrl?: string | null, nextUrl?: string | null) {
+  const previousPublicId = getManagedCloudinaryPublicId(previousUrl);
+  const nextPublicId = getManagedCloudinaryPublicId(nextUrl);
+
+  if (!previousPublicId || previousPublicId === nextPublicId) {
+    return false;
+  }
+
+  return deleteManagedImage(previousUrl);
 }
 
 export async function storeImage(file: File, folder: string) {

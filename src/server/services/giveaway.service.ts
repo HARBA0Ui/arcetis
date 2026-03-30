@@ -2,6 +2,7 @@ import type { GiveawayField, Giveaway } from "@/lib/types";
 import type { Prisma, GiveawayStatus } from "@prisma/client";
 import { ApiError } from "../utils/http";
 import { prisma } from "../utils/prisma";
+import { deleteManagedImage } from "../storage";
 import { createNotification, createNotificationForAdmins } from "./notification.service";
 import { getUserOrThrow } from "./user.service";
 
@@ -742,7 +743,7 @@ export async function deleteGiveaway(giveawayId: string) {
 
   const existing = await prisma.giveaway.findUnique({
     where: { id: giveawayId },
-    select: { id: true }
+    select: { id: true, imageUrl: true }
   });
 
   if (!existing) {
@@ -753,6 +754,8 @@ export async function deleteGiveaway(giveawayId: string) {
     await tx.giveawayEntry.deleteMany({ where: { giveawayId } });
     await tx.giveaway.delete({ where: { id: giveawayId } });
   });
+
+  await deleteManagedImage(existing.imageUrl);
 }
 
 export async function reviewGiveawayEntry(input: ReviewGiveawayEntryInput) {

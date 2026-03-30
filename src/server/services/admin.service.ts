@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import type { Prisma, RedemptionStatus } from "@prisma/client";
 import { ApiError } from "../utils/http";
 import { prisma } from "../utils/prisma";
+import { deleteManagedImage, deleteReplacedManagedImage } from "../storage";
 import { createNotification } from "./notification.service";
 import { getPlatformConfig, updatePlatformConfig } from "./platformConfig.service";
 import {
@@ -322,39 +323,59 @@ export async function getAdminRewardById(rewardId: string) {
 export async function updateQuest(questId: string, data: Prisma.QuestUpdateInput) {
   const exists = await prisma.quest.findUnique({
     where: { id: questId },
-    select: { id: true }
+    select: { id: true, imageUrl: true }
   });
 
   if (!exists) {
     throw new ApiError(404, "Quest not found");
   }
 
-  return prisma.quest.update({
+  const updated = await prisma.quest.update({
     where: { id: questId },
-    data
+    data:
+      typeof data.imageUrl === "string"
+        ? {
+            ...data,
+            imageUrl: data.imageUrl.trim() || null
+          }
+        : data
   });
+
+  await deleteReplacedManagedImage(exists.imageUrl, updated.imageUrl);
+
+  return updated;
 }
 
 export async function updateReward(rewardId: string, data: Prisma.RewardUpdateInput) {
   const exists = await prisma.reward.findUnique({
     where: { id: rewardId },
-    select: { id: true }
+    select: { id: true, imageUrl: true }
   });
 
   if (!exists) {
     throw new ApiError(404, "Product not found");
   }
 
-  return prisma.reward.update({
+  const updated = await prisma.reward.update({
     where: { id: rewardId },
-    data
+    data:
+      typeof data.imageUrl === "string"
+        ? {
+            ...data,
+            imageUrl: data.imageUrl.trim() || null
+          }
+        : data
   });
+
+  await deleteReplacedManagedImage(exists.imageUrl, updated.imageUrl);
+
+  return updated;
 }
 
 export async function deleteQuest(questId: string) {
   const existing = await prisma.quest.findUnique({
     where: { id: questId },
-    select: { id: true }
+    select: { id: true, imageUrl: true }
   });
 
   if (!existing) {
@@ -370,6 +391,8 @@ export async function deleteQuest(questId: string) {
     await tx.questCompletion.deleteMany({ where: { questId } });
     await tx.quest.delete({ where: { id: questId } });
   });
+
+  await deleteManagedImage(existing.imageUrl);
 }
 
 export async function deleteReward(rewardId: string) {
@@ -377,7 +400,7 @@ export async function deleteReward(rewardId: string) {
 
   const existing = await prisma.reward.findUnique({
     where: { id: rewardId },
-    select: { id: true }
+    select: { id: true, imageUrl: true }
   });
 
   if (!existing) {
@@ -393,6 +416,7 @@ export async function deleteReward(rewardId: string) {
   }
 
   await prisma.reward.delete({ where: { id: rewardId } });
+  await deleteManagedImage(existing.imageUrl);
 }
 
 export async function listRedemptions(query: AdminCollectionQuery & { status?: RedemptionStatus }) {
