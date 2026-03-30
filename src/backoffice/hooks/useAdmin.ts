@@ -512,7 +512,7 @@ export function useUpdateGiveaway() {
 
   return useMutation({
     mutationFn: async (payload: { id: string; status?: Giveaway["status"]; durationDays?: number }) => {
-      const response = await api.patch<{ giveaway: Giveaway }>(`/admin/giveaway/${payload.id}`, {
+      const response = await api.patch<{ giveaway: GiveawayDetails }>(`/admin/giveaway/${payload.id}`, {
         status: payload.status,
         durationDays: payload.durationDays
       });
@@ -520,9 +520,7 @@ export function useUpdateGiveaway() {
     },
     onSuccess: (data) => {
       upsertPaginatedCache(queryClient, ["admin-giveaways"], data);
-      queryClient.setQueryData(["admin-giveaway-details", data.id], (previous: GiveawayDetails | undefined) =>
-        previous ? { ...previous, ...data } : previous
-      );
+      queryClient.setQueryData(["admin-giveaway-details", data.id], data);
       queryClient.invalidateQueries({ queryKey: ["admin-giveaways"], refetchType: "active" });
       queryClient.invalidateQueries({ queryKey: ["admin-giveaway-details", data.id], refetchType: "active" });
     }

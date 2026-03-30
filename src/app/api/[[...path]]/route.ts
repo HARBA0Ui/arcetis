@@ -1061,24 +1061,27 @@ async function handlePatch(request: NextRequest, path: string[]) {
   if (path[0] === "admin" && path[1] === "reward" && path.length === 3) {
     await requireAdmin(request);
     const payload = await parseJsonBody(request, updateRewardSchema);
-    const reward = await updateReward(path[2], payload);
+    await updateReward(path[2], payload);
+    const reward = await getAdminRewardById(path[2]);
     return NextResponse.json({ reward });
   }
 
   if (path[0] === "admin" && path[1] === "giveaway" && path.length === 3) {
     await requireAdmin(request);
     const payload = await parseJsonBody(request, updateGiveawaySchema);
-    const giveaway = await updateGiveaway({
+    await updateGiveaway({
       giveawayId: path[2],
       ...payload
     });
+    const giveaway = await getAdminGiveawayById(path[2]);
     return NextResponse.json({ giveaway });
   }
 
   if (path[0] === "admin" && path[1] === "quest" && path.length === 3) {
     await requireAdmin(request);
     const payload = await parseJsonBody(request, updateQuestSchema);
-    const quest = await updateQuest(path[2], payload);
+    await updateQuest(path[2], payload);
+    const quest = await getAdminQuestById(path[2]);
     return NextResponse.json({ quest });
   }
 
