@@ -271,6 +271,13 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
             secondaryHref={rewardsRedirect}
             secondaryLabel={copy.exploreRewards}
           />
+
+          <p className="text-center text-sm text-muted-foreground">
+            Log in to see the rest of the products.{" "}
+            <Link href={rewardsRedirect} className="font-medium text-foreground underline underline-offset-4">
+              {copy.signIn}
+            </Link>
+          </p>
         </section>
 
         <section className="mt-6 grid gap-6 lg:grid-cols-[1.02fr_0.98fr]">

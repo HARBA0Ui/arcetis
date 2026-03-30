@@ -1,5 +1,6 @@
 "use client";
 
+import type { MouseEvent } from "react";
 import { useState } from "react";
 import { ClipboardList, LayoutDashboard, LogOut, Menu, PartyPopper, Package2, Settings2, Shield, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
@@ -31,6 +32,24 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     { href: "/backoffice/dashboard/config", label: "Config", icon: Settings2 },
     { href: "/backoffice/dashboard/admins", label: "Admins", icon: Shield }
   ];
+  const mobileNavItems = navItems.filter((item) => item.href !== "/backoffice/dashboard");
+
+  function handleDashboardNavigation(event: MouseEvent<HTMLAnchorElement>) {
+    setIsMobileNavOpen(false);
+
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.altKey || event.ctrlKey || event.shiftKey) {
+      return;
+    }
+
+    if (pathname === "/backoffice/dashboard") {
+      event.preventDefault();
+      return;
+    }
+
+    event.preventDefault();
+    startNavigation("/backoffice/dashboard");
+    router.push("/backoffice/dashboard");
+  }
 
   async function handleLogout() {
     startNavigation("/backoffice/login");
@@ -44,7 +63,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-50 border-b border-border/70 bg-background/90 backdrop-blur">
         <div className="mx-auto max-w-7xl px-3 py-3 sm:px-4 sm:py-4">
           <div className="flex items-center justify-between gap-3 sm:hidden">
-            <Link href="/backoffice/dashboard" className="shrink-0">
+            <Link href="/backoffice/dashboard" onClick={handleDashboardNavigation} className="shrink-0">
               <ArcetisLogo className="h-10" />
             </Link>
 
@@ -63,7 +82,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
           <div className="hidden sm:block">
             <div className="flex flex-wrap items-center gap-3">
-              <Link href="/backoffice/dashboard" className="shrink-0">
+              <Link href="/backoffice/dashboard" onClick={handleDashboardNavigation} className="shrink-0">
                 <ArcetisLogo className="h-12 md:h-14" />
               </Link>
 
@@ -120,7 +139,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         onClose={() => setIsMobileNavOpen(false)}
         title="Backoffice"
         subtitle="Move between admin sections from one clean mobile sidebar instead of squeezing the whole dashboard nav into the header."
-        links={navItems.map((item) => {
+        links={mobileNavItems.map((item) => {
           const isHome = item.href === "/backoffice/dashboard" && pathname === item.href;
           const isSection =
             item.href !== "/backoffice/dashboard" && (pathname === item.href || pathname.startsWith(item.href));

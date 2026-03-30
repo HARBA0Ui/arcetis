@@ -57,7 +57,7 @@ export function MobileNavSidebar({
 
       <aside
         className={cn(
-          "absolute right-0 top-0 flex h-full w-[min(86vw,22rem)] flex-col border-l border-white/10 bg-[linear-gradient(180deg,rgba(10,10,10,0.98),rgba(17,17,17,0.98)_56%,rgba(44,23,7,0.96))] px-4 py-4 text-white shadow-[-24px_0_80px_-42px_rgba(0,0,0,0.95)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "absolute right-0 top-0 flex h-full w-[min(86vw,22rem)] flex-col overflow-y-auto overscroll-contain border-l border-white/10 bg-[linear-gradient(180deg,rgba(10,10,10,0.98),rgba(17,17,17,0.98)_56%,rgba(44,23,7,0.96))] px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,calc(env(safe-area-inset-top)+0.5rem))] text-white shadow-[-24px_0_80px_-42px_rgba(0,0,0,0.95)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
           open ? "translate-x-0" : "translate-x-full"
         )}
         role="dialog"
@@ -80,7 +80,7 @@ export function MobileNavSidebar({
           </button>
         </div>
 
-        <nav className="mt-6 flex flex-col gap-2">
+        <nav className="mt-6 flex flex-col gap-2 pb-4">
           {links.map((link) => (
             <Link
               key={link.href}
@@ -100,7 +100,7 @@ export function MobileNavSidebar({
           ))}
         </nav>
 
-        {footer ? <div className="mt-auto pt-6">{footer}</div> : null}
+        {footer ? <div className="mt-auto min-h-fit pt-6">{footer}</div> : null}
       </aside>
     </div>
   );

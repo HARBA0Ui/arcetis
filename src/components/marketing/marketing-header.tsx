@@ -1,13 +1,15 @@
 "use client";
 
+import type { MouseEvent } from "react";
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ArcetisLogo } from "@/components/common/arcetis-logo";
 import { ThemeToggle } from "@/components/common/theme-toggle";
 import { useLanguage } from "@/components/i18n/language-provider";
 import { MobileNavSidebar } from "@/components/layout/mobile-nav-sidebar";
+import { useNavigationProgress } from "@/components/navigation/navigation-provider";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +23,8 @@ function isActiveRoute(pathname: string, href: string) {
 
 export function MarketingHeader() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { startNavigation } = useNavigationProgress();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const { language } = useLanguage();
   const shopLabel = "Shop";
@@ -53,11 +57,30 @@ export function MarketingHeader() {
     { href: "/privacy", label: copy.privacy },
     { href: "/terms", label: copy.terms }
   ];
+  const mobileLinks = links.filter((link) => link.href !== "/");
+
+  function handleHomeNavigation(event: MouseEvent<HTMLAnchorElement>) {
+    setIsMobileNavOpen(false);
+
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.altKey || event.ctrlKey || event.shiftKey) {
+      return;
+    }
+
+    if (pathname === "/") {
+      event.preventDefault();
+      return;
+    }
+
+    event.preventDefault();
+    startNavigation("/");
+    router.push("/");
+  }
+
   return (
     <>
       <header className="rounded-[1.75rem] border border-border/70 bg-background/78 px-3 py-3 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.65)] backdrop-blur sm:rounded-[2rem] sm:px-4 sm:py-4 xl:px-6">
         <div className="flex items-center justify-between gap-3 sm:hidden">
-          <Link href="/" className="shrink-0">
+          <Link href="/" onClick={handleHomeNavigation} className="shrink-0">
             <ArcetisLogo className="h-10" />
           </Link>
 
@@ -75,7 +98,7 @@ export function MarketingHeader() {
         </div>
 
         <div className="hidden sm:flex sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
-          <Link href="/" className="shrink-0">
+          <Link href="/" onClick={handleHomeNavigation} className="shrink-0">
             <ArcetisLogo className="h-12 md:h-16" />
           </Link>
 
@@ -114,7 +137,7 @@ export function MarketingHeader() {
         onClose={() => setIsMobileNavOpen(false)}
         title="Arcetis"
         subtitle="Browse the public pages, then jump into sign-in or account creation from one clean mobile menu."
-        links={links.map((link) => ({
+        links={mobileLinks.map((link) => ({
           ...link,
           active: isActiveRoute(pathname, link.href),
           onNavigate: () => setIsMobileNavOpen(false)

@@ -1,5 +1,6 @@
 "use client";
 
+import type { MouseEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import {
   CircleDollarSign,
@@ -51,6 +52,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const prefetchedRoutesRef = useRef(false);
   const logoutTarget = pathname === "/" ? "/" : "/login";
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const mobileNavItems = navItems.filter((item) => item.href !== "/");
+
+  function handleHomeNavigation(event: MouseEvent<HTMLAnchorElement>) {
+    setIsMobileNavOpen(false);
+
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.altKey || event.ctrlKey || event.shiftKey) {
+      return;
+    }
+
+    if (pathname === "/") {
+      event.preventDefault();
+      return;
+    }
+
+    event.preventDefault();
+    startNavigation("/");
+    router.push("/");
+  }
 
   useEffect(() => {
     if (sessionHint) return;
@@ -128,7 +147,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/85 backdrop-blur-xl supports-[backdrop-filter]:bg-background/72">
         <div className="mx-auto max-w-6xl px-3 py-3 sm:px-4 sm:py-4">
           <div className="flex items-center justify-between gap-3 sm:hidden">
-            <Link href="/" className="shrink-0">
+            <Link href="/" onClick={handleHomeNavigation} className="shrink-0">
               <ArcetisLogo className="h-11" />
             </Link>
 
@@ -147,7 +166,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-3">
-            <Link href="/" className="mr-2 shrink-0">
+            <Link href="/" onClick={handleHomeNavigation} className="mr-2 shrink-0">
               <ArcetisLogo className="h-14 md:h-20" />
             </Link>
 
@@ -184,7 +203,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         onClose={() => setIsMobileNavOpen(false)}
         title="Arcetis"
         subtitle="Open the pages you use most, then jump back into your account without fighting the mobile header."
-        links={navItems.map((item) => ({
+        links={mobileNavItems.map((item) => ({
           ...item,
           active: isActiveRoute(pathname, item.href),
           onNavigate: () => setIsMobileNavOpen(false)

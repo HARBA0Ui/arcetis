@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
-import { Home, LogIn, Menu, Shield, UserPlus } from "lucide-react";
+import { LogIn, Menu, Shield, UserPlus } from "lucide-react";
 import { ArcetisLogo } from "@/components/common/arcetis-logo";
 import { ThemeToggle } from "@/components/common/theme-toggle";
 import { useToast } from "@/components/common/toast-center";
@@ -156,12 +156,6 @@ export default function LoginPage() {
             href: "/register",
             label: "Create account",
             icon: UserPlus,
-            onNavigate: () => setIsMobileNavOpen(false)
-          },
-          {
-            href: "/",
-            label: "Frontoffice home",
-            icon: Home,
             onNavigate: () => setIsMobileNavOpen(false)
           }
         ]}
