@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Clock3, ImageIcon, Search, Trash2, Trophy, UserCircle2, XCircle } from "lucide-react";
 import { SectionHeader } from "@/backoffice/components/backoffice/section-header";
