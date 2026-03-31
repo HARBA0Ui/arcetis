@@ -12,7 +12,30 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: "arcetis",
-  description: "Arcetis gamified rewards platform"
+  description: "Arcetis gamified rewards platform",
+  icons: {
+    icon: [
+      {
+        url: "/logo_dark.png",
+        media: "(prefers-color-scheme: light)"
+      },
+      {
+        url: "/logo_light.png",
+        media: "(prefers-color-scheme: dark)"
+      }
+    ],
+    shortcut: [
+      {
+        url: "/logo_dark.png",
+        media: "(prefers-color-scheme: light)"
+      },
+      {
+        url: "/logo_light.png",
+        media: "(prefers-color-scheme: dark)"
+      }
+    ],
+    apple: "/logo_dark.png"
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
