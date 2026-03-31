@@ -68,6 +68,14 @@ export function ProtectedAdmin({ children }: { children: React.ReactNode }) {
     );
   }
 
+  if (!user) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-10">
+        <BackofficeRouteLoading label="Finishing your admin session..." />
+      </div>
+    );
+  }
+
   if (user.role !== "ADMIN") {
     return (
       <div className="mx-auto max-w-7xl px-4 py-10">
