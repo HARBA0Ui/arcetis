@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useEffect, useState } from "react";
-import { ArrowRight, FileCheck2 } from "lucide-react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import { ArrowRight, FileCheck2, Search } from "lucide-react";
 import { SectionHeader } from "@/backoffice/components/backoffice/section-header";
 import { LoadingCard } from "@/backoffice/components/backoffice/loading-card";
 import { Spinner } from "@/components/common/spinner";
@@ -19,6 +19,9 @@ import { useAdminQuestSubmissions, useCreateQuest, useQuests, useUploadQuestImag
 import { getApiError } from "@/lib/api";
 import { normalizeAssetUrl } from "@/lib/assets";
 import { formatDateTime } from "@/lib/format";
+
+const REVIEW_PREVIEW_LIMIT = 5;
+const QUEST_PREVIEW_LIMIT = 8;
 
 export default function BackofficeQuestsPage() {
   const quests = useQuests();
@@ -40,6 +43,10 @@ export default function BackofficeQuestsPage() {
   });
   const [createImage, setCreateImage] = useState<File | null>(null);
   const [createPreview, setCreatePreview] = useState("");
+  const [reviewSearch, setReviewSearch] = useState("");
+  const [catalogSearch, setCatalogSearch] = useState("");
+  const [showAllReviews, setShowAllReviews] = useState(false);
+  const [showAllCatalog, setShowAllCatalog] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -88,6 +95,46 @@ export default function BackofficeQuestsPage() {
     }
   };
 
+  const filteredReviews = useMemo(() => {
+    const query = reviewSearch.trim().toLowerCase();
+    const submissions = pendingReviews.data ?? [];
+
+    if (!query) {
+      return submissions;
+    }
+
+    return submissions.filter((submission) =>
+      [
+        submission.quest?.title,
+        submission.user?.username,
+        submission.user?.email,
+        submission.proofText
+      ]
+        .filter(Boolean)
+        .some((value) => value?.toLowerCase().includes(query))
+    );
+  }, [pendingReviews.data, reviewSearch]);
+
+  const filteredQuests = useMemo(() => {
+    const query = catalogSearch.trim().toLowerCase();
+    const catalog = quests.data ?? [];
+
+    if (!query) {
+      return catalog;
+    }
+
+    return catalog.filter((quest) =>
+      [quest.title, quest.description, quest.category, quest.platform]
+        .filter(Boolean)
+        .some((value) => value?.toLowerCase().includes(query))
+    );
+  }, [catalogSearch, quests.data]);
+
+  const visibleReviews = showAllReviews ? filteredReviews : filteredReviews.slice(0, REVIEW_PREVIEW_LIMIT);
+  const visibleQuests = showAllCatalog ? filteredQuests : filteredQuests.slice(0, QUEST_PREVIEW_LIMIT);
+  const hiddenReviewCount = Math.max(filteredReviews.length - visibleReviews.length, 0);
+  const hiddenQuestCount = Math.max(filteredQuests.length - visibleQuests.length, 0);
+
   return (
     <div>
       <SectionHeader
@@ -99,16 +146,52 @@ export default function BackofficeQuestsPage() {
 
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileCheck2 className="h-5 w-5" />
-            Proof Review Queue
-          </CardTitle>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <CardTitle className="flex items-center gap-2">
+              <FileCheck2 className="h-5 w-5" />
+              Proof Review Queue
+            </CardTitle>
+
+            <Badge variant="outline">
+              Showing {visibleReviews.length} of {filteredReviews.length}
+            </Badge>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="relative w-full md:max-w-sm">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={reviewSearch}
+                onChange={(event) => {
+                  setReviewSearch(event.target.value);
+                  setShowAllReviews(false);
+                }}
+                className="pl-10"
+                placeholder="Search by quest, member, email, or note"
+              />
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {filteredReviews.length > REVIEW_PREVIEW_LIMIT ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAllReviews((current) => !current)}
+                >
+                  {showAllReviews
+                    ? "Back to queue preview"
+                    : `Open full proof list${hiddenReviewCount ? ` (${hiddenReviewCount} more)` : ""}`}
+                </Button>
+              ) : null}
+            </div>
+          </div>
+
           {pendingReviews.isLoading && !pendingReviews.data ? (
             <p className="text-sm text-muted-foreground">Loading pending proof reviews...</p>
-          ) : pendingReviews.data?.length ? (
-            pendingReviews.data.slice(0, 6).map((submission) => (
+          ) : filteredReviews.length ? (
+            visibleReviews.map((submission) => (
               <div
                 key={submission.id}
                 className="flex flex-col gap-3 rounded-xl border border-border/70 bg-background/60 p-4 sm:flex-row sm:items-center sm:justify-between"
@@ -136,7 +219,9 @@ export default function BackofficeQuestsPage() {
             ))
           ) : (
             <div className="rounded-xl border border-dashed border-border/80 p-5 text-sm text-muted-foreground">
-              No quest proofs are waiting for review right now.
+              {reviewSearch.trim()
+                ? "No quest proofs match the current search."
+                : "No quest proofs are waiting for review right now."}
             </div>
           )}
         </CardContent>
@@ -297,9 +382,44 @@ export default function BackofficeQuestsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Quest Catalog</CardTitle>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <CardTitle>Quest Catalog</CardTitle>
+              <Badge variant="outline">
+                Showing {visibleQuests.length} of {filteredQuests.length}
+              </Badge>
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="relative w-full md:max-w-sm">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={catalogSearch}
+                  onChange={(event) => {
+                    setCatalogSearch(event.target.value);
+                    setShowAllCatalog(false);
+                  }}
+                  className="pl-10"
+                  placeholder="Search by title, category, platform, or description"
+                />
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {filteredQuests.length > QUEST_PREVIEW_LIMIT ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowAllCatalog((current) => !current)}
+                  >
+                    {showAllCatalog
+                      ? "Back to catalog preview"
+                      : `Open full quest list${hiddenQuestCount ? ` (${hiddenQuestCount} more)` : ""}`}
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+
             <Table>
               <TableHeader>
                 <TableRow>
@@ -311,7 +431,7 @@ export default function BackofficeQuestsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {(quests.data ?? []).map((quest) => (
+                {visibleQuests.map((quest) => (
                   <TableRow key={quest.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -344,6 +464,16 @@ export default function BackofficeQuestsPage() {
                     </TableCell>
                   </TableRow>
                 ))}
+
+                {!visibleQuests.length ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
+                      {catalogSearch.trim()
+                        ? "No quests match the current search."
+                        : "No quests are available right now."}
+                    </TableCell>
+                  </TableRow>
+                ) : null}
               </TableBody>
             </Table>
           </CardContent>
