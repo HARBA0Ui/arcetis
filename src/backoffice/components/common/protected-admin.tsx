@@ -13,32 +13,46 @@ export function ProtectedAdmin({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { startNavigation } = useNavigationProgress();
   const token = useBackofficeAuthToken();
-  const { data: user, isLoading, isError, error } = useMe();
-  const shouldRedirect = !token || (!isLoading && !user && (!isError || isSessionError(error, { includeNotFound: true })));
+  const {
+    data: user,
+    isLoading,
+    isError,
+    error,
+    isFetched
+  } = useMe({ bootstrap: !token });
+  const hasVerifiedSession = !!token || !!user;
+  const shouldRedirect =
+    !hasVerifiedSession &&
+    isFetched &&
+    (!isError || isSessionError(error, { includeNotFound: true }));
 
   useEffect(() => {
-    if (shouldRedirect) {
-      const target = "/backoffice/login";
-      startNavigation(target);
-
-      if (typeof window !== "undefined") {
-        window.location.replace(target);
-        return;
-      }
-
-      router.replace(target);
+    if (!shouldRedirect) {
+      return;
     }
+
+    const target = "/backoffice/login";
+    startNavigation(target);
+    router.replace(target);
   }, [router, shouldRedirect, startNavigation]);
 
-  if (!token || isLoading) {
+  if (!hasVerifiedSession && !isFetched) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-10">
-        <BackofficeRouteLoading label={!token ? "Redirecting to backoffice login..." : "Loading Arcetis backoffice..."} />
+        <BackofficeRouteLoading label="Opening Arcetis backoffice..." />
       </div>
     );
   }
 
-  if (!user) {
+  if (isLoading && !user) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-10">
+        <BackofficeRouteLoading label="Loading Arcetis backoffice..." />
+      </div>
+    );
+  }
+
+  if (!hasVerifiedSession) {
     if (isError && !isSessionError(error, { includeNotFound: true })) {
       return (
         <div className="mx-auto max-w-7xl px-4 py-10">
@@ -49,7 +63,7 @@ export function ProtectedAdmin({ children }: { children: React.ReactNode }) {
 
     return (
       <div className="mx-auto max-w-7xl px-4 py-10">
-        <BackofficeRouteLoading label="Finishing your admin session..." />
+        <BackofficeRouteLoading label="Redirecting to backoffice login..." />
       </div>
     );
   }

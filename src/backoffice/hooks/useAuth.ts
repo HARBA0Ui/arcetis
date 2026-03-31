@@ -32,16 +32,20 @@ async function requestLogout() {
   }
 }
 
-export function useMe() {
+export function useMe(options?: { bootstrap?: boolean }) {
   const token = useBackofficeAuthToken();
+  const shouldBootstrap = !!options?.bootstrap;
 
   return useQuery({
     queryKey: adminMeQueryKey,
     queryFn: async () => {
       const response = await api.get<{ user: User }>("/session/me");
+      if (!token) {
+        setToken();
+      }
       return response.data.user;
     },
-    enabled: !!token,
+    enabled: !!token || shouldBootstrap,
     staleTime: 5 * 60 * 1000,
     retry: false
   });
