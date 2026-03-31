@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, FileCheck2 } from "lucide-react";
 import { SectionHeader } from "@/backoffice/components/backoffice/section-header";
 import { LoadingCard } from "@/backoffice/components/backoffice/loading-card";
 import { Spinner } from "@/components/common/spinner";
@@ -15,12 +15,14 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreateQuest, useQuests, useUploadQuestImage } from "@/backoffice/hooks/useAdmin";
+import { useAdminQuestSubmissions, useCreateQuest, useQuests, useUploadQuestImage } from "@/backoffice/hooks/useAdmin";
 import { getApiError } from "@/lib/api";
 import { normalizeAssetUrl } from "@/lib/assets";
+import { formatDateTime } from "@/lib/format";
 
 export default function BackofficeQuestsPage() {
   const quests = useQuests();
+  const pendingReviews = useAdminQuestSubmissions({ status: "pending" });
   const createQuest = useCreateQuest();
   const uploadQuestImage = useUploadQuestImage();
   const toast = useToast();
@@ -88,8 +90,57 @@ export default function BackofficeQuestsPage() {
 
   return (
     <div>
-      <SectionHeader title="Quests" subtitle="Create tasks, review the live catalog, and open a detail page to update rewards." />
+      <SectionHeader
+        title="Quests"
+        subtitle="Create tasks, watch the proof review queue, and open a detail page to inspect attachments or update rewards."
+        right={<Badge variant="secondary">Pending proofs: {pendingReviews.data?.length ?? 0}</Badge>}
+      />
       {quests.isLoading ? <LoadingCard label="Loading quests..." /> : null}
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileCheck2 className="h-5 w-5" />
+            Proof Review Queue
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {pendingReviews.isLoading && !pendingReviews.data ? (
+            <p className="text-sm text-muted-foreground">Loading pending proof reviews...</p>
+          ) : pendingReviews.data?.length ? (
+            pendingReviews.data.slice(0, 6).map((submission) => (
+              <div
+                key={submission.id}
+                className="flex flex-col gap-3 rounded-xl border border-border/70 bg-background/60 p-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="min-w-0">
+                  <p className="font-semibold">{submission.quest?.title ?? "Quest proof"}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {submission.user?.username ?? "Member"} | {submission.user?.email ?? "Unknown email"}
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
+                    <Badge variant="outline">{formatDateTime(submission.createdAt)}</Badge>
+                    {submission.proofUrl ? <Badge variant="outline">Primary proof</Badge> : null}
+                    {submission.proofSecondaryUrl ? <Badge variant="outline">Secondary proof</Badge> : null}
+                    {submission.proofText ? <Badge variant="outline">Note attached</Badge> : null}
+                  </div>
+                </div>
+
+                <Button asChild size="sm" variant="outline" className="shrink-0">
+                  <Link href={`/backoffice/dashboard/quests/${submission.questId}?review=${submission.id}`}>
+                    Review proof
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            ))
+          ) : (
+            <div className="rounded-xl border border-dashed border-border/80 p-5 text-sm text-muted-foreground">
+              No quest proofs are waiting for review right now.
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
         <Card>

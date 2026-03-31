@@ -258,7 +258,8 @@ export const rewardCatalogQuerySchema = z.object({
 });
 
 export const questSubmissionsQuerySchema = z.object({
-  status: z.nativeEnum(QuestSubmissionStatus).optional()
+  status: z.nativeEnum(QuestSubmissionStatus).optional(),
+  questId: z.string().min(1).optional()
 });
 
 export const notificationsQuerySchema = z.object({

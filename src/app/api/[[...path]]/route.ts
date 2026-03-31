@@ -423,7 +423,7 @@ async function handleGet(request: NextRequest, path: string[]) {
   if (path[0] === "admin" && path[1] === "quest-submissions" && path.length === 2) {
     await requireAdmin(request);
     const query = parseQuery(request, questSubmissionsQuerySchema);
-    const submissions = await getManualSubmissions(query.status);
+    const submissions = await getManualSubmissions(query.status, query.questId);
     return NextResponse.json({ submissions });
   }
 

@@ -168,12 +168,12 @@ export function useAdminDashboardStats() {
   });
 }
 
-export function useAdminQuestSubmissions(status?: QuestSubmissionStatus) {
+export function useAdminQuestSubmissions(params: { status?: QuestSubmissionStatus; questId?: string } = {}) {
   return useQuery({
-    queryKey: ["admin-quest-submissions", status],
+    queryKey: ["admin-quest-submissions", params],
     queryFn: async () => {
       const response = await api.get<{ submissions: QuestSubmission[] }>("/admin/quest-submissions", {
-        params: status ? { status } : undefined
+        params: normalizeCollectionParams(params)
       });
       return response.data.submissions;
     },
@@ -631,6 +631,7 @@ export function useReviewQuestSubmission() {
   return useMutation({
     mutationFn: async (payload: {
       id: string;
+      questId: string;
       status: "approved" | "rejected";
       reviewNote?: string;
     }) => {
@@ -640,8 +641,9 @@ export function useReviewQuestSubmission() {
       });
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["admin-quest-submissions"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: ["admin-quest-details", variables.questId], refetchType: "active" });
       queryClient.invalidateQueries({ queryKey: ["quests"], refetchType: "active" });
       queryClient.invalidateQueries({ queryKey: ["admin-dashboard-stats"] });
     }

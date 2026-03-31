@@ -374,9 +374,10 @@ export async function getUserQuestSubmissions(userId: string, status?: QuestSubm
   });
 }
 
-export async function getManualSubmissions(status?: QuestSubmissionStatus) {
+export async function getManualSubmissions(status?: QuestSubmissionStatus, questId?: string) {
   const submissions = await prisma.questSubmission.findMany({
     where: {
+      ...(questId ? { questId } : {}),
       ...(status ? { status } : {})
     },
     include: {
