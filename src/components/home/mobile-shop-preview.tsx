@@ -7,8 +7,7 @@ import { RewardThumbnail } from "@/components/rewards/reward-thumbnail";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatNumber } from "@/lib/format";
-import { getRewardStartingPointsCost } from "@/lib/reward-options";
+import { useCurrency } from "@/components/common/currency-provider";
 import type { Reward } from "@/lib/types";
 
 export function MobileShopPreview({
@@ -23,7 +22,7 @@ export function MobileShopPreview({
   itemActionHref
 }: {
   id?: string;
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description: string;
   rewards: Reward[];
@@ -32,6 +31,7 @@ export function MobileShopPreview({
   itemActionLabel: string;
   itemActionHref: (reward: Reward) => string;
 }) {
+  const { currency, formatPrice } = useCurrency();
   const featuredRewards = useMemo(() => {
     const source = rewards.some((reward) => reward.stock > 0)
       ? rewards.filter((reward) => reward.stock > 0)
@@ -46,7 +46,7 @@ export function MobileShopPreview({
     <section id={id} className="space-y-4 sm:hidden">
       <div className="flex items-end justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">{eyebrow}</p>
+          {eyebrow && <p className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">{eyebrow}</p>}
           <h2 className="mt-2 text-xl font-semibold tracking-tight">{title}</h2>
           <p className="mt-2 text-xs leading-5 text-muted-foreground">{description}</p>
         </div>
@@ -75,7 +75,7 @@ export function MobileShopPreview({
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-1.5">
                     <Badge className="rounded-full bg-primary/12 px-2 py-1 text-[10px] text-foreground hover:bg-primary/12">
-                      {formatNumber(getRewardStartingPointsCost(reward))} pts
+                      {formatPrice(reward.tndPrice, reward.usdPrice)}
                     </Badge>
                     <Badge variant="outline" className="px-2 py-1 text-[10px]">
                       Lvl {reward.minLevel}
