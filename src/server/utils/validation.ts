@@ -101,7 +101,8 @@ const rewardPlanSchema = z.object({
   id: z.string().min(1).max(80),
   label: z.string().min(1).max(160),
   pointsCost: z.number().int().positive().max(100000),
-  tndPrice: z.number().nonnegative().max(100000).optional()
+  tndPrice: z.number().nonnegative().max(100000).optional(),
+  usdPrice: z.number().nonnegative().max(100000).optional()
 });
 
 const rewardDeliveryFieldSchema = z.object({
@@ -167,6 +168,7 @@ export const createRewardSchema = z.object({
     ),
   pointsCost: z.number().int().positive().max(100000),
   tndPrice: z.number().nonnegative().max(100000).optional(),
+  usdPrice: z.number().nonnegative().max(100000).optional(),
   plans: z.array(rewardPlanSchema).max(20).optional(),
   deliveryFields: z.array(rewardDeliveryFieldSchema).max(20).optional(),
   minLevel: z.number().int().min(1).max(100),
@@ -186,6 +188,7 @@ export const updateRewardSchema = z.object({
     ),
   pointsCost: z.number().int().positive().max(100000).optional(),
   tndPrice: z.number().nonnegative().max(100000).optional(),
+  usdPrice: z.number().nonnegative().max(100000).optional(),
   plans: z.array(rewardPlanSchema).max(20).optional(),
   deliveryFields: z.array(rewardDeliveryFieldSchema).max(20).optional(),
   minLevel: z.number().int().min(1).max(100).optional(),
@@ -232,6 +235,9 @@ export const updatePlatformConfigSchema = z.object({
   redemptionRequestExpiryHours: z.number().int().min(1).max(168).optional(),
   spinCooldownHours: z.number().int().min(1).max(168).optional(),
   spinMinLevel: z.number().int().min(1).max(100).optional(),
+  tasksEnabled: z.boolean().optional(),
+  pointsEnabled: z.boolean().optional(),
+  spinEnabled: z.boolean().optional(),
   spinItems: z
     .array(
       z.object({

@@ -99,6 +99,7 @@ export type RewardPlan = {
   label: string;
   pointsCost: number;
   tndPrice?: number | null;
+  usdPrice?: number | null;
 };
 
 export type RewardDeliveryField = {
@@ -125,6 +126,7 @@ export type Reward = {
   imageUrl?: string | null;
   pointsCost: number;
   tndPrice?: number | null;
+  usdPrice?: number | null;
   plans?: RewardPlan[] | null;
   deliveryFields?: RewardDeliveryField[] | null;
   minLevel: number;
@@ -243,6 +245,9 @@ export type PlatformConfig = {
   redemptionRequestExpiryHours: number;
   spinCooldownHours: number;
   spinMinLevel: number;
+  tasksEnabled: boolean;
+  pointsEnabled: boolean;
+  spinEnabled: boolean;
   spinItems?: SpinItem[];
 };
 

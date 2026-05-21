@@ -32,7 +32,10 @@ export default function BackofficeConfigPage() {
     sponsorRequestWindowDays: 30,
     redemptionRequestExpiryHours: 12,
     spinCooldownHours: 24,
-    spinMinLevel: 2
+    spinMinLevel: 2,
+    tasksEnabled: true,
+    pointsEnabled: true,
+    spinEnabled: true
   });
   const [spinItemsJson, setSpinItemsJson] = useState("[]");
 
@@ -52,7 +55,10 @@ export default function BackofficeConfigPage() {
       sponsorRequestWindowDays: config.data.sponsorRequestWindowDays,
       redemptionRequestExpiryHours: config.data.redemptionRequestExpiryHours,
       spinCooldownHours: config.data.spinCooldownHours,
-      spinMinLevel: config.data.spinMinLevel
+      spinMinLevel: config.data.spinMinLevel,
+      tasksEnabled: config.data.tasksEnabled,
+      pointsEnabled: config.data.pointsEnabled,
+      spinEnabled: config.data.spinEnabled
     });
     setSpinItemsJson(JSON.stringify(config.data.spinItems ?? [], null, 2));
   }, [config.data]);
@@ -82,7 +88,33 @@ export default function BackofficeConfigPage() {
           <CardTitle>Platform Config</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={submit} className="grid gap-3 md:grid-cols-2">
+          <form onSubmit={submit} className="grid gap-4 md:grid-cols-2">
+            <div className="col-span-1 md:col-span-2 grid gap-4 sm:grid-cols-3 mb-4 rounded-xl border border-border/70 p-4 bg-muted/20">
+              <label className="flex items-center gap-2 font-medium">
+                <input
+                  type="checkbox"
+                  checked={form.tasksEnabled}
+                  onChange={(e) => setForm((prev) => ({ ...prev, tasksEnabled: e.target.checked }))}
+                />
+                Tasks Enabled
+              </label>
+              <label className="flex items-center gap-2 font-medium">
+                <input
+                  type="checkbox"
+                  checked={form.pointsEnabled}
+                  onChange={(e) => setForm((prev) => ({ ...prev, pointsEnabled: e.target.checked }))}
+                />
+                Points/XP Enabled
+              </label>
+              <label className="flex items-center gap-2 font-medium">
+                <input
+                  type="checkbox"
+                  checked={form.spinEnabled}
+                  onChange={(e) => setForm((prev) => ({ ...prev, spinEnabled: e.target.checked }))}
+                />
+                Spin Wheel Enabled
+              </label>
+            </div>
             {(
               [
                 "maxXpPerDay",

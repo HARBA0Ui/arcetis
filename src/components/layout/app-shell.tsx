@@ -28,14 +28,14 @@ import { useAuthToken } from "@/hooks/use-auth-token";
 import { isSessionError } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useLogout, useMe } from "@/hooks/useAuth";
+import { useUserStats } from "@/hooks/usePlatform";
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/rewards", label: "Shop", icon: CircleDollarSign },
   { href: "/tasks", label: "Tasks", icon: Sparkles },
   { href: "/spin", label: "Spin", icon: Gift },
-  { href: "/giveaways", label: "Giveaways", icon: PartyPopper },
-  { href: "/referrals", label: "Referrals", icon: Users2 }
+  { href: "/giveaways", label: "Giveaways", icon: PartyPopper }
 ];
 
 function isActiveRoute(pathname: string, href: string) {
@@ -49,10 +49,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const logout = useLogout();
   const sessionHint = useAuthToken();
   const { data: user, error, isError, isFetched } = useMe({ bootstrap: !sessionHint });
+  const stats = useUserStats();
+  const features = stats.data?.features ?? { tasksEnabled: true, pointsEnabled: true, spinEnabled: true };
   const prefetchedRoutesRef = useRef(false);
   const logoutTarget = pathname === "/" ? "/" : "/login";
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const mobileNavItems = navItems.filter((item) => item.href !== "/");
+  
+  const filteredNavItems = navItems.filter((item) => {
+    if (item.href === "/spin" && !features.spinEnabled) return false;
+    return true;
+  });
+  
+  const mobileNavItems = filteredNavItems.filter((item) => item.href !== "/");
   const hasVerifiedSession = !!sessionHint || !!user;
 
   function handleHomeNavigation(event: MouseEvent<HTMLAnchorElement>) {
@@ -181,7 +189,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Link>
 
             <nav className="-mx-1 flex flex-1 items-center gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
-              {navItems.map((item) => (
+              {filteredNavItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -224,7 +232,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div className="mt-3">
               <p className="text-sm font-semibold text-white">{user?.username ?? "Arcetis member"}</p>
               <p className="mt-1 text-xs text-white/60">
-                Level {user?.level ?? 1} - {user?.points ?? 0} pts
+                Level {user?.level ?? 1}{features.pointsEnabled ? ` - ${user?.points ?? 0} pts` : ""}
               </p>
             </div>
 

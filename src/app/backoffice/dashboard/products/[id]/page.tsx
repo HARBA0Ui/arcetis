@@ -41,7 +41,7 @@ function slugify(value: string) {
 }
 
 function createPlan(seed = 1): EditablePlan {
-  return { id: `plan_${seed}`, label: "", pointsCost: 1000, tndPrice: undefined };
+  return { id: `plan_${seed}`, label: "", pointsCost: 1000, tndPrice: undefined, usdPrice: undefined };
 }
 
 function createField(seed = 1): EditableField {
@@ -55,7 +55,8 @@ function cleanPlans(plans: EditablePlan[]) {
       id: slugify(plan.label) || slugify(plan.id) || `plan_${index + 1}`,
       label: plan.label.trim(),
       pointsCost: Number(plan.pointsCost),
-      ...(typeof plan.tndPrice === "number" && Number.isFinite(plan.tndPrice) ? { tndPrice: Number(plan.tndPrice) } : {})
+      ...(typeof plan.tndPrice === "number" && Number.isFinite(plan.tndPrice) ? { tndPrice: Number(plan.tndPrice) } : {}),
+      ...(typeof plan.usdPrice === "number" && Number.isFinite(plan.usdPrice) ? { usdPrice: Number(plan.usdPrice) } : {})
     }));
 }
 
@@ -88,6 +89,7 @@ export default function BackofficeProductDetailsPage() {
     description: "",
     pointsCost: 0,
     tndPrice: 0,
+    usdPrice: 0,
     minLevel: 1,
     minAccountAge: 0,
     stock: 0,
@@ -111,6 +113,7 @@ export default function BackofficeProductDetailsPage() {
       description: reward.data.description,
       pointsCost: reward.data.pointsCost,
       tndPrice: reward.data.tndPrice ?? 0,
+      usdPrice: reward.data.usdPrice ?? 0,
       minLevel: reward.data.minLevel,
       minAccountAge: reward.data.minAccountAge,
       stock: reward.data.stock,
@@ -149,6 +152,7 @@ export default function BackofficeProductDetailsPage() {
 
       const effectivePointsCost = cleanedPlans.length ? Math.min(...cleanedPlans.map((plan) => plan.pointsCost)) : form.pointsCost;
       const tndValues = cleanedPlans.map((plan) => plan.tndPrice).filter((value): value is number => typeof value === "number");
+      const usdValues = cleanedPlans.map((plan) => plan.usdPrice).filter((value): value is number => typeof value === "number");
 
       await updateReward.mutateAsync({
         id: rewardId,
@@ -156,6 +160,7 @@ export default function BackofficeProductDetailsPage() {
         imageUrl,
         pointsCost: effectivePointsCost,
         tndPrice: tndValues.length ? Math.min(...tndValues) : form.tndPrice || undefined,
+        usdPrice: usdValues.length ? Math.min(...usdValues) : form.usdPrice || undefined,
         plans: cleanedPlans.length ? cleanedPlans : undefined,
         deliveryFields: cleanedFields.length ? cleanedFields : undefined
       });
@@ -227,7 +232,7 @@ export default function BackofficeProductDetailsPage() {
                 <Textarea id="edit-product-description" value={form.description} onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))} />
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-3">
                 <div className="space-y-2">
                   <Label htmlFor="edit-product-points">Fallback points cost</Label>
                   <Input id="edit-product-points" type="number" min={1} value={form.pointsCost} onChange={(event) => setForm((prev) => ({ ...prev, pointsCost: Number(event.target.value) }))} />
@@ -235,6 +240,10 @@ export default function BackofficeProductDetailsPage() {
                 <div className="space-y-2">
                   <Label htmlFor="edit-product-tnd">Fallback TND price</Label>
                   <Input id="edit-product-tnd" type="number" min={0} step="0.01" value={form.tndPrice} onChange={(event) => setForm((prev) => ({ ...prev, tndPrice: Number(event.target.value) }))} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-product-usd">Fallback USD price</Label>
+                  <Input id="edit-product-usd" type="number" min={0} step="0.01" value={form.usdPrice} onChange={(event) => setForm((prev) => ({ ...prev, usdPrice: Number(event.target.value) }))} />
                 </div>
               </div>
 
@@ -265,10 +274,11 @@ export default function BackofficeProductDetailsPage() {
                 </div>
                 <div className="space-y-3">
                   {plans.map((plan, index) => (
-                    <div key={`${plan.id}-${index}`} className="grid gap-3 rounded-xl border border-border/70 bg-background/60 p-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_auto]">
+                    <div key={`${plan.id}-${index}`} className="grid gap-3 rounded-xl border border-border/70 bg-background/60 p-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_auto]">
                       <Input placeholder="Plan label" value={plan.label} onChange={(event) => setPlans((prev) => prev.map((item, itemIndex) => itemIndex === index ? { ...item, label: event.target.value } : item))} />
                       <Input type="number" min={1} placeholder="Points" value={plan.pointsCost} onChange={(event) => setPlans((prev) => prev.map((item, itemIndex) => itemIndex === index ? { ...item, pointsCost: Number(event.target.value) } : item))} />
                       <Input type="number" min={0} step="0.01" placeholder="TND" value={plan.tndPrice ?? ""} onChange={(event) => setPlans((prev) => prev.map((item, itemIndex) => itemIndex === index ? { ...item, tndPrice: event.target.value ? Number(event.target.value) : undefined } : item))} />
+                      <Input type="number" min={0} step="0.01" placeholder="USD" value={plan.usdPrice ?? ""} onChange={(event) => setPlans((prev) => prev.map((item, itemIndex) => itemIndex === index ? { ...item, usdPrice: event.target.value ? Number(event.target.value) : undefined } : item))} />
                       <Button type="button" variant="outline" className="h-10 w-10 p-0" onClick={() => setPlans((prev) => prev.filter((_, itemIndex) => itemIndex !== index))}><Trash2 className="h-4 w-4" /></Button>
                     </div>
                   ))}

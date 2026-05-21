@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 
 interface UserMenuProps {
   user?: Pick<User, "username" | "level" | "points" | "xp" | "loginStreak">;
+  features?: { tasksEnabled: boolean; pointsEnabled: boolean; spinEnabled: boolean };
   className?: string;
   onLogout?: () => void;
 }
@@ -99,7 +100,7 @@ function UserProgressIcon({
   );
 }
 
-export function UserMenu({ user, className, onLogout }: UserMenuProps) {
+export function UserMenu({ user, features, className, onLogout }: UserMenuProps) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const username = user?.username ?? "User";
@@ -162,10 +163,12 @@ export function UserMenu({ user, className, onLogout }: UserMenuProps) {
           )}
           {user ? (
             <span className="flex min-w-0 items-center gap-2">
-              <span className="truncate text-sm font-semibold tabular-nums" title={`${formatNumber(points)} pts`}>
-                {compactPoints}
-                <span className="ml-1 text-xs font-normal text-muted-foreground">pts</span>
-              </span>
+              {features?.pointsEnabled !== false ? (
+                <span className="truncate text-sm font-semibold tabular-nums" title={`${formatNumber(points)} pts`}>
+                  {compactPoints}
+                  <span className="ml-1 text-xs font-normal text-muted-foreground">pts</span>
+                </span>
+              ) : null}
               <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-border/70 bg-muted/50 px-2 py-1 text-[11px] font-medium leading-none text-foreground/88">
                 <Flame className="h-3 w-3 text-[hsl(var(--arcetis-ember))]" />
                 {streak}d
@@ -196,21 +199,25 @@ export function UserMenu({ user, className, onLogout }: UserMenuProps) {
             </span>
           </div>
 
-          <div className="mt-3 grid grid-cols-3 gap-2">
-            <div className="rounded-lg border border-border/70 bg-muted/40 p-2">
-              <p className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
-                <Coins className="h-3 w-3" />
-                {t("menuPoints")}
-              </p>
-              <p className="mt-1 text-sm font-semibold">{formatNumber(points)}</p>
-            </div>
-            <div className="rounded-lg border border-border/70 bg-muted/40 p-2">
-              <p className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
-                <Zap className="h-3 w-3" />
-                {t("menuXp")}
-              </p>
-              <p className="mt-1 text-sm font-semibold">{formatNumber(xp)}</p>
-            </div>
+          <div className={cn("mt-3 grid gap-2", features?.pointsEnabled !== false ? "grid-cols-3" : "grid-cols-1")}>
+            {features?.pointsEnabled !== false ? (
+              <>
+                <div className="rounded-lg border border-border/70 bg-muted/40 p-2">
+                  <p className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
+                    <Coins className="h-3 w-3" />
+                    {t("menuPoints")}
+                  </p>
+                  <p className="mt-1 text-sm font-semibold">{formatNumber(points)}</p>
+                </div>
+                <div className="rounded-lg border border-border/70 bg-muted/40 p-2">
+                  <p className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
+                    <Zap className="h-3 w-3" />
+                    {t("menuXp")}
+                  </p>
+                  <p className="mt-1 text-sm font-semibold">{formatNumber(xp)}</p>
+                </div>
+              </>
+            ) : null}
             <div className="rounded-lg border border-border/70 bg-muted/40 p-2">
               <p className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
                 <Flame className="h-3 w-3" />

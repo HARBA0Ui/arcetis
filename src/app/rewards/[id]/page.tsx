@@ -137,13 +137,13 @@ export default function RewardDetailPage() {
           icon: Star,
           iconClassName: "text-amber-300"
         },
-        {
+        ...(stats.data?.features.pointsEnabled !== false ? [{
           id: "points-remaining",
           label: t("remaining"),
           value: stats.data && selectedPlan ? `${formatNumber(remainingPoints)} pts` : "...",
           icon: Target,
           iconClassName: remainingPoints > 0 ? "text-[hsl(var(--arcetis-ember))]" : "text-emerald-300"
-        }
+        }] : [])
       ]
     : [];
 
@@ -221,16 +221,23 @@ export default function RewardDetailPage() {
                             <div className="flex flex-wrap items-center justify-between gap-3">
                               <div>
                                 <p className="font-semibold">{plan.label}</p>
-                                <p className="mt-1 text-xs text-muted-foreground">
-                                  {formatNumber(plan.pointsCost)} {t("menuPoints").toLowerCase()}
-                                </p>
+                                {stats.data?.features.pointsEnabled !== false ? (
+                                  <p className="mt-1 text-xs text-muted-foreground">
+                                    {formatNumber(plan.pointsCost)} {t("menuPoints").toLowerCase()}
+                                  </p>
+                                ) : null}
                               </div>
                               <div className="flex flex-wrap gap-2">
-                                <Badge variant={isActive ? "default" : "outline"}>
-                                  {formatNumber(plan.pointsCost)} pts
-                                </Badge>
+                                {stats.data?.features.pointsEnabled !== false ? (
+                                  <Badge variant={isActive ? "default" : "outline"}>
+                                    {formatNumber(plan.pointsCost)} pts
+                                  </Badge>
+                                ) : null}
                                 {typeof plan.tndPrice === "number" ? (
                                   <Badge variant="outline">{formatNumber(plan.tndPrice, { maximumFractionDigits: 2 })} DT</Badge>
+                                ) : null}
+                                {typeof plan.usdPrice === "number" ? (
+                                  <Badge variant="outline" className="text-[hsl(var(--arcetis-ember))]">${formatNumber(plan.usdPrice, { maximumFractionDigits: 2 })}</Badge>
                                 ) : null}
                               </div>
                             </div>
@@ -291,8 +298,14 @@ export default function RewardDetailPage() {
                 <div className="flex flex-col items-center gap-2">
                   <div>
                     <CardTitle className="flex items-center justify-center gap-2 text-[1.8rem] leading-none tabular-nums">
-                      <Coins className="h-5 w-5 text-[hsl(var(--arcetis-ember))]" />
-                      {selectedPlan ? `${formatNumber(selectedPlan.pointsCost)} pts` : "-"}
+                      {stats.data?.features.pointsEnabled !== false ? (
+                        <>
+                          <Coins className="h-5 w-5 text-[hsl(var(--arcetis-ember))]" />
+                          {selectedPlan ? `${formatNumber(selectedPlan.pointsCost)} pts` : "-"}
+                        </>
+                      ) : (
+                        <span className="text-xl">{reward.title}</span>
+                      )}
                     </CardTitle>
                   </div>
                   <div className="flex flex-wrap justify-center gap-1.5">
@@ -330,39 +343,41 @@ export default function RewardDetailPage() {
                 </div>
 
                 <div className="grid gap-3">
-                  <Button
-                    className="h-12 w-full"
-                    disabled={!canRedeem || redeem.isPending}
-                    onClick={() => setRedeemConfirmOpen(true)}
-                  >
-                    {redeem.isPending ? (
-                      <span className="inline-flex items-center gap-2">
-                        <Spinner /> {t("processing")}
-                      </span>
-                    ) : reward.stock <= 0 ? (
-                      <span className="inline-flex items-center gap-2">
-                        <X className="h-4 w-4" />
-                        {t("outOfStock")}
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-2">
-                        <Coins className="h-4 w-4" />
-                        {t("getProduct")}
-                      </span>
-                    )}
-                  </Button>
+                  {stats.data?.features.pointsEnabled !== false ? (
+                    <Button
+                      className="h-12 w-full"
+                      disabled={!canRedeem || redeem.isPending}
+                      onClick={() => setRedeemConfirmOpen(true)}
+                    >
+                      {redeem.isPending ? (
+                        <span className="inline-flex items-center gap-2">
+                          <Spinner /> {t("processing")}
+                        </span>
+                      ) : reward.stock <= 0 ? (
+                        <span className="inline-flex items-center gap-2">
+                          <X className="h-4 w-4" />
+                          {t("outOfStock")}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-2">
+                          <Coins className="h-4 w-4" />
+                          {t("getProduct")}
+                        </span>
+                      )}
+                    </Button>
+                  ) : null}
 
                   <Button
                     type="button"
                     variant="outline"
                     className="h-12 w-full"
-                    disabled={typeof selectedPlan?.tndPrice !== "number"}
+                    disabled={typeof selectedPlan?.tndPrice !== "number" && typeof selectedPlan?.usdPrice !== "number"}
                     onClick={() => setTndModalOpen(true)}
                   >
                     <span className="inline-flex items-center gap-2">
                       <CreditCard className="h-4 w-4" />
-                      {typeof selectedPlan?.tndPrice === "number"
-                        ? `${formatNumber(selectedPlan.tndPrice, { maximumFractionDigits: 2 })} DT`
+                      {typeof selectedPlan?.tndPrice === "number" || typeof selectedPlan?.usdPrice === "number"
+                        ? "Buy via Instagram"
                         : t("unavailableDt")}
                     </span>
                   </Button>

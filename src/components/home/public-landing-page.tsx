@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { ArrowRight, Flame, Gift, Sparkles, Star, Trophy, Zap } from "lucide-react";
-import { GuestSpinTeaserModal } from "@/components/home/guest-spin-teaser-modal";
 import { MobileShopPreview } from "@/components/home/mobile-shop-preview";
 import { useLanguage, type AppLanguage } from "@/components/i18n/language-provider";
 import { LatestProductsCarousel, type HomeCarouselIntroSlide } from "@/components/home/latest-products-carousel";
@@ -226,7 +225,6 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
 
   return (
     <main className="relative min-h-screen overflow-hidden px-3 py-4 sm:px-6 lg:px-8">
-      <GuestSpinTeaserModal />
       <div className="arcetis-landing-grid pointer-events-none absolute inset-0 -z-20" />
       <div className="arcetis-landing-orb absolute left-[-6rem] top-24 -z-10 h-64 w-64 rounded-full bg-[radial-gradient(circle,_rgba(255,179,71,0.26),_rgba(255,179,71,0))] blur-3xl" />
       <div className="arcetis-landing-orb arcetis-landing-orb-delayed absolute right-[-5rem] top-12 -z-10 h-72 w-72 rounded-full bg-[radial-gradient(circle,_rgba(98,190,255,0.2),_rgba(98,190,255,0))] blur-3xl" />

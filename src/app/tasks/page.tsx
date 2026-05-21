@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import {
@@ -344,6 +344,7 @@ export default function TasksPage() {
   const submissionsQuery = useQuestSubmissions();
   const spinStatus = useSpinStatus();
   const stats = useUserStats();
+  const features = stats.data?.features ?? { tasksEnabled: true, pointsEnabled: true, spinEnabled: true };
   const userLevel = stats.data?.user.level;
   const [search, setSearch] = useState("");
   const [isPromotionModalOpen, setPromotionModalOpen] = useState(false);
@@ -415,6 +416,24 @@ export default function TasksPage() {
       </CardContent>
     </Card>
   );
+
+  if (stats.isSuccess && !features.tasksEnabled) {
+    return (
+      <>
+        <PageHeader
+          title="Tasks"
+          subtitle="Clear the highest-point tasks first and keep your account moving every time you show up."
+        />
+        <Card className="mt-8 rounded-[2rem] border-border/70 bg-card/92 py-12 text-center shadow-sm">
+          <CardContent>
+            <Sparkles className="mx-auto h-12 w-12 text-[hsl(var(--arcetis-ember))]/80" />
+            <h2 className="mt-6 text-xl font-semibold">Coming Soon</h2>
+            <p className="mt-3 text-muted-foreground">Complete tasks to win rewards. We are preparing the first set of missions.</p>
+          </CardContent>
+        </Card>
+      </>
+    );
+  }
 
   return (
     <>

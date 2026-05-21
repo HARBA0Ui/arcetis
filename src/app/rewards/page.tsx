@@ -22,7 +22,7 @@ import { useSmoothBusy } from "@/hooks/use-smooth-busy";
 import { useRedeemReward, useRewards, useRewardsCatalog, useUserStats } from "@/hooks/usePlatform";
 import { getApiError } from "@/lib/api";
 import { formatNumber } from "@/lib/format";
-import { getRewardDeliveryFields, getRewardStartingPointsCost, getRewardStartingTndPrice, rewardHasSelectablePlans } from "@/lib/reward-options";
+import { getRewardDeliveryFields, getRewardStartingPointsCost, getRewardStartingTndPrice, getRewardStartingUsdPrice, rewardHasSelectablePlans } from "@/lib/reward-options";
 import {
   canUserRedeemReward,
   getNextRewardTarget,
@@ -60,7 +60,7 @@ export default function RewardsPage() {
     hasRewardData && (rewards.isFetching || stats.isFetching || rewardsCatalog.isFetching)
   );
   const activeRewardId = redeem.isPending ? redeem.variables?.rewardId : null;
-  const rewardTarget = rewards.data && stats.data ? getNextRewardTarget(rewards.data, stats.data.user) : null;
+  const rewardTarget = rewards.data && stats.data && stats.data.features.pointsEnabled !== false ? getNextRewardTarget(rewards.data, stats.data.user) : null;
   const isStatsBootstrapping = stats.isLoading && !stats.data;
   const isRewardsBootstrapping = rewardsCatalog.isLoading && !rewardsCatalog.data;
   const currentPage = rewardsCatalog.data?.page ?? page;
@@ -110,24 +110,26 @@ export default function RewardsPage() {
         }
       />
 
-      <div className="mb-4 text-sm text-muted-foreground">
-        {t("balance")}:{" "}
-        {stats.data ? (
-          <span className="font-medium text-foreground">{formatNumber(stats.data.user.points)} {t("menuPoints").toLowerCase()}</span>
-        ) : isStatsBootstrapping ? (
-          <Skeleton className="mx-1 inline-block h-5 w-24 align-middle" />
-        ) : (
-          <span className="font-medium text-foreground">Unavailable</span>
-        )}{" "}
-        | {t("level")}{" "}
-        {stats.data ? (
-          <span className="font-medium text-foreground">{stats.data.user.level}</span>
-        ) : isStatsBootstrapping ? (
-          <Skeleton className="ml-1 inline-block h-5 w-10 align-middle" />
-        ) : (
-          <span className="font-medium text-foreground">-</span>
-        )}
-      </div>
+      {stats.data?.features.pointsEnabled !== false ? (
+        <div className="mb-4 text-sm text-muted-foreground">
+          {t("balance")}:{" "}
+          {stats.data ? (
+            <span className="font-medium text-foreground">{formatNumber(stats.data.user.points)} {t("menuPoints").toLowerCase()}</span>
+          ) : isStatsBootstrapping ? (
+            <Skeleton className="mx-1 inline-block h-5 w-24 align-middle" />
+          ) : (
+            <span className="font-medium text-foreground">Unavailable</span>
+          )}{" "}
+          | {t("level")}{" "}
+          {stats.data ? (
+            <span className="font-medium text-foreground">{stats.data.user.level}</span>
+          ) : isStatsBootstrapping ? (
+            <Skeleton className="ml-1 inline-block h-5 w-10 align-middle" />
+          ) : (
+            <span className="font-medium text-foreground">-</span>
+          )}
+        </div>
+      ) : null}
 
       {showSyncBanner ? <SyncBanner className="mb-4" message="Refreshing rewards..." /> : null}
 
@@ -234,6 +236,7 @@ export default function RewardsPage() {
               const isTargetReward = rewardTarget?.reward.id === reward.id;
               const startingCost = getRewardStartingPointsCost(reward);
               const startingTndPrice = getRewardStartingTndPrice(reward);
+              const startingUsdPrice = getRewardStartingUsdPrice(reward);
               const needsDetails = rewardHasSelectablePlans(reward) || getRewardDeliveryFields(reward).length > 0;
 
               return (
@@ -254,10 +257,12 @@ export default function RewardsPage() {
                     <CardDescription className="text-xs leading-5 sm:text-sm sm:leading-6">{reward.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="flex flex-1 flex-col space-y-3 text-sm">
-                    <p className="inline-flex items-center gap-2 text-muted-foreground">
-                      <Coins className="h-4 w-4" />
-                      <span className="text-foreground">{t("startingAtPoints", { points: formatNumber(startingCost) })}</span>
-                    </p>
+                    {stats.data?.features.pointsEnabled !== false ? (
+                      <p className="inline-flex items-center gap-2 text-muted-foreground">
+                        <Coins className="h-4 w-4" />
+                        <span className="text-foreground">{t("startingAtPoints", { points: formatNumber(startingCost) })}</span>
+                      </p>
+                    ) : null}
                     <p className="inline-flex items-center gap-2 text-muted-foreground">
                       <ShieldCheck className="h-4 w-4" />
                       <span className="text-foreground">Required Level: {reward.minLevel}</span>
@@ -270,6 +275,12 @@ export default function RewardsPage() {
                       <p className="inline-flex items-center gap-2 text-muted-foreground">
                         <CreditCard className="h-4 w-4" />
                         <span className="text-foreground">From {formatNumber(startingTndPrice, { maximumFractionDigits: 2 })} TND</span>
+                      </p>
+                    ) : null}
+                    {typeof startingUsdPrice === "number" ? (
+                      <p className="inline-flex items-center gap-2 text-muted-foreground">
+                        <CreditCard className="h-4 w-4 text-[hsl(var(--arcetis-ember))]" />
+                        <span className="text-foreground">From ${formatNumber(startingUsdPrice, { maximumFractionDigits: 2 })}</span>
                       </p>
                     ) : null}
 

@@ -81,7 +81,10 @@ export async function getPlatformConfig() {
       sponsorRequestWindowDays: 30,
       spinCooldownHours: 24,
       spinMinLevel: 2,
-      spinItems: DEFAULT_SPIN_ITEMS
+      spinItems: DEFAULT_SPIN_ITEMS,
+      tasksEnabled: false,
+      pointsEnabled: false,
+      spinEnabled: false
     }
   });
 }

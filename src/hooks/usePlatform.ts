@@ -66,6 +66,7 @@ async function fetchUserStats() {
     requiredForNext: number;
     dailyEarned: { xp: number; points: number };
     limits: { maxXpPerDay: number; maxPointsPerDay: number; maxSocialTasksPerDay: number };
+    features: { tasksEnabled: boolean; pointsEnabled: boolean; spinEnabled: boolean };
     completedQuests: number;
     redemptions: number;
     leaderboardRank: number;

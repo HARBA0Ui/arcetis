@@ -412,6 +412,7 @@ export function useCreateReward() {
       imageUrl?: string;
       pointsCost: number;
       tndPrice?: number;
+      usdPrice?: number;
       plans?: RewardPlan[];
       deliveryFields?: RewardDeliveryField[];
       minLevel: number;
@@ -454,6 +455,7 @@ export function useUpdateReward() {
       imageUrl?: string;
       pointsCost?: number;
       tndPrice?: number;
+      usdPrice?: number;
       plans?: RewardPlan[];
       deliveryFields?: RewardDeliveryField[];
       minLevel?: number;

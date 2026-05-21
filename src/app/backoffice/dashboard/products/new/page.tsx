@@ -35,7 +35,8 @@ function createPlan(seed = 1): EditablePlan {
     id: `plan_${seed}`,
     label: "",
     pointsCost: 1000,
-    tndPrice: undefined
+    tndPrice: undefined,
+    usdPrice: undefined
   };
 }
 
@@ -57,7 +58,8 @@ function cleanPlans(plans: EditablePlan[]) {
       id: slugify(plan.label) || slugify(plan.id) || `plan_${index + 1}`,
       label: plan.label.trim(),
       pointsCost: Number(plan.pointsCost),
-      ...(typeof plan.tndPrice === "number" && Number.isFinite(plan.tndPrice) ? { tndPrice: Number(plan.tndPrice) } : {})
+      ...(typeof plan.tndPrice === "number" && Number.isFinite(plan.tndPrice) ? { tndPrice: Number(plan.tndPrice) } : {}),
+      ...(typeof plan.usdPrice === "number" && Number.isFinite(plan.usdPrice) ? { usdPrice: Number(plan.usdPrice) } : {})
     }));
 }
 
@@ -86,6 +88,7 @@ export default function BackofficeCreateProductPage() {
     description: "",
     pointsCost: 1000,
     tndPrice: 0,
+    usdPrice: 0,
     minLevel: 1,
     minAccountAge: 0,
     stock: 10
@@ -122,11 +125,15 @@ export default function BackofficeCreateProductPage() {
       const tndValues = cleanedPlans
         .map((plan) => plan.tndPrice)
         .filter((value): value is number => typeof value === "number");
+      const usdValues = cleanedPlans
+        .map((plan) => plan.usdPrice)
+        .filter((value): value is number => typeof value === "number");
 
       const created = await createReward.mutateAsync({
         ...form,
         pointsCost: effectivePointsCost,
         tndPrice: tndValues.length ? Math.min(...tndValues) : form.tndPrice || undefined,
+        usdPrice: usdValues.length ? Math.min(...usdValues) : form.usdPrice || undefined,
         plans: cleanedPlans.length ? cleanedPlans : undefined,
         deliveryFields: cleanedFields.length ? cleanedFields : undefined,
         imageUrl
@@ -188,7 +195,7 @@ export default function BackofficeCreateProductPage() {
               />
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-2">
                 <Label htmlFor="create-product-cost">Fallback points cost</Label>
                 <Input
@@ -208,6 +215,17 @@ export default function BackofficeCreateProductPage() {
                   step="0.01"
                   value={form.tndPrice}
                   onChange={(event) => setForm((prev) => ({ ...prev, tndPrice: Number(event.target.value) }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="create-product-usd">Fallback USD price</Label>
+                <Input
+                  id="create-product-usd"
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={form.usdPrice}
+                  onChange={(event) => setForm((prev) => ({ ...prev, usdPrice: Number(event.target.value) }))}
                 />
               </div>
             </div>
@@ -267,7 +285,7 @@ export default function BackofficeCreateProductPage() {
                 {plans.map((plan, index) => (
                   <div
                     key={`${plan.id}-${index}`}
-                    className="grid gap-3 rounded-xl border border-border/70 bg-background/60 p-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_auto]"
+                    className="grid gap-3 rounded-xl border border-border/70 bg-background/60 p-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_auto]"
                   >
                     <Input
                       placeholder="Plan label"
@@ -304,6 +322,22 @@ export default function BackofficeCreateProductPage() {
                           prev.map((item, itemIndex) =>
                             itemIndex === index
                               ? { ...item, tndPrice: event.target.value ? Number(event.target.value) : undefined }
+                              : item
+                          )
+                        )
+                      }
+                    />
+                    <Input
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      placeholder="USD"
+                      value={plan.usdPrice ?? ""}
+                      onChange={(event) =>
+                        setPlans((prev) =>
+                          prev.map((item, itemIndex) =>
+                            itemIndex === index
+                              ? { ...item, usdPrice: event.target.value ? Number(event.target.value) : undefined }
                               : item
                           )
                         )

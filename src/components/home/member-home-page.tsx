@@ -1029,7 +1029,6 @@ export function MemberHomePage() {
           <LatestProductsCarousel
             className="hidden sm:block"
             introSlide={introSlide}
-            introAside={progressSnapshotPanel}
             rewards={rewards.data}
             user={stats.data?.user}
             isLoading={rewards.isLoading || rewards.isFetching}
@@ -1038,13 +1037,11 @@ export function MemberHomePage() {
         </section>
 
         <DeferredSection fallback={secondaryPanelsFallback}>
-          <section className="grid gap-8 xl:grid-cols-[minmax(0,1.18fr)_minmax(0,0.82fr)] xl:items-start [&>*]:min-w-0">
-            <div className="flex flex-col gap-6">
-              {leaderboardPanel}
-              {spinPanel}
-            </div>
+          <section className="grid gap-8 xl:grid-cols-2 xl:items-start [&>*]:min-w-0">
             <div className="flex flex-col gap-6">
               {rewardPanel}
+            </div>
+            <div className="flex flex-col gap-6">
               {giveawayPanel}
             </div>
           </section>

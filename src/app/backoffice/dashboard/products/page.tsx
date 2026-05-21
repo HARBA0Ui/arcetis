@@ -14,7 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useAdminRewards } from "@/backoffice/hooks/useAdmin";
 import { normalizeAssetUrl } from "@/lib/assets";
 import { formatNumber } from "@/lib/format";
-import { getRewardStartingPointsCost, getRewardStartingTndPrice } from "@/lib/reward-options";
+import { getRewardStartingPointsCost, getRewardStartingTndPrice, getRewardStartingUsdPrice } from "@/lib/reward-options";
 
 export default function BackofficeProductsPage() {
   const [query, setQuery] = useState("");
@@ -100,6 +100,13 @@ export default function BackofficeProductsPage() {
                               maximumFractionDigits: 2
                             })}{" "}
                             TND
+                          </div>
+                        ) : null}
+                        {typeof getRewardStartingUsdPrice(reward) === "number" ? (
+                          <div className="text-xs text-[hsl(var(--arcetis-ember))]">
+                            ${formatNumber(getRewardStartingUsdPrice(reward) ?? 0, {
+                              maximumFractionDigits: 2
+                            })}
                           </div>
                         ) : null}
                       </div>

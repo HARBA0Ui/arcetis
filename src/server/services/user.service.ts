@@ -237,6 +237,11 @@ export async function getUserStats(userId: string) {
       maxPointsPerDay: config.maxPointsPerDay,
       maxSocialTasksPerDay: config.maxSocialTasksPerDay
     },
+    features: {
+      tasksEnabled: config.tasksEnabled,
+      pointsEnabled: config.pointsEnabled,
+      spinEnabled: config.spinEnabled
+    },
     completedQuests,
     redemptions,
     leaderboardRank: leaderboardRank + 1

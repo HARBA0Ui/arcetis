@@ -16,7 +16,8 @@ export function getRewardPlans(reward: Reward): RewardPlan[] {
       id: `${reward.id}-default`,
       label: "Standard",
       pointsCost: reward.pointsCost,
-      tndPrice: reward.tndPrice ?? undefined
+      tndPrice: reward.tndPrice ?? undefined,
+      usdPrice: reward.usdPrice ?? undefined
     }
   ];
 }
@@ -41,6 +42,22 @@ export function getRewardStartingTndPrice(reward: Reward) {
 
   if (isFiniteNumber(reward.tndPrice)) {
     candidates.push(reward.tndPrice);
+  }
+
+  if (!candidates.length) {
+    return null;
+  }
+
+  return Math.min(...candidates);
+}
+
+export function getRewardStartingUsdPrice(reward: Reward) {
+  const candidates = getRewardPlans(reward)
+    .map((plan) => plan.usdPrice)
+    .filter((value): value is number => isFiniteNumber(value));
+
+  if (isFiniteNumber(reward.usdPrice)) {
+    candidates.push(reward.usdPrice);
   }
 
   if (!candidates.length) {

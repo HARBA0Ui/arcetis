@@ -239,6 +239,7 @@ model Reward {
   imageUrl      String?
   pointsCost    Int
   tndPrice      Float?
+  usdPrice      Float?
   plans         Json?
   deliveryFields Json?
   minLevel      Int
@@ -373,6 +374,9 @@ model PlatformConfig {
   spinCooldownHours       Int      @default(24)
   spinMinLevel            Int      @default(2)
   spinItems               Json?
+  tasksEnabled            Boolean  @default(false)
+  pointsEnabled           Boolean  @default(false)
+  spinEnabled             Boolean  @default(false)
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
 }
