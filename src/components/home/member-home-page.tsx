@@ -820,91 +820,6 @@ export function MemberHomePage() {
     </div>
   );
 
-  const rewardPanel = (
-    <div className="flex flex-col gap-4">
-      <div>
-        <h2 className="text-2xl font-semibold tracking-tight">{copy.nextAffordableReward}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{copy.nextAffordableRewardSubtitle}</p>
-      </div>
-
-      {rewards.data && stats.data ? (
-        rewardTarget ? (
-          <div className="flex h-full flex-col rounded-[1.6rem] border border-border/70 bg-[linear-gradient(180deg,_rgba(255,255,255,0.84),_rgba(255,248,242,0.94))] p-5 shadow-[0_22px_60px_-46px_rgba(255,122,24,0.35)] dark:bg-[linear-gradient(180deg,_rgba(18,18,18,0.92),_rgba(10,10,10,0.98))]">
-            <div className="mx-auto w-full max-w-[320px]">
-              <RewardThumbnail
-                title={rewardTarget.reward.title}
-                imageUrl={rewardTarget.reward.imageUrl}
-                className="aspect-square w-full"
-              />
-            </div>
-
-            <div className="mt-5">
-              <Badge
-                variant={rewardTarget.canRedeemNow ? "default" : "outline"}
-                className={
-                  rewardTarget.canRedeemNow
-                    ? "bg-[hsl(var(--arcetis-ember))] text-black hover:bg-[hsl(var(--arcetis-ember))]"
-                    : "border-[rgba(255,122,24,0.22)] bg-[rgba(255,122,24,0.08)] text-foreground"
-                }
-              >
-                {getLocalizedRewardTargetStatusLabel(rewardTarget, copy)}
-              </Badge>
-              <p className="mt-4 text-2xl font-semibold tracking-tight" title={rewardTarget.reward.title}>
-                {rewardTarget.reward.title}
-              </p>
-              <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">
-                {getLocalizedRewardTargetSummary(rewardTarget, copy, language)}
-              </p>
-
-              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <div className="rounded-[1rem] border border-border/60 bg-background/80 p-3">
-                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{copy.target}</p>
-                  <p className="mt-1 font-semibold">{formatCompactNumber(rewardTarget.reward.pointsCost)} {copy.pointsUnit}</p>
-                </div>
-                <div className="rounded-[1rem] border border-border/60 bg-background/80 p-3">
-                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{t("balance")}</p>
-                  <p className="mt-1 font-semibold">{formatCompactNumber(stats.data.user.points)} {copy.pointsUnit}</p>
-                </div>
-                <div className="rounded-[1rem] border border-border/60 bg-background/80 p-3">
-                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                    {rewardTarget.canRedeemNow ? copy.statusLabel : copy.gap}
-                  </p>
-                  <p className="mt-1 font-semibold">
-                    {rewardTarget.canRedeemNow ? copy.readyNow : `${formatCompactNumber(rewardTarget.pointsNeeded)} ${copy.pointsUnit}`}
-                  </p>
-                </div>
-              </div>
-
-              {rewardTarget.levelNeeded > 0 || rewardTarget.daysNeeded > 0 ? (
-                <p className="mt-4 text-sm text-muted-foreground">
-                  {rewardTarget.daysNeeded > 0
-                    ? copy.requiresLevelAndDays(rewardTarget.reward.minLevel, rewardTarget.reward.minAccountAge)
-                    : copy.requiresLevelOnly(rewardTarget.reward.minLevel)}
-                </p>
-              ) : null}
-
-              <Button
-                asChild
-                variant="outline"
-                className="mt-5 w-full justify-between rounded-xl border-[rgba(255,122,24,0.2)] bg-background/80 hover:bg-[rgba(255,122,24,0.06)]"
-              >
-                <Link href={`/rewards/${rewardTarget.reward.id}`}>
-                  {copy.viewTarget}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="rounded-[1.5rem] border border-border/70 bg-background/65 p-5 text-sm text-muted-foreground">
-            {copy.noRewards}
-          </div>
-        )
-      ) : (
-        <Skeleton className="h-[34rem] w-full rounded-[1.5rem]" />
-      )}
-    </div>
-  );
 
   const giveawayPanel = (
     <div className="flex flex-col gap-4">
@@ -981,13 +896,9 @@ export function MemberHomePage() {
   );
 
   const secondaryPanelsFallback = (
-    <section className="grid gap-8 xl:grid-cols-[minmax(0,1.18fr)_minmax(0,0.82fr)] xl:items-start [&>*]:min-w-0">
+    <section className="flex flex-col gap-6 [&>*]:min-w-0">
       <div className="flex flex-col gap-6">
-        <Skeleton className="h-[24rem] w-full rounded-[1.8rem]" />
         <Skeleton className="h-[24rem] w-full rounded-[1.6rem]" />
-      </div>
-      <div className="flex flex-col gap-6">
-        <Skeleton className="h-[34rem] w-full rounded-[1.6rem]" />
       </div>
     </section>
   );
@@ -999,7 +910,6 @@ export function MemberHomePage() {
       <div className="space-y-6">
         <section className="[&>*]:min-w-0">
           <MobileShopPreview
-            eyebrow={copy.nextAffordableReward}
             title="Shop"
             description={t("rewardsSubtitle")}
             rewards={rewards.data ?? []}
@@ -1019,10 +929,7 @@ export function MemberHomePage() {
         </section>
 
         <DeferredSection fallback={secondaryPanelsFallback}>
-          <section className="grid gap-8 xl:grid-cols-2 xl:items-start [&>*]:min-w-0">
-            <div className="flex flex-col gap-6">
-              {rewardPanel}
-            </div>
+          <section className="flex flex-col gap-6 [&>*]:min-w-0">
             <div className="flex flex-col gap-6">
               {giveawayPanel}
             </div>
