@@ -534,23 +534,6 @@ export function MemberHomePage() {
     }
   }
 
-  const introSlide = useMemo<HomeCarouselIntroSlide>(
-    () => ({
-      theme: "member",
-      badge: copy.introBadge,
-      title: copy.introTitle,
-      description: copy.introDescription,
-      primaryAction: {
-        href: "/spin",
-        label: copy.introPrimary
-      },
-      secondaryAction: {
-        href: "/rewards",
-        label: copy.introSecondary
-      }
-    }),
-    [copy]
-  );
 
   const progressSnapshotPanel = stats.data ? (
     <Card className="relative flex h-full w-full flex-col overflow-hidden rounded-tl-[1.9rem] rounded-tr-[1.9rem] border border-white/12 bg-[linear-gradient(180deg,rgba(20,12,9,0.82),rgba(34,18,9,0.74))] text-white shadow-[0_24px_72px_-42px_rgba(0,0,0,0.55)] backdrop-blur-md">
@@ -1028,7 +1011,6 @@ export function MemberHomePage() {
 
           <LatestProductsCarousel
             className="hidden sm:block"
-            introSlide={introSlide}
             rewards={rewards.data}
             user={stats.data?.user}
             isLoading={rewards.isLoading || rewards.isFetching}

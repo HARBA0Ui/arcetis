@@ -202,27 +202,6 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
   const { language, t } = useLanguage();
   const copy = getLandingCopy(language);
   const rewardsRedirect = `/login?redirect=${encodeURIComponent("/rewards")}`;
-  const introSlide: HomeCarouselIntroSlide = {
-    theme: "public",
-    badge: copy.introBadge,
-    title: copy.introTitle,
-    description: copy.introDescription,
-    primaryAction: {
-      href: "/login",
-      label: copy.introPrimary
-    },
-    secondaryAction: {
-      href: "/register",
-      label: copy.introSecondary
-    },
-    highlights: copy.introHighlights,
-    metricsTitle: copy.introMetricsTitle,
-    metrics: copy.proofStrip.map((item) => ({
-      label: item.label,
-      value: item.value
-    }))
-  };
-
   return (
     <main className="relative min-h-screen overflow-hidden px-3 py-4 sm:px-6 lg:px-8">
       <div className="arcetis-landing-grid pointer-events-none absolute inset-0 -z-20" />
@@ -262,7 +241,6 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
 
           <LatestProductsCarousel
             className="hidden sm:block"
-            introSlide={introSlide}
             rewards={rewards}
             primaryLinkMode="signin"
             autoplayMs={3800}
