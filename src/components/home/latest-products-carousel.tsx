@@ -5,6 +5,7 @@ import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight, Clock3, Package2, ShieldCheck, Sparkles } from "lucide-react";
 import { useLanguage } from "@/components/i18n/language-provider";
 import { RewardThumbnail } from "@/components/rewards/reward-thumbnail";
+import { useCurrency } from "@/components/common/currency-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -138,19 +139,9 @@ function getProductState(reward: Reward, user?: Pick<User, "points" | "level" | 
     };
   }
 
-  if (user.points < reward.pointsCost) {
-    const pointsGap = reward.pointsCost - user.points;
-
-    return {
-      label: `${formatCompactNumber(pointsGap)} pts left`,
-      detail: `You are ${formatCompactNumber(pointsGap)} points away from redeeming it.`,
-      badgeClassName: "border-[rgba(255,122,24,0.22)] bg-[rgba(255,122,24,0.14)] text-white"
-    };
-  }
-
   return {
     label: "Ready now",
-    detail: "You currently meet the level, age, and balance requirements.",
+    detail: "You currently meet the level and age requirements.",
     badgeClassName: "border-emerald-400/20 bg-emerald-400/14 text-emerald-100"
   };
 }
@@ -207,6 +198,7 @@ export function LatestProductsCarousel({
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const { language } = useLanguage();
+  const { currency, formatPrice } = useCurrency();
   const safeActiveIndex = slideList.length ? activeIndex % slideList.length : 0;
   const isCompact = size === "compact";
   const hasIntroAside = !!introAside && !isCompact;
@@ -225,10 +217,8 @@ export function LatestProductsCarousel({
           reachLevel: (level: number) => `صل إلى المستوى ${level} لفتح هذا المنتج.`,
           daysLeft: (days: number) => `متبقي ${days} يوم`,
           daysDetail: (days: number) => `حسابك يحتاج ${days} يوم إضافي ليفتح هذا المنتج.`,
-          ptsLeft: (points: string) => `متبقي ${points} نقطة`,
-          ptsDetail: (points: string) => `أنت تحتاج ${points} نقطة للحصول عليه.`,
-          readyNow: "جاهز الآن",
-          readyDetail: "أنت تستوفي حاليًا شروط المستوى والعمر والرصيد.",
+          readyNow: "متاح للشراء",
+          readyDetail: "أنت تستوفي حاليًا شروط المستوى والعمر.",
           prev: "الشريحة السابقة",
           next: "الشريحة التالية",
           latestProduct: "أحدث منتج",
@@ -252,10 +242,8 @@ export function LatestProductsCarousel({
           reachLevel: (level: number) => `Reach level ${level} to unlock this product.`,
           daysLeft: (days: number) => `${days} day${days === 1 ? "" : "s"} left`,
           daysDetail: (days: number) => `Your account needs ${days} more day${days === 1 ? "" : "s"} to unlock it.`,
-          ptsLeft: (points: string) => `${points} pts left`,
-          ptsDetail: (points: string) => `You are ${points} points away from redeeming it.`,
-          readyNow: "Ready now",
-          readyDetail: "You currently meet the level, age, and balance requirements.",
+          readyNow: "Available to buy",
+          readyDetail: "You currently meet the level and age requirements.",
           prev: "Previous slide",
           next: "Next slide",
           latestProduct: "Latest Product",
@@ -467,9 +455,7 @@ export function LatestProductsCarousel({
                   ? copy.readyNow
                   : reward.stock <= 0
                     ? copy.unavailable
-                    : productState.label.includes("pts left")
-                      ? copy.ptsLeft(productState.label.replace(" pts left", ""))
-                      : productState.label.includes("day") && productState.label.includes("left")
+                    : productState.label.includes("day") && productState.label.includes("left")
                         ? copy.daysLeft(Number.parseInt(productState.label, 10) || 0)
                         : productState.label.startsWith("Level ")
                           ? productState.label
@@ -479,13 +465,11 @@ export function LatestProductsCarousel({
               ? copy.unavailableDetail
               : productState.detail === "Open the rewards store to check your current eligibility."
                 ? copy.exploreDetail
-                : productState.detail === "You currently meet the level, age, and balance requirements."
+                : productState.detail === "You currently meet the level and age requirements." || productState.detail === "أنت تستوفي حاليًا شروط المستوى والعمر."
                   ? copy.readyDetail
                   : productState.detail.startsWith("Reach level ")
                     ? copy.reachLevel(reward.minLevel)
-                    : productState.detail.includes("points away")
-                      ? copy.ptsDetail(formatCompactNumber(Math.max(reward.pointsCost - (user?.points ?? 0), 0)))
-                      : productState.detail.includes("more day")
+                    : productState.detail.includes("more day")
                         ? copy.daysDetail(Math.max(reward.minAccountAge - getAccountAgeDays(user?.createdAt), 0))
                         : productState.detail;
           const primaryHref =
@@ -541,7 +525,7 @@ export function LatestProductsCarousel({
                   <div className={cn("grid grid-cols-1 sm:grid-cols-3", isCompact ? "gap-2" : "gap-3")}>
                     <div className={cn("rounded-[1.15rem] border border-white/10 bg-white/[0.05]", isCompact ? "p-3" : "p-3 sm:p-4")}>
                       <p className="text-[11px] uppercase tracking-[0.24em] text-white/48">{copy.cost}</p>
-                      <p className={cn("mt-2 font-semibold", isCompact ? "text-base leading-tight" : "text-base leading-tight sm:text-lg")}>{formatCompactNumber(reward.pointsCost)} pts</p>
+                      <p className={cn("mt-2 font-semibold", isCompact ? "text-base leading-tight" : "text-base leading-tight sm:text-lg")}>{formatPrice(reward.tndPrice, reward.usdPrice)}</p>
                     </div>
                     <div className={cn("rounded-[1.15rem] border border-white/10 bg-white/[0.05]", isCompact ? "p-3" : "p-3 sm:p-4")}>
                       <p className="text-[11px] uppercase tracking-[0.24em] text-white/48">{copy.level}</p>
@@ -605,7 +589,7 @@ export function LatestProductsCarousel({
                       </div>
                       <div className={cn("inline-flex items-center rounded-full border border-white/10 bg-white/[0.06] font-semibold", isCompact ? "px-2.5 py-1 text-xs sm:text-sm" : "px-3 py-1 text-sm")}>
                         <Package2 className={cn("mr-2 text-[hsl(var(--arcetis-ember))]", isCompact ? "h-3.5 w-3.5" : "h-4 w-4")} />
-                        {formatCompactNumber(reward.pointsCost)}
+                        {formatPrice(reward.tndPrice, reward.usdPrice)}
                       </div>
                     </div>
                   </div>

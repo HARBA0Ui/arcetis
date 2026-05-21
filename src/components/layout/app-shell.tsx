@@ -19,6 +19,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ArcetisLogo } from "@/components/common/arcetis-logo";
 import { NotificationCenter } from "@/components/common/notification-center";
 import { ThemeToggle } from "@/components/common/theme-toggle";
+import { CurrencyToggle } from "@/components/common/currency-toggle";
 import { MobileNavSidebar } from "@/components/layout/mobile-nav-sidebar";
 import { UserMenu } from "@/components/common/user-menu";
 import { ProtectedShellLoading } from "@/components/layout/protected-shell-loading";
@@ -169,6 +170,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Link>
 
             <div className="flex items-center gap-2">
+              <CurrencyToggle iconOnly className="h-10 w-10 rounded-2xl border-border/80 bg-card text-foreground" />
               <ThemeToggle iconOnly className="h-10 w-10 rounded-2xl border-border/80 bg-card text-foreground" />
               <NotificationCenter />
               <button
@@ -207,6 +209,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </nav>
 
             <div className="flex w-full items-center justify-end gap-2 sm:ml-auto sm:w-auto">
+              <CurrencyToggle iconOnly className="h-12 w-12 rounded-2xl border-border/80 bg-card text-foreground" />
               <ThemeToggle iconOnly className="h-12 w-12 rounded-2xl border-border/80 bg-card text-foreground" />
               <NotificationCenter />
               <UserMenu user={user ?? undefined} onLogout={() => void handleLogout()} />

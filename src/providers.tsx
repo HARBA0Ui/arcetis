@@ -5,6 +5,7 @@ import { ThemeProvider as NextThemesProvider, type ThemeProviderProps } from "ne
 import { useState, type ComponentType, type PropsWithChildren } from "react";
 import { ToastProvider } from "@/components/common/toast-center";
 import { LanguageProvider } from "@/components/i18n/language-provider";
+import { CurrencyProvider } from "@/components/common/currency-provider";
 import { NavigationProvider } from "@/components/navigation/navigation-provider";
 
 const ThemeProvider = NextThemesProvider as ComponentType<PropsWithChildren<ThemeProviderProps>>;
@@ -30,9 +31,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
       <QueryClientProvider client={queryClient}>
         <LanguageProvider>
-          <NavigationProvider>
-            <ToastProvider>{children}</ToastProvider>
-          </NavigationProvider>
+          <CurrencyProvider>
+            <NavigationProvider>
+              <ToastProvider>{children}</ToastProvider>
+            </NavigationProvider>
+          </CurrencyProvider>
         </LanguageProvider>
       </QueryClientProvider>
     </ThemeProvider>
