@@ -58,7 +58,7 @@ export function canUserRedeemReward(reward: Reward, user?: RewardTargetUser | nu
   const level = user?.level ?? 1;
   const accountAgeDays = getAccountAgeDays(user?.createdAt);
 
-  return points >= getRewardStartingPointsCost(reward) && level >= reward.minLevel && accountAgeDays >= reward.minAccountAge;
+  return points >= getRewardStartingPointsCost(reward) && accountAgeDays >= reward.minAccountAge;
 }
 
 export function getNextRewardTarget(rewards: Reward[], user?: RewardTargetUser | null): RewardTarget | null {

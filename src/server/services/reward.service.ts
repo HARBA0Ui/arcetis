@@ -590,15 +590,6 @@ export async function redeemReward(
     throw new ApiError(400, "Reward out of stock");
   }
 
-  if (user.level < reward.minLevel) {
-    throw new ApiError(403, `Reward requires level ${reward.minLevel}`);
-  }
-
-  const accountAgeDays = daysBetween(new Date(), user.createdAt);
-  if (accountAgeDays < reward.minAccountAge) {
-    throw new ApiError(403, `Reward requires account age of ${reward.minAccountAge} days`);
-  }
-
   const plans = getRewardPlans(reward);
   const selectedPlan = planId ? plans.find((plan) => plan.id === planId) : plans[0];
 
@@ -610,15 +601,6 @@ export async function redeemReward(
 
   if (user.points < pointsCost) {
     throw new ApiError(400, "Not enough points");
-  }
-
-  const latestRedemption = await prisma.redemption.findFirst({
-    where: { userId },
-    orderBy: { createdAt: "desc" }
-  });
-
-  if (latestRedemption && hoursBetween(new Date(), latestRedemption.createdAt) < config.redemptionCooldownHours) {
-    throw new ApiError(429, `You can redeem only once every ${config.redemptionCooldownHours} hours`);
   }
 
   const deliveryFields = getDeliveryFields(reward);

@@ -252,14 +252,6 @@ export default function BackofficeProductDetailsPage() {
                   <Label htmlFor="edit-product-stock">Stock</Label>
                   <Input id="edit-product-stock" type="number" min={0} value={form.stock} onChange={(event) => setForm((prev) => ({ ...prev, stock: Number(event.target.value) }))} />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-product-level">Minimum level</Label>
-                  <Input id="edit-product-level" type="number" min={1} value={form.minLevel} onChange={(event) => setForm((prev) => ({ ...prev, minLevel: Number(event.target.value) }))} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-product-age">Minimum account age (days)</Label>
-                  <Input id="edit-product-age" type="number" min={0} value={form.minAccountAge} onChange={(event) => setForm((prev) => ({ ...prev, minAccountAge: Number(event.target.value) }))} />
-                </div>
               </div>
 
               <div className="space-y-3 rounded-2xl border border-border/70 p-4">

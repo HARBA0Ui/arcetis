@@ -102,12 +102,6 @@ export default function RewardsPage() {
       <PageHeader
         title={t("rewardsTitle")}
         subtitle={t("rewardsSubtitle")}
-        right={
-          <Badge variant="secondary" className="gap-1.5">
-            <ShieldCheck className="h-3.5 w-3.5" />
-            {t("rewardCooldown")}
-          </Badge>
-        }
       />
 
       {stats.data?.features.pointsEnabled !== false ? (
