@@ -178,12 +178,12 @@ export default function RewardsPage() {
                       </p>
                     ) : null}
 
-                    <div className="mt-auto grid grid-cols-1 gap-2 pt-2">
-                      <Button asChild>
-                        <Link href={`/shop/${reward.id}`}>{needsDetails ? "Choose plan" : "Details"}</Link>
-                      </Button>
-                    </div>
                   </CardContent>
+                  <div className="mt-auto p-6 pt-0">
+                    <Button className="w-full" asChild>
+                      <Link href={`/shop/${reward.id}`}>Buy</Link>
+                    </Button>
+                  </div>
                 </Card>
               );
             })

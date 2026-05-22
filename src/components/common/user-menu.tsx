@@ -65,9 +65,12 @@ export function UserMenu({ user, className, onLogout }: UserMenuProps) {
       >
         <span className="flex min-w-0 items-center gap-2">
           {user ? (
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted/60 border border-border/70">
-              <UserCircle2 className="h-4 w-4" />
-            </div>
+            <>
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted/60 border border-border/70">
+                <UserCircle2 className="h-4 w-4" />
+              </div>
+              <span className="truncate pr-1 text-sm font-medium">{username}</span>
+            </>
           ) : (
             <Skeleton className="h-10 w-10 rounded-full" />
           )}

@@ -284,7 +284,6 @@ async function handleGet(request: NextRequest, path: string[]) {
   }
 
   if (path[0] === "rewards" && path[1] === "catalog" && path.length === 2) {
-    requireAuth(request);
     const query = parseQuery(request, rewardCatalogQuerySchema);
     const result = await listRewardCatalog(query);
     return NextResponse.json({
@@ -297,7 +296,6 @@ async function handleGet(request: NextRequest, path: string[]) {
   }
 
   if (path[0] === "rewards" && path.length === 2) {
-    requireAuth(request);
     const reward = await getRewardById(path[1]);
     return NextResponse.json({ reward });
   }
