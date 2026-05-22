@@ -3,7 +3,6 @@ export const frontofficeProtectedRoutePrefixes = [
   "/tasks",
   "/spin",
   "/giveaways",
-  "/rewards",
   "/requests",
   "/referrals",
   "/profile"

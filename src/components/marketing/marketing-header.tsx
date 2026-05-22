@@ -52,11 +52,8 @@ export function MarketingHeader() {
 
   const links = [
     { href: "/", label: copy.home },
-    { href: "/#shop-preview", label: shopLabel },
-    { href: "/about", label: copy.about },
-    { href: "/contact", label: copy.contact },
-    { href: "/privacy", label: copy.privacy },
-    { href: "/terms", label: copy.terms }
+    { href: "/rewards", label: shopLabel },
+    { href: "/about", label: copy.about }
   ];
   const mobileLinks = links.filter((link) => link.href !== "/");
 
