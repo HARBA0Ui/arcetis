@@ -447,7 +447,7 @@ export function MemberHomePage() {
           unlockedRewards.length === 1
             ? copy.rewardOpenedDescription(unlockedRewards[0].title)
             : copy.rewardsOpenedDescription(unlockedRewards[0].title),
-        href: "/rewards",
+        href: "/shop",
         cta: copy.viewRewards
       });
     }
@@ -913,10 +913,10 @@ export function MemberHomePage() {
             title="Shop"
             description={t("rewardsSubtitle")}
             rewards={rewards.data ?? []}
-            headerHref="/rewards"
+            headerHref="/shop"
             headerLabel={copy.introSecondary}
             itemActionLabel={t("viewTarget")}
-            itemActionHref={(reward) => `/rewards/${reward.id}`}
+            itemActionHref={(reward) => `/shop/${reward.id}`}
           />
 
           <LatestProductsCarousel

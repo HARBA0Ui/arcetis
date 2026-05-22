@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/rewards", label: "Shop", icon: CircleDollarSign },
+  { href: "/shop", label: "Shop", icon: CircleDollarSign },
   { href: "/giveaways", label: "Giveaways", icon: PartyPopper }
 ];
 

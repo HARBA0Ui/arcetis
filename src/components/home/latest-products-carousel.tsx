@@ -136,7 +136,7 @@ export function LatestProductsCarousel({
   primaryLinkMode = "reward",
   size = "default",
   autoplayMs = 3800,
-  secondaryHref = "/rewards",
+  secondaryHref = "/shop",
   secondaryLabel = "Browse Rewards Store",
   className
 }: {
@@ -451,8 +451,8 @@ export function LatestProductsCarousel({
                   : productState.detail;
           const primaryHref =
             primaryLinkMode === "signin"
-              ? `/login?redirect=${encodeURIComponent(`/rewards/${reward.id}`)}`
-              : `/rewards/${reward.id}`;
+              ? `/login?redirect=${encodeURIComponent(`/shop/${reward.id}`)}`
+              : `/shop/${reward.id}`;
 
           return (
             <article

@@ -309,11 +309,8 @@ export function useSubmitQuestProof() {
 export const useSubmitSponsoredQuest = useSubmitQuestProof;
 
 export function useRewards() {
-  const token = useAuthToken();
-
   return useQuery({
     queryKey: rewardsQueryKey,
-    enabled: !!token,
     queryFn: fetchRewards,
     staleTime: ONE_MINUTE,
     placeholderData: (previousData) => previousData
@@ -321,11 +318,8 @@ export function useRewards() {
 }
 
 export function useGiveaways() {
-  const token = useAuthToken();
-
   return useQuery({
     queryKey: giveawaysQueryKey,
-    enabled: !!token,
     queryFn: fetchGiveaways,
     staleTime: ONE_MINUTE,
     placeholderData: (previousData) => previousData
@@ -350,7 +344,7 @@ export function useGiveawayById(giveawayId: string) {
 
   return useQuery({
     queryKey: giveawayByIdQueryKey(giveawayId),
-    enabled: !!giveawayId && !!token,
+    enabled: !!giveawayId,
     queryFn: () => fetchGiveawayById(giveawayId),
     staleTime: ONE_MINUTE,
     initialData: () =>
@@ -442,7 +436,6 @@ export function useRewardsCatalog(params: { q?: string; page: number; pageSize: 
 
   return useQuery({
     queryKey: rewardsCatalogQueryKey(params),
-    enabled: !!token,
     queryFn: () => fetchRewardsCatalog(params),
     staleTime: ONE_MINUTE,
     placeholderData: (previousData) => previousData

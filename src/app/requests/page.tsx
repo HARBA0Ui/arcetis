@@ -75,7 +75,7 @@ export default function RequestsPage() {
         subtitle={t("requestHistorySubtitle")}
         right={
           <Button asChild variant="outline" size="sm">
-            <Link href="/rewards">{t("browseProducts")}</Link>
+            <Link href="/shop">{t("browseProducts")}</Link>
           </Button>
         }
       />

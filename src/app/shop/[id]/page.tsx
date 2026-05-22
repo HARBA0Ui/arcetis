@@ -144,7 +144,7 @@ export default function RewardDetailPage() {
         subtitle={t("rewardDetailsSubtitle")}
         right={
           <Button asChild variant="outline" size="sm">
-            <Link href="/rewards">{t("backToProducts")}</Link>
+            <Link href="/shop">{t("backToProducts")}</Link>
           </Button>
         }
       />

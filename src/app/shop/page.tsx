@@ -60,7 +60,7 @@ export default function RewardsPage() {
     hasRewardData && (rewards.isFetching || stats.isFetching || rewardsCatalog.isFetching)
   );
   const activeRewardId = redeem.isPending ? redeem.variables?.rewardId : null;
-  const rewardTarget = rewards.data && stats.data && stats.data.features.pointsEnabled !== false ? getNextRewardTarget(rewards.data, stats.data.user) : null;
+  const activeRewardId = redeem.isPending ? redeem.variables?.rewardId : null;
   const isStatsBootstrapping = stats.isLoading && !stats.data;
   const isRewardsBootstrapping = rewardsCatalog.isLoading && !rewardsCatalog.data;
   const currentPage = rewardsCatalog.data?.page ?? page;
@@ -101,101 +101,14 @@ export default function RewardsPage() {
     <>
       <PageHeader
         title={t("rewardsTitle")}
-        subtitle={t("rewardsSubtitle")}
+        subtitle={t("shopSubtitle") || "Browse our catalog of products and get items securely."}
       />
 
-      {stats.data?.features.pointsEnabled !== false ? (
-        <div className="mb-4 text-sm text-muted-foreground">
-          {t("balance")}:{" "}
-          {stats.data ? (
-            <span className="font-medium text-foreground">{formatNumber(stats.data.user.points)} {t("menuPoints").toLowerCase()}</span>
-          ) : isStatsBootstrapping ? (
-            <Skeleton className="mx-1 inline-block h-5 w-24 align-middle" />
-          ) : (
-            <span className="font-medium text-foreground">Unavailable</span>
-          )}{" "}
-          | {t("level")}{" "}
-          {stats.data ? (
-            <span className="font-medium text-foreground">{stats.data.user.level}</span>
-          ) : isStatsBootstrapping ? (
-            <Skeleton className="ml-1 inline-block h-5 w-10 align-middle" />
-          ) : (
-            <span className="font-medium text-foreground">-</span>
-          )}
-        </div>
-      ) : null}
+
 
       {showSyncBanner ? <SyncBanner className="mb-4" message="Refreshing rewards..." /> : null}
 
-      {rewards.data && stats.data ? (
-        rewardTarget ? (
-          <Card className="mb-6 overflow-hidden rounded-[2rem] border-[rgba(255,122,24,0.18)] bg-[linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(255,247,241,0.96))] shadow-[0_24px_70px_-52px_rgba(255,122,24,0.38)] dark:bg-[linear-gradient(180deg,_rgba(18,18,18,0.96),_rgba(10,10,10,0.98))]">
-            <CardContent className="p-5 sm:p-6">
-              <div className="flex flex-wrap items-center gap-5">
-                <div className="mx-auto w-full max-w-[128px] shrink-0 sm:mx-0 sm:max-w-[176px]">
-                  <RewardThumbnail title={rewardTarget.reward.title} imageUrl={rewardTarget.reward.imageUrl} className="aspect-square w-full" />
-                </div>
 
-                <div className="min-w-0 flex-1 basis-[280px]">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge className="rounded-full bg-[hsl(var(--arcetis-ember))] text-black hover:bg-[hsl(var(--arcetis-ember))]">{t("nextAffordableProduct")}</Badge>
-                    <Badge variant="outline" className="border-[rgba(255,122,24,0.22)] bg-[rgba(255,122,24,0.06)]">{getRewardTargetStatusLabel(rewardTarget)}</Badge>
-                  </div>
-
-                  <p className="mt-4 text-2xl font-semibold tracking-tight" title={rewardTarget.reward.title}>{rewardTarget.reward.title}</p>
-                  <p className="mt-3 text-sm leading-6 text-muted-foreground">{getRewardTargetSummary(rewardTarget)}</p>
-
-                    <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                      <div className="rounded-[1rem] border border-border/60 bg-background/78 p-3">
-                        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{t("from")}</p>
-                        <p className="mt-1 font-semibold">{formatNumber(getRewardStartingPointsCost(rewardTarget.reward))} pts</p>
-                      </div>
-                      <div className="rounded-[1rem] border border-border/60 bg-background/78 p-3">
-                        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{t("balance")}</p>
-                      <p className="mt-1 font-semibold">{formatNumber(stats.data.user.points)} pts</p>
-                    </div>
-                      <div className="rounded-[1rem] border border-border/60 bg-background/78 p-3">
-                        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{t("plans")}</p>
-                        <p className="mt-1 font-semibold">{rewardTarget.reward.plans?.length ?? 1}</p>
-                      </div>
-                    </div>
-                </div>
-
-                <Button asChild className="w-full justify-between rounded-xl bg-[hsl(var(--arcetis-ember))] text-black hover:bg-[rgba(255,122,24,0.92)] sm:w-auto">
-                  <Link href={`/rewards/${rewardTarget.reward.id}`}>
-                    {t("viewTarget")}
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card className="mb-6 rounded-[2rem]">
-            <CardContent className="p-6 text-sm text-muted-foreground">{t("productsUnavailable")}</CardContent>
-          </Card>
-        )
-      ) : isRewardsBootstrapping || isStatsBootstrapping ? (
-        <Card className="mb-6 rounded-[2rem]">
-          <CardContent className="p-6">
-            <div className="flex flex-wrap items-center gap-5">
-              <Skeleton className="aspect-square w-full max-w-[176px] rounded-[1.25rem]" />
-              <div className="min-w-0 flex-1 space-y-3">
-                <Skeleton className="h-6 w-40" />
-                <Skeleton className="h-8 w-64" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card className="mb-6 rounded-[2rem]">
-          <CardContent className="p-6 text-sm text-muted-foreground">
-            Reward highlights are not available right now.
-          </CardContent>
-        </Card>
-      )}
 
       <Card className="mb-6 rounded-[1.8rem] border-border/70 bg-card/88 shadow-sm">
         <CardContent className="flex flex-col gap-3 p-5 md:flex-row md:items-center">
@@ -251,12 +164,7 @@ export default function RewardsPage() {
                     <CardDescription className="text-xs leading-5 sm:text-sm sm:leading-6">{reward.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="flex flex-1 flex-col space-y-3 text-sm">
-                    {stats.data?.features.pointsEnabled !== false ? (
-                      <p className="inline-flex items-center gap-2 text-muted-foreground">
-                        <Coins className="h-4 w-4" />
-                        <span className="text-foreground">{t("startingAtPoints", { points: formatNumber(startingCost) })}</span>
-                      </p>
-                    ) : null}
+
 
                     {typeof startingTndPrice === "number" ? (
                       <p className="inline-flex items-center gap-2 text-muted-foreground">
@@ -271,35 +179,9 @@ export default function RewardsPage() {
                       </p>
                     ) : null}
 
-                    <div className="mt-auto grid grid-cols-2 gap-2 pt-2">
-                      <Button variant="outline" asChild>
-                        <Link href={`/rewards/${reward.id}`}>{needsDetails ? "Choose plan" : "Details"}</Link>
-                      </Button>
-                      <Button
-                        disabled={needsDetails ? false : !canRedeem || redeem.isPending}
-                        onClick={async () => {
-                          if (needsDetails) {
-                            window.location.href = `/rewards/${reward.id}`;
-                            return;
-                          }
-
-                          setConfirmState({
-                            rewardId: reward.id,
-                            rewardTitle: reward.title,
-                            pointsCost: startingCost,
-                            planLabel: reward.plans?.[0]?.label ?? "Standard"
-                          });
-                        }}
-                      >
-                        {redeem.isPending && activeRewardId === reward.id ? (
-                          <span className="inline-flex items-center gap-2">
-                            <Spinner /> Working...
-                          </span>
-                        ) : needsDetails ? (
-                          "Open offer"
-                        ) : (
-                          "Get product"
-                        )}
+                    <div className="mt-auto grid grid-cols-1 gap-2 pt-2">
+                      <Button asChild>
+                        <Link href={`/shop/${reward.id}`}>{needsDetails ? "Choose plan" : "Details"}</Link>
                       </Button>
                     </div>
                   </CardContent>

@@ -201,7 +201,7 @@ function getLandingCopy(language: AppLanguage) {
 export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
   const { language, t } = useLanguage();
   const copy = getLandingCopy(language);
-  const rewardsRedirect = `/login?redirect=${encodeURIComponent("/rewards")}`;
+  const rewardsRedirect = `/login?redirect=${encodeURIComponent("/shop")}`;
   return (
     <main className="relative min-h-screen overflow-hidden px-3 py-4 sm:px-6 lg:px-8">
       <div className="arcetis-landing-grid pointer-events-none absolute inset-0 -z-20" />
@@ -236,7 +236,7 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
             headerHref="/register?redirect=%2Frewards"
             headerLabel={copy.createAccount}
             itemActionLabel={copy.signIn}
-            itemActionHref={(reward) => `/login?redirect=${encodeURIComponent(`/rewards/${reward.id}`)}`}
+            itemActionHref={(reward) => `/login?redirect=${encodeURIComponent(`/shop/${reward.id}`)}`}
           />
 
           <LatestProductsCarousel
