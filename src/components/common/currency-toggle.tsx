@@ -11,6 +11,8 @@ export function CurrencyToggle({ className, iconOnly = false }: { className?: st
     setCurrency(currency === "TND" ? "USD" : "TND");
   };
 
+  const label = currency === "TND" ? "DT" : "USD";
+
   if (iconOnly) {
     return (
       <button
@@ -20,10 +22,7 @@ export function CurrencyToggle({ className, iconOnly = false }: { className?: st
         className={cn("inline-flex items-center justify-center transition-colors hover:bg-muted/70", className)}
         title={currency === "TND" ? "Switch to USD" : "Switch to TND"}
       >
-        <div className="flex items-center gap-1.5 font-medium text-xs">
-          {currency === "TND" ? <Wallet className="h-4 w-4" /> : <DollarSign className="h-4 w-4" />}
-          {currency}
-        </div>
+        <span className="font-bold text-[11px] tracking-widest">{label}</span>
       </button>
     );
   }
@@ -32,10 +31,9 @@ export function CurrencyToggle({ className, iconOnly = false }: { className?: st
     <button
       type="button"
       onClick={toggle}
-      className={cn("inline-flex items-center gap-2 rounded-md border border-border/70 px-3 py-2 text-sm transition-colors hover:bg-muted/50", className)}
+      className={cn("inline-flex items-center justify-center rounded-md border border-border/70 px-4 py-2 transition-colors hover:bg-muted/50", className)}
     >
-      {currency === "TND" ? <Wallet className="h-4 w-4" /> : <DollarSign className="h-4 w-4" />}
-      {currency}
+      <span className="font-bold text-xs tracking-widest">{label}</span>
     </button>
   );
 }

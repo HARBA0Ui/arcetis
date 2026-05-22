@@ -263,14 +263,7 @@ export default function RewardsPage() {
                         <span className="text-foreground">{t("startingAtPoints", { points: formatNumber(startingCost) })}</span>
                       </p>
                     ) : null}
-                    <p className="inline-flex items-center gap-2 text-muted-foreground">
-                      <ShieldCheck className="h-4 w-4" />
-                      <span className="text-foreground">Required Level: {reward.minLevel}</span>
-                    </p>
-                    <p className="inline-flex items-center gap-2 text-muted-foreground">
-                      <Clock3 className="h-4 w-4" />
-                      <span className="text-foreground">Account age lock: {reward.minAccountAge} days</span>
-                    </p>
+
                     {typeof startingTndPrice === "number" ? (
                       <p className="inline-flex items-center gap-2 text-muted-foreground">
                         <CreditCard className="h-4 w-4" />

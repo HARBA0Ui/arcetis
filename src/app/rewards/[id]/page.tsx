@@ -124,19 +124,9 @@ export default function RewardDetailPage() {
     !!reward &&
     !!selectedPlan &&
     reward.stock > 0 &&
-    points >= selectedPlan.pointsCost &&
-    level >= reward.minLevel &&
-    accountAgeDays >= reward.minAccountAge &&
     !missingRequiredInfo;
   const summaryFacts = reward
     ? [
-        {
-          id: "level-required",
-          label: t("level"),
-          value: `${reward.minLevel}+`,
-          icon: Star,
-          iconClassName: "text-amber-300"
-        },
         ...(stats.data?.features.pointsEnabled !== false ? [{
           id: "points-remaining",
           label: t("remaining"),
@@ -188,8 +178,6 @@ export default function RewardDetailPage() {
                     </div>
 
                     <div className="mt-5 flex flex-wrap gap-2">
-                      <Badge variant="outline">{t("minimumLevel", { level: reward.minLevel })}</Badge>
-                      <Badge variant="outline">{t("accountAgeDays", { days: reward.minAccountAge })}</Badge>
                       {deliveryFields.length ? (
                         <Badge variant="outline">{t("infoFields", { count: deliveryFields.length })}</Badge>
                       ) : null}

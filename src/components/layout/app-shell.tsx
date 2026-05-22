@@ -34,7 +34,6 @@ import { useUserStats } from "@/hooks/usePlatform";
 const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/rewards", label: "Shop", icon: CircleDollarSign },
-  { href: "/tasks", label: "Tasks", icon: Sparkles },
   { href: "/giveaways", label: "Giveaways", icon: PartyPopper }
 ];
 

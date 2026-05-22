@@ -120,28 +120,9 @@ function getProductState(reward: Reward, user?: Pick<User, "points" | "level" | 
     };
   }
 
-  if (user.level < reward.minLevel) {
-    return {
-      label: `Level ${reward.minLevel}`,
-      detail: `Reach level ${reward.minLevel} to unlock this product.`,
-      badgeClassName: "border-white/12 bg-white/[0.06] text-white/78"
-    };
-  }
-
-  const accountAgeDays = getAccountAgeDays(user.createdAt);
-  if (accountAgeDays < reward.minAccountAge) {
-    const remainingDays = reward.minAccountAge - accountAgeDays;
-
-    return {
-      label: `${remainingDays} day${remainingDays === 1 ? "" : "s"} left`,
-      detail: `Your account needs ${remainingDays} more day${remainingDays === 1 ? "" : "s"} to unlock it.`,
-      badgeClassName: "border-white/12 bg-white/[0.06] text-white/78"
-    };
-  }
-
   return {
     label: "Ready now",
-    detail: "You currently meet the level and age requirements.",
+    detail: "Available to purchase.",
     badgeClassName: "border-emerald-400/20 bg-emerald-400/14 text-emerald-100"
   };
 }
@@ -465,13 +446,9 @@ export function LatestProductsCarousel({
               ? copy.unavailableDetail
               : productState.detail === "Open the rewards store to check your current eligibility."
                 ? copy.exploreDetail
-                : productState.detail === "You currently meet the level and age requirements." || productState.detail === "أنت تستوفي حاليًا شروط المستوى والعمر."
+                : productState.detail === "Available to purchase." || productState.detail === "متاح للشراء."
                   ? copy.readyDetail
-                  : productState.detail.startsWith("Reach level ")
-                    ? copy.reachLevel(reward.minLevel)
-                    : productState.detail.includes("more day")
-                        ? copy.daysDetail(Math.max(reward.minAccountAge - getAccountAgeDays(user?.createdAt), 0))
-                        : productState.detail;
+                  : productState.detail;
           const primaryHref =
             primaryLinkMode === "signin"
               ? `/login?redirect=${encodeURIComponent(`/rewards/${reward.id}`)}`
@@ -522,14 +499,10 @@ export function LatestProductsCarousel({
                 </div>
 
                 <div className={cn(isCompact ? "mt-4" : "mt-6 sm:mt-8")}>
-                  <div className={cn("grid grid-cols-1 sm:grid-cols-3", isCompact ? "gap-2" : "gap-3")}>
+                  <div className={cn("grid grid-cols-1 sm:grid-cols-2", isCompact ? "gap-2" : "gap-3")}>
                     <div className={cn("rounded-[1.15rem] border border-white/10 bg-white/[0.05]", isCompact ? "p-3" : "p-3 sm:p-4")}>
                       <p className="text-[11px] uppercase tracking-[0.24em] text-white/48">{copy.cost}</p>
                       <p className={cn("mt-2 font-semibold", isCompact ? "text-base leading-tight" : "text-base leading-tight sm:text-lg")}>{formatPrice(reward.tndPrice, reward.usdPrice)}</p>
-                    </div>
-                    <div className={cn("rounded-[1.15rem] border border-white/10 bg-white/[0.05]", isCompact ? "p-3" : "p-3 sm:p-4")}>
-                      <p className="text-[11px] uppercase tracking-[0.24em] text-white/48">{copy.level}</p>
-                      <p className={cn("mt-2 font-semibold", isCompact ? "text-base leading-tight" : "text-base leading-tight sm:text-lg")}>Level {reward.minLevel}+</p>
                     </div>
                     <div className={cn("rounded-[1.15rem] border border-white/10 bg-white/[0.05]", isCompact ? "p-3" : "p-3 sm:p-4")}>
                       <p className="text-[11px] uppercase tracking-[0.24em] text-white/48">{copy.plans}</p>
@@ -540,12 +513,6 @@ export function LatestProductsCarousel({
                   <div className={cn("flex flex-wrap items-center gap-2 text-white/68", isCompact ? "mt-4 text-sm leading-6" : "mt-4 text-[13px] leading-6 sm:mt-5 sm:text-sm")}>
                     <ShieldCheck className={cn("text-[hsl(var(--arcetis-ember))]", isCompact ? "h-3.5 w-3.5" : "h-4 w-4")} />
                     <span className={cn(isCompact ? "line-clamp-2 max-w-[28rem]" : "")}>{translatedDetail}</span>
-                    {reward.minAccountAge > 0 ? (
-                      <>
-                        <Clock3 className={cn("ml-2 text-white/44", isCompact ? "h-3.5 w-3.5" : "h-4 w-4")} />
-                        <span>{reward.minAccountAge} {copy.accountAge}</span>
-                      </>
-                    ) : null}
                   </div>
 
                   <div className={cn("flex flex-wrap gap-3", isCompact ? "mt-5" : "mt-6")}>
