@@ -60,7 +60,6 @@ export default function RewardsPage() {
     hasRewardData && (rewards.isFetching || stats.isFetching || rewardsCatalog.isFetching)
   );
   const activeRewardId = redeem.isPending ? redeem.variables?.rewardId : null;
-  const activeRewardId = redeem.isPending ? redeem.variables?.rewardId : null;
   const isStatsBootstrapping = stats.isLoading && !stats.data;
   const isRewardsBootstrapping = rewardsCatalog.isLoading && !rewardsCatalog.data;
   const currentPage = rewardsCatalog.data?.page ?? page;
@@ -101,7 +100,7 @@ export default function RewardsPage() {
     <>
       <PageHeader
         title={t("rewardsTitle")}
-        subtitle={t("shopSubtitle") || "Browse our catalog of products and get items securely."}
+        subtitle="Browse our catalog of products and get items securely."
       />
 
 
@@ -140,14 +139,14 @@ export default function RewardsPage() {
           {rewardsCatalog.data
             ? rewardsCatalog.data.items.map((reward) => {
               const canRedeem = canUserRedeemReward(reward, stats.data?.user);
-              const isTargetReward = rewardTarget?.reward.id === reward.id;
+
               const startingCost = getRewardStartingPointsCost(reward);
               const startingTndPrice = getRewardStartingTndPrice(reward);
               const startingUsdPrice = getRewardStartingUsdPrice(reward);
               const needsDetails = rewardHasSelectablePlans(reward) || getRewardDeliveryFields(reward).length > 0;
 
               return (
-                <Card key={reward.id} className={cn("flex h-full flex-col overflow-hidden rounded-[1.5rem] border-border/70 bg-card/95", isTargetReward && "border-[rgba(255,122,24,0.22)] shadow-[0_22px_70px_-46px_rgba(255,122,24,0.38)]")}>
+                <Card key={reward.id} className="flex h-full flex-col overflow-hidden rounded-[1.5rem] border-border/70 bg-card/95">
                   <div className="px-4 pt-4 sm:px-0 sm:pt-0">
                     <RewardThumbnail
                       title={reward.title}
@@ -157,7 +156,7 @@ export default function RewardsPage() {
                   </div>
                   <CardHeader>
                     <div className="flex flex-wrap items-center gap-2">
-                      {isTargetReward ? <Badge className="rounded-full bg-[hsl(var(--arcetis-ember))] text-black hover:bg-[hsl(var(--arcetis-ember))]">{t("nextAffordableProduct")}</Badge> : null}
+
                       {reward.plans?.length ? <Badge variant="outline">{reward.plans.length} {t("plans").toLowerCase()}</Badge> : null}
                     </div>
                     <CardTitle className="text-base sm:text-lg">{reward.title}</CardTitle>

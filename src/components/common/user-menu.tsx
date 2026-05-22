@@ -59,7 +59,7 @@ export function UserMenu({ user, className, onLogout }: UserMenuProps) {
         aria-label={user ? `Open account menu for ${username}` : "Open account menu"}
         title={
           user
-            ? `${Math.round(levelProgress)}% to level ${level + 1} | ${formatNumber(points)} pts | ${streak}d streak`
+            ? `Account menu for ${username}`
             : "Open account menu"
         }
       >
