@@ -103,7 +103,8 @@ const rewardPlanSchema = z.object({
   label: z.string().min(1).max(160),
   pointsCost: z.number().int().positive().max(100000),
   tndPrice: z.number().nonnegative().max(100000).optional(),
-  usdPrice: z.number().nonnegative().max(100000).optional()
+  usdPrice: z.number().nonnegative().max(100000).optional(),
+  paymentLink: z.string().max(1000).optional()
 });
 
 const rewardDeliveryFieldSchema = z.object({
