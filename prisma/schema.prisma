@@ -196,6 +196,8 @@ model QuestSubmission {
   @@index([reviewedById])
   @@index([status])
   @@index([createdAt])
+  @@index([userId, status])
+  @@index([questId, status])
 }
 
 model SponsorRequest {
@@ -295,6 +297,7 @@ model GiveawayEntry {
   @@index([reviewedById])
   @@index([status])
   @@index([createdAt])
+  @@index([giveawayId, status])
 }
 
 model Redemption {
@@ -325,6 +328,7 @@ model Redemption {
   @@index([requestCode])
   @@index([expiresAt])
   @@index([createdAt])
+  @@index([userId, status])
 }
 
 model Referral {

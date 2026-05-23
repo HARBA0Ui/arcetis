@@ -191,7 +191,7 @@ export default function RegisterPage() {
             </div>
 
             <GoogleAuthButton
-              callbackUrl={`/auth/google/sync?redirect=${encodeURIComponent(postAuthRedirectPath)}`}
+              callbackUrl={postAuthRedirectPath}
               label={copy.google}
             />
 

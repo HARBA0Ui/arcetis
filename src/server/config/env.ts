@@ -17,7 +17,9 @@ const envSchema = z.object({
   SMTP_FROM: z.string().optional(),
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
-  CLOUDINARY_API_SECRET: z.string().optional()
+  CLOUDINARY_API_SECRET: z.string().optional(),
+  UPSTASH_REDIS_REST_URL: z.string().url().optional(),
+  UPSTASH_REDIS_REST_TOKEN: z.string().optional()
 });
 
 type RuntimeEnv = {
@@ -38,6 +40,8 @@ type RuntimeEnv = {
   CLOUDINARY_CLOUD_NAME: string;
   CLOUDINARY_API_KEY: string;
   CLOUDINARY_API_SECRET: string;
+  UPSTASH_REDIS_REST_URL: string;
+  UPSTASH_REDIS_REST_TOKEN: string;
 };
 
 let cachedEnv: RuntimeEnv | null = null;
@@ -68,7 +72,9 @@ function resolveEnv(): RuntimeEnv {
     SMTP_FROM: process.env.SMTP_FROM,
     CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
     CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
-    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET
+    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+    UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+    UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN
   });
 
   if (!parsed.success) {
@@ -162,7 +168,9 @@ function resolveEnv(): RuntimeEnv {
     SMTP_FROM: parsed.data.SMTP_FROM ?? "",
     CLOUDINARY_CLOUD_NAME: parsed.data.CLOUDINARY_CLOUD_NAME ?? "",
     CLOUDINARY_API_KEY: parsed.data.CLOUDINARY_API_KEY ?? "",
-    CLOUDINARY_API_SECRET: parsed.data.CLOUDINARY_API_SECRET ?? ""
+    CLOUDINARY_API_SECRET: parsed.data.CLOUDINARY_API_SECRET ?? "",
+    UPSTASH_REDIS_REST_URL: parsed.data.UPSTASH_REDIS_REST_URL ?? "",
+    UPSTASH_REDIS_REST_TOKEN: parsed.data.UPSTASH_REDIS_REST_TOKEN ?? ""
   };
 
   return cachedEnv;

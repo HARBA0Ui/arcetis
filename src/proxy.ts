@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { isFrontofficeProtectedRoute, matchesRoutePrefix } from "@/lib/frontoffice-routes";
+import { rateLimit } from "@/server/ratelimit";
 
 const frontofficeAuthRoutes = new Set(["/login", "/register", "/verify-email", "/forgot-password", "/reset-password"]);
 const backofficeLoginRoute = "/backoffice/login";
@@ -20,8 +21,29 @@ function getSafeRedirectTarget(request: NextRequest, fallback: string, expectedP
   return redirect;
 }
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  
+  if (pathname.startsWith("/api/")) {
+    const ip = request.headers.get("x-forwarded-for") ?? request.headers.get("x-real-ip") ?? "127.0.0.1";
+    
+    try {
+      const { success, limit, reset, remaining } = await rateLimit(`api_global_${ip}`, 100, "1 m");
+      
+      if (!success) {
+        return NextResponse.json({ message: "Too many requests" }, { status: 429 });
+      }
+
+      const response = NextResponse.next();
+      response.headers.set("X-RateLimit-Limit", limit.toString());
+      response.headers.set("X-RateLimit-Remaining", remaining.toString());
+      response.headers.set("X-RateLimit-Reset", reset.toString());
+      return response;
+    } catch (e) {
+      // ignore
+    }
+  }
+
   const hasFrontofficeToken = !!request.cookies.get("arcetis_token")?.value;
   const hasBackofficeToken = !!request.cookies.get("arcetis_backoffice_token")?.value;
 
@@ -73,6 +95,7 @@ export const config = {
     "/requests/:path*",
     "/referrals/:path*",
     "/profile/:path*",
-    "/backoffice/:path*"
+    "/backoffice/:path*",
+    "/api/:path*"
   ]
 };

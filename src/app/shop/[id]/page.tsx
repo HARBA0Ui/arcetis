@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/common/page-header";
 import { useLanguage } from "@/components/i18n/language-provider";
 import { RewardThumbnail } from "@/components/rewards/reward-thumbnail";
 import { RedemptionConfirmModal } from "@/components/rewards/redemption-confirm-modal";
+import { KashyPaymentModal } from "@/components/rewards/kashy-payment-modal";
 import { Spinner } from "@/components/common/spinner";
 import { SyncBanner } from "@/components/common/sync-banner";
 import { useToast } from "@/components/common/toast-center";
@@ -96,10 +97,11 @@ export default function RewardDetailPage() {
   const [selectedPlanId, setSelectedPlanId] = useState("");
   const [deliveryInfo, setDeliveryInfo] = useState<Record<string, string>>({});
   const [isTndModalOpen, setTndModalOpen] = useState(false);
+  const [isKashyModalOpen, setKashyModalOpen] = useState(false);
   const [isRedeemConfirmOpen, setRedeemConfirmOpen] = useState(false);
 
   useEffect(() => {
-    if (!isTndModalOpen) {
+    if (!isTndModalOpen && !isKashyModalOpen) {
       return;
     }
 
@@ -109,7 +111,7 @@ export default function RewardDetailPage() {
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [isTndModalOpen]);
+  }, [isTndModalOpen, isKashyModalOpen]);
 
   const selectedPlan = reward ? getSelectedRewardPlan(reward, selectedPlanId) : null;
   const deliveryFields = reward ? getRewardDeliveryFields(reward) : [];
@@ -359,13 +361,19 @@ export default function RewardDetailPage() {
                     type="button"
                     variant="outline"
                     className="h-12 w-full"
-                    disabled={typeof selectedPlan?.tndPrice !== "number" && typeof selectedPlan?.usdPrice !== "number"}
-                    onClick={() => setTndModalOpen(true)}
+                    disabled={(!selectedPlan?.paymentLink && typeof selectedPlan?.tndPrice !== "number" && typeof selectedPlan?.usdPrice !== "number") || !canRedeem}
+                    onClick={() => {
+                      if (selectedPlan?.paymentLink) {
+                        setKashyModalOpen(true);
+                      } else {
+                        setTndModalOpen(true);
+                      }
+                    }}
                   >
                     <span className="inline-flex items-center gap-2">
                       <CreditCard className="h-4 w-4" />
-                      {typeof selectedPlan?.tndPrice === "number" || typeof selectedPlan?.usdPrice === "number"
-                        ? "Buy via Instagram"
+                      {selectedPlan?.paymentLink || typeof selectedPlan?.tndPrice === "number" || typeof selectedPlan?.usdPrice === "number"
+                        ? "Buy"
                         : t("unavailableDt")}
                     </span>
                   </Button>
@@ -440,6 +448,35 @@ export default function RewardDetailPage() {
               setRedeemConfirmOpen(false);
               const nextPath = `/requests/${created.id}`;
               toast.success(t("requestCreated"), t("requestPageReady"));
+              startNavigation(nextPath);
+              router.push(nextPath);
+            } catch (error) {
+              toast.error(t("requestFailed"), getApiError(error));
+            }
+          }}
+        />
+      ) : null}
+
+      {reward && selectedPlan && selectedPlan.paymentLink ? (
+        <KashyPaymentModal
+          open={isKashyModalOpen}
+          rewardTitle={reward.title}
+          planLabel={selectedPlan.label}
+          paymentLink={selectedPlan.paymentLink}
+          isPending={redeem.isPending}
+          onClose={() => setKashyModalOpen(false)}
+          onConfirm={async () => {
+            try {
+              const created = await redeem.mutateAsync({
+                rewardId: reward.id,
+                planId: selectedPlan.id,
+                requestedInfo: deliveryInfo,
+                paymentMethod: "kashy"
+              });
+
+              setKashyModalOpen(false);
+              const nextPath = `/requests/${created.id}`;
+              toast.success(t("requestCreated"), "Your code has been generated. Please send us your screenshot!");
               startNavigation(nextPath);
               router.push(nextPath);
             } catch (error) {

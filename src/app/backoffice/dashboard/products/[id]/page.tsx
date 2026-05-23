@@ -41,7 +41,7 @@ function slugify(value: string) {
 }
 
 function createPlan(seed = 1): EditablePlan {
-  return { id: `plan_${seed}`, label: "", pointsCost: 1000, tndPrice: undefined, usdPrice: undefined };
+  return { id: `plan_${seed}`, label: "", pointsCost: 1000, tndPrice: undefined, usdPrice: undefined, paymentLink: "" };
 }
 
 function createField(seed = 1): EditableField {
@@ -56,7 +56,8 @@ function cleanPlans(plans: EditablePlan[]) {
       label: plan.label.trim(),
       pointsCost: Number(plan.pointsCost),
       ...(typeof plan.tndPrice === "number" && Number.isFinite(plan.tndPrice) ? { tndPrice: Number(plan.tndPrice) } : {}),
-      ...(typeof plan.usdPrice === "number" && Number.isFinite(plan.usdPrice) ? { usdPrice: Number(plan.usdPrice) } : {})
+      ...(typeof plan.usdPrice === "number" && Number.isFinite(plan.usdPrice) ? { usdPrice: Number(plan.usdPrice) } : {}),
+      ...(plan.paymentLink?.trim() ? { paymentLink: plan.paymentLink.trim() } : {})
     }));
 }
 

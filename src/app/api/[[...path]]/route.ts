@@ -144,6 +144,7 @@ import {
   webhookSponsoredVerificationSchema,
   twoFactorCodeSchema
 } from "@/server/utils/validation";
+import { z } from "zod";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -834,7 +835,7 @@ async function handlePost(request: NextRequest, path: string[]) {
   if (path[0] === "rewards" && path[1] === "redeem" && path.length === 2) {
     const auth = requireAuth(request);
     const payload = await parseJsonBody(request, redeemRewardSchema);
-    const redemption = await redeemReward(auth.userId, payload.rewardId, payload.planId, payload.requestedInfo);
+    const redemption = await redeemReward(auth.userId, payload.rewardId, payload.planId, payload.requestedInfo, payload.paymentMethod);
     return NextResponse.json({ redemption }, { status: 201 });
   }
 

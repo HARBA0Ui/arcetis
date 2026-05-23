@@ -172,7 +172,7 @@ export default function LoginPage() {
             </div>
 
             <GoogleAuthButton
-              callbackUrl={`/auth/google/sync?redirect=${encodeURIComponent(postAuthRedirectPath)}`}
+              callbackUrl={postAuthRedirectPath}
               label={copy.google}
             />
 

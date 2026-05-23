@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+
 import { Button } from "@/components/ui/button";
 
 function GoogleMark() {
@@ -44,9 +44,7 @@ export function GoogleAuthButton({
       disabled={pending}
       onClick={() => {
         setPending(true);
-        void signIn("google", {
-          callbackUrl
-        }).finally(() => setPending(false));
+        window.location.href = `/api/auth/google?callbackUrl=${encodeURIComponent(callbackUrl)}`;
       }}
     >
       <GoogleMark />

@@ -100,6 +100,7 @@ export type RewardPlan = {
   pointsCost: number;
   tndPrice?: number | null;
   usdPrice?: number | null;
+  paymentLink?: string | null;
 };
 
 export type RewardDeliveryField = {

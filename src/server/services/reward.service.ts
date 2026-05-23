@@ -572,7 +572,8 @@ export async function redeemReward(
   userId: string,
   rewardId: string,
   planId?: string,
-  requestedInfo?: Record<string, string>
+  requestedInfo?: Record<string, string>,
+  paymentMethod?: "points" | "kashy"
 ) {
   await ensureExpiredRedemptionsAreFresh();
 
@@ -597,14 +598,22 @@ export async function redeemReward(
     throw new ApiError(400, "Selected plan is invalid");
   }
 
-  const pointsCost = selectedPlan.pointsCost ?? getStartingPointsCost(reward);
+  const isKashy = paymentMethod === "kashy";
+  const pointsCost = isKashy ? 0 : (selectedPlan.pointsCost ?? getStartingPointsCost(reward));
 
-  if (user.points < pointsCost) {
+  if (!isKashy && user.points < pointsCost) {
     throw new ApiError(400, "Not enough points");
   }
 
   const deliveryFields = getDeliveryFields(reward);
-  const requestedInfoPayload = buildRequestedInfoPayload(deliveryFields, requestedInfo);
+  
+  // Inject the payment method into requestedInfo so admins know it was paid via Kashy
+  const injectedInfo = {
+    ...requestedInfo,
+    ...(isKashy ? { _paymentMethod: "KASHY_LINK" } : {})
+  };
+  
+  const requestedInfoPayload = buildRequestedInfoPayload(deliveryFields, injectedInfo);
   const requestCode = await generateUniqueRequestCode();
   const expiresAt = new Date(Date.now() + config.redemptionRequestExpiryHours * 60 * 60 * 1000);
 
@@ -625,20 +634,24 @@ export async function redeemReward(
       include: { reward: true }
     });
 
-    await tx.pointsTransaction.create({
-      data: {
-        userId,
-        amount: -pointsCost,
-        source: "REDEMPTION"
-      }
-    });
+    if (pointsCost > 0) {
+      await tx.pointsTransaction.create({
+        data: {
+          userId,
+          amount: -pointsCost,
+          source: "REDEMPTION"
+        }
+      });
+    }
 
-    await tx.user.update({
-      where: { id: userId },
-      data: {
-        points: { decrement: pointsCost }
-      }
-    });
+    if (pointsCost > 0) {
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          points: { decrement: pointsCost }
+        }
+      });
+    }
 
     await tx.reward.update({
       where: { id: rewardId },

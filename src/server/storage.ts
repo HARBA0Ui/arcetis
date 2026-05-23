@@ -3,7 +3,7 @@ import { v2 as cloudinary } from "cloudinary";
 import { env } from "@/server/config/env";
 import { ApiError } from "@/server/utils/http";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_FILE_SIZE = 2 * 1024 * 1024;
 const CLOUDINARY_FOLDER_PREFIX = "arcetis";
 let cloudinaryConfigured = false;
 
@@ -230,7 +230,7 @@ export async function storeImage(file: File, folder: string) {
   }
 
   if (file.size > MAX_FILE_SIZE) {
-    throw new ApiError(400, "Image must be 5MB or smaller");
+    throw new ApiError(400, "Image must be 2MB or smaller");
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());

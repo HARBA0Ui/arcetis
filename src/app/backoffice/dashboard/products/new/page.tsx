@@ -36,7 +36,8 @@ function createPlan(seed = 1): EditablePlan {
     label: "",
     pointsCost: 1000,
     tndPrice: undefined,
-    usdPrice: undefined
+    usdPrice: undefined,
+    paymentLink: ""
   };
 }
 
@@ -59,7 +60,8 @@ function cleanPlans(plans: EditablePlan[]) {
       label: plan.label.trim(),
       pointsCost: Number(plan.pointsCost),
       ...(typeof plan.tndPrice === "number" && Number.isFinite(plan.tndPrice) ? { tndPrice: Number(plan.tndPrice) } : {}),
-      ...(typeof plan.usdPrice === "number" && Number.isFinite(plan.usdPrice) ? { usdPrice: Number(plan.usdPrice) } : {})
+      ...(typeof plan.usdPrice === "number" && Number.isFinite(plan.usdPrice) ? { usdPrice: Number(plan.usdPrice) } : {}),
+      ...(plan.paymentLink?.trim() ? { paymentLink: plan.paymentLink.trim() } : {})
     }));
 }
 
