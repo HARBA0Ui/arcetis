@@ -164,15 +164,15 @@ export default function RewardsPage() {
                   </CardHeader>
                   <CardContent className="flex flex-1 flex-col space-y-3 text-sm">
                   </CardContent>
-                  <div className="mt-auto p-6 pt-0 flex items-center justify-between gap-3">
-                    <div className="font-semibold text-foreground whitespace-nowrap">
+                  <div className="mt-auto flex flex-col gap-3 p-6 pt-0">
+                    <div className="font-semibold text-foreground">
                       {typeof startingTndPrice === "number"
                         ? `${formatNumber(startingTndPrice, { maximumFractionDigits: 2 })} TND`
                         : typeof startingUsdPrice === "number"
                           ? `$${formatNumber(startingUsdPrice, { maximumFractionDigits: 2 })}`
                           : ""}
                     </div>
-                    <Button asChild>
+                    <Button className="w-full" asChild>
                       <Link href={`/shop/${reward.id}`}>Buy</Link>
                     </Button>
                   </div>
