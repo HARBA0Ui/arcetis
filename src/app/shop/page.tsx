@@ -163,24 +163,16 @@ export default function RewardsPage() {
                     <CardDescription className="text-xs leading-5 sm:text-sm sm:leading-6">{reward.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="flex flex-1 flex-col space-y-3 text-sm">
-
-
-                    {typeof startingTndPrice === "number" ? (
-                      <p className="inline-flex items-center gap-2 text-muted-foreground">
-                        <CreditCard className="h-4 w-4" />
-                        <span className="text-foreground">From {formatNumber(startingTndPrice, { maximumFractionDigits: 2 })} TND</span>
-                      </p>
-                    ) : null}
-                    {typeof startingUsdPrice === "number" ? (
-                      <p className="inline-flex items-center gap-2 text-muted-foreground">
-                        <CreditCard className="h-4 w-4 text-[hsl(var(--arcetis-ember))]" />
-                        <span className="text-foreground">From ${formatNumber(startingUsdPrice, { maximumFractionDigits: 2 })}</span>
-                      </p>
-                    ) : null}
-
                   </CardContent>
-                  <div className="mt-auto p-6 pt-0">
-                    <Button className="w-full" asChild>
+                  <div className="mt-auto p-6 pt-0 flex items-center justify-between gap-3">
+                    <div className="font-semibold text-foreground whitespace-nowrap">
+                      {typeof startingTndPrice === "number"
+                        ? `${formatNumber(startingTndPrice, { maximumFractionDigits: 2 })} TND`
+                        : typeof startingUsdPrice === "number"
+                          ? `$${formatNumber(startingUsdPrice, { maximumFractionDigits: 2 })}`
+                          : ""}
+                    </div>
+                    <Button asChild>
                       <Link href={`/shop/${reward.id}`}>Buy</Link>
                     </Button>
                   </div>
