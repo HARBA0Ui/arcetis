@@ -235,10 +235,6 @@ export default function BackofficeProductDetailsPage() {
 
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="space-y-2">
-                  <Label htmlFor="edit-product-points">Fallback points cost</Label>
-                  <Input id="edit-product-points" type="number" min={1} value={form.pointsCost} onChange={(event) => setForm((prev) => ({ ...prev, pointsCost: Number(event.target.value) }))} />
-                </div>
-                <div className="space-y-2">
                   <Label htmlFor="edit-product-tnd">Fallback TND price</Label>
                   <Input id="edit-product-tnd" type="number" min={0} step="0.01" value={form.tndPrice} onChange={(event) => setForm((prev) => ({ ...prev, tndPrice: Number(event.target.value) }))} />
                 </div>
@@ -246,9 +242,6 @@ export default function BackofficeProductDetailsPage() {
                   <Label htmlFor="edit-product-usd">Fallback USD price</Label>
                   <Input id="edit-product-usd" type="number" min={0} step="0.01" value={form.usdPrice} onChange={(event) => setForm((prev) => ({ ...prev, usdPrice: Number(event.target.value) }))} />
                 </div>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-3">
                 <div className="space-y-2">
                   <Label htmlFor="edit-product-stock">Stock</Label>
                   <Input id="edit-product-stock" type="number" min={0} value={form.stock} onChange={(event) => setForm((prev) => ({ ...prev, stock: Number(event.target.value) }))} />
@@ -267,11 +260,11 @@ export default function BackofficeProductDetailsPage() {
                 </div>
                 <div className="space-y-3">
                   {plans.map((plan, index) => (
-                    <div key={`${plan.id}-${index}`} className="grid gap-3 rounded-xl border border-border/70 bg-background/60 p-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_auto]">
+                    <div key={`${plan.id}-${index}`} className="grid gap-3 rounded-xl border border-border/70 bg-background/60 p-3 md:grid-cols-[1.5fr_1fr_1fr_2fr_auto]">
                       <Input placeholder="Plan label" value={plan.label} onChange={(event) => setPlans((prev) => prev.map((item, itemIndex) => itemIndex === index ? { ...item, label: event.target.value } : item))} />
-                      <Input type="number" min={1} placeholder="Points" value={plan.pointsCost} onChange={(event) => setPlans((prev) => prev.map((item, itemIndex) => itemIndex === index ? { ...item, pointsCost: Number(event.target.value) } : item))} />
                       <Input type="number" min={0} step="0.01" placeholder="TND" value={plan.tndPrice ?? ""} onChange={(event) => setPlans((prev) => prev.map((item, itemIndex) => itemIndex === index ? { ...item, tndPrice: event.target.value ? Number(event.target.value) : undefined } : item))} />
                       <Input type="number" min={0} step="0.01" placeholder="USD" value={plan.usdPrice ?? ""} onChange={(event) => setPlans((prev) => prev.map((item, itemIndex) => itemIndex === index ? { ...item, usdPrice: event.target.value ? Number(event.target.value) : undefined } : item))} />
+                      <Input type="url" placeholder="Kashy Link (https://...)" value={plan.paymentLink ?? ""} onChange={(event) => setPlans((prev) => prev.map((item, itemIndex) => itemIndex === index ? { ...item, paymentLink: event.target.value } : item))} />
                       <Button type="button" variant="outline" className="h-10 w-10 p-0" onClick={() => setPlans((prev) => prev.filter((_, itemIndex) => itemIndex !== index))}><Trash2 className="h-4 w-4" /></Button>
                     </div>
                   ))}

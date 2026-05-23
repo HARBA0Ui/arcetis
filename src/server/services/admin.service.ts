@@ -412,10 +412,14 @@ export async function deleteReward(rewardId: string) {
   });
 
   if (pendingCount > 0) {
-    throw new ApiError(400, "Cannot delete product with pending redemptions");
+    throw new ApiError(400, "Cannot delete product with pending redemptions. Please review them first.");
   }
 
-  await prisma.reward.delete({ where: { id: rewardId } });
+  await prisma.$transaction(async (tx) => {
+    await tx.redemption.deleteMany({ where: { rewardId } });
+    await tx.reward.delete({ where: { id: rewardId } });
+  });
+  
   await deleteManagedImage(existing.imageUrl);
 }
 

@@ -199,16 +199,6 @@ export default function BackofficeCreateProductPage() {
 
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="create-product-cost">Fallback points cost</Label>
-                <Input
-                  id="create-product-cost"
-                  type="number"
-                  min={1}
-                  value={form.pointsCost}
-                  onChange={(event) => setForm((prev) => ({ ...prev, pointsCost: Number(event.target.value) }))}
-                />
-              </div>
-              <div className="space-y-2">
                 <Label htmlFor="create-product-tnd">Fallback TND price</Label>
                 <Input
                   id="create-product-tnd"
@@ -230,9 +220,6 @@ export default function BackofficeCreateProductPage() {
                   onChange={(event) => setForm((prev) => ({ ...prev, usdPrice: Number(event.target.value) }))}
                 />
               </div>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-2">
                 <Label htmlFor="create-product-stock">Stock</Label>
                 <Input
@@ -267,7 +254,7 @@ export default function BackofficeCreateProductPage() {
                 {plans.map((plan, index) => (
                   <div
                     key={`${plan.id}-${index}`}
-                    className="grid gap-3 rounded-xl border border-border/70 bg-background/60 p-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_auto]"
+                    className="grid gap-3 rounded-xl border border-border/70 bg-background/60 p-3 md:grid-cols-[1.5fr_1fr_1fr_2fr_auto]"
                   >
                     <Input
                       placeholder="Plan label"
@@ -280,19 +267,7 @@ export default function BackofficeCreateProductPage() {
                         )
                       }
                     />
-                    <Input
-                      type="number"
-                      min={1}
-                      placeholder="Points"
-                      value={plan.pointsCost}
-                      onChange={(event) =>
-                        setPlans((prev) =>
-                          prev.map((item, itemIndex) =>
-                            itemIndex === index ? { ...item, pointsCost: Number(event.target.value) } : item
-                          )
-                        )
-                      }
-                    />
+
                     <Input
                       type="number"
                       min={0}
@@ -321,6 +296,18 @@ export default function BackofficeCreateProductPage() {
                             itemIndex === index
                               ? { ...item, usdPrice: event.target.value ? Number(event.target.value) : undefined }
                               : item
+                          )
+                        )
+                      }
+                    />
+                    <Input
+                      type="url"
+                      placeholder="Kashy Link (https://...)"
+                      value={plan.paymentLink ?? ""}
+                      onChange={(event) =>
+                        setPlans((prev) =>
+                          prev.map((item, itemIndex) =>
+                            itemIndex === index ? { ...item, paymentLink: event.target.value } : item
                           )
                         )
                       }
