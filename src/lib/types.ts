@@ -250,6 +250,7 @@ export type PlatformConfig = {
   tasksEnabled: boolean;
   pointsEnabled: boolean;
   spinEnabled: boolean;
+  globalPaymentInstructions?: string;
   spinItems?: SpinItem[];
 };
 

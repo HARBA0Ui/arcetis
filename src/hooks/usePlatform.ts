@@ -157,6 +157,11 @@ async function fetchReferralStats() {
   return response.data;
 }
 
+async function fetchPublicConfig() {
+  const response = await api.get<{ globalPaymentInstructions: string | null }>("/config/public");
+  return response.data;
+}
+
 async function fetchNotifications() {
   const response = await api.get<NotificationsPayload>("/notifications");
   return response.data;
@@ -470,6 +475,14 @@ export function usePlaySpin() {
       queryClient.invalidateQueries({ queryKey: userStatsQueryKey });
       queryClient.invalidateQueries({ queryKey: ["me"] });
     }
+  });
+}
+
+export function usePublicConfig() {
+  return useQuery({
+    queryKey: ["public-config"],
+    queryFn: fetchPublicConfig,
+    staleTime: FIVE_MINUTES
   });
 }
 

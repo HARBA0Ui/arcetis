@@ -22,7 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSmoothBusy } from "@/hooks/use-smooth-busy";
 import { useNavigationProgress } from "@/components/navigation/navigation-provider";
-import { useRedeemReward, useRewardById, useUserStats } from "@/hooks/usePlatform";
+import { usePublicConfig, useRedeemReward, useRewardById, useUserStats } from "@/hooks/usePlatform";
 import { getApiError } from "@/lib/api";
 import { formatNumber } from "@/lib/format";
 import { getRewardDeliveryFields, getRewardPlans, getSelectedRewardPlan } from "@/lib/reward-options";
@@ -52,6 +52,7 @@ export default function RewardDetailPage() {
 
   const rewardQuery = useRewardById(rewardId);
   const stats = useUserStats();
+  const publicConfig = usePublicConfig();
   const redeem = useRedeemReward();
   const toast = useToast();
   const { language, t } = useLanguage();
@@ -166,7 +167,15 @@ export default function RewardDetailPage() {
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <h2 className="text-3xl font-semibold tracking-tight">{reward.title}</h2>
-                        <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">{reward.description}</p>
+                        <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground whitespace-pre-wrap">{reward.description}</p>
+                        
+                        {publicConfig.data?.globalPaymentInstructions ? (
+                          <div className="mt-5 pt-5 border-t border-border/70 max-w-3xl">
+                            <p className="text-sm leading-7 text-muted-foreground whitespace-pre-wrap">
+                              {publicConfig.data.globalPaymentInstructions}
+                            </p>
+                          </div>
+                        ) : null}
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {reward.stock <= 0 || reward.isOutOfStock ? <Badge variant="outline">{t("outOfStock")}</Badge> : null}

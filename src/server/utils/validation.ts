@@ -248,6 +248,7 @@ export const updatePlatformConfigSchema = z.object({
   tasksEnabled: z.boolean().optional(),
   pointsEnabled: z.boolean().optional(),
   spinEnabled: z.boolean().optional(),
+  globalPaymentInstructions: z.string().optional(),
   spinItems: z
     .array(
       z.object({

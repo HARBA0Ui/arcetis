@@ -83,6 +83,7 @@ import {
   sanitizeUser,
   updateUserSettings
 } from "@/server/services/user.service";
+import { getPlatformConfig } from "@/server/services/platformConfig.service";
 import { env } from "@/server/config/env";
 import {
   assertTrustedOrigin,
@@ -303,6 +304,13 @@ async function handleGet(request: NextRequest, path: string[]) {
   if (path[0] === "rewards" && path.length === 2) {
     const reward = await getRewardById(path[1]);
     return NextResponse.json({ reward });
+  }
+
+  if (path[0] === "config" && path[1] === "public" && path.length === 2) {
+    const config = await getPlatformConfig();
+    return NextResponse.json({
+      globalPaymentInstructions: config.globalPaymentInstructions
+    });
   }
 
   if (path[0] === "giveaways" && path.length === 2) {

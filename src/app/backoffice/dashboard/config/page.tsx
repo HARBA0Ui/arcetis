@@ -35,7 +35,8 @@ export default function BackofficeConfigPage() {
     spinMinLevel: 2,
     tasksEnabled: true,
     pointsEnabled: true,
-    spinEnabled: true
+    spinEnabled: true,
+    globalPaymentInstructions: ""
   });
   const [spinItemsJson, setSpinItemsJson] = useState("[]");
 
@@ -58,7 +59,8 @@ export default function BackofficeConfigPage() {
       spinMinLevel: config.data.spinMinLevel,
       tasksEnabled: config.data.tasksEnabled,
       pointsEnabled: config.data.pointsEnabled,
-      spinEnabled: config.data.spinEnabled
+      spinEnabled: config.data.spinEnabled,
+      globalPaymentInstructions: config.data.globalPaymentInstructions ?? ""
     });
     setSpinItemsJson(JSON.stringify(config.data.spinItems ?? [], null, 2));
   }, [config.data]);
@@ -154,6 +156,16 @@ export default function BackofficeConfigPage() {
                 className="font-mono text-xs"
                 value={spinItemsJson}
                 onChange={(event) => setSpinItemsJson(event.target.value)}
+              />
+            </div>
+
+            <div className="md:col-span-2 mt-4 pt-4 border-t border-border/70">
+              <Label>Global Payment Instructions</Label>
+              <Textarea
+                rows={6}
+                value={form.globalPaymentInstructions}
+                onChange={(e) => setForm((prev) => ({ ...prev, globalPaymentInstructions: e.target.value }))}
+                placeholder="Enter the payment instructions to show under product descriptions..."
               />
             </div>
 
