@@ -181,7 +181,8 @@ export const createRewardSchema = z.object({
   deliveryFields: z.array(rewardDeliveryFieldSchema).max(20).optional(),
   minLevel: z.number().int().min(1).max(100),
   minAccountAge: z.number().int().min(0).max(3650).optional(),
-  stock: z.number().int().min(0).max(100000)
+  stock: z.number().int().min(0).max(100000),
+  isOutOfStock: z.boolean().optional()
 });
 
 export const updateRewardSchema = z.object({
@@ -201,7 +202,8 @@ export const updateRewardSchema = z.object({
   deliveryFields: z.array(rewardDeliveryFieldSchema).max(20).optional(),
   minLevel: z.number().int().min(1).max(100).optional(),
   minAccountAge: z.number().int().min(0).max(3650).optional(),
-  stock: z.number().int().min(0).max(100000).optional()
+  stock: z.number().int().min(0).max(100000).optional(),
+  isOutOfStock: z.boolean().optional()
 });
 
 export const updateQuestSchema = z.object({

@@ -94,6 +94,7 @@ export default function BackofficeProductDetailsPage() {
     minLevel: 1,
     minAccountAge: 0,
     stock: 0,
+    isOutOfStock: false,
     imageUrl: ""
   });
   const [plans, setPlans] = useState<EditablePlan[]>([]);
@@ -118,6 +119,7 @@ export default function BackofficeProductDetailsPage() {
       minLevel: reward.data.minLevel,
       minAccountAge: reward.data.minAccountAge,
       stock: reward.data.stock,
+      isOutOfStock: reward.data.isOutOfStock,
       imageUrl: reward.data.imageUrl ?? ""
     });
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -162,6 +164,7 @@ export default function BackofficeProductDetailsPage() {
         pointsCost: effectivePointsCost,
         tndPrice: tndValues.length ? Math.min(...tndValues) : form.tndPrice || undefined,
         usdPrice: usdValues.length ? Math.min(...usdValues) : form.usdPrice || undefined,
+        isOutOfStock: form.isOutOfStock,
         plans: cleanedPlans.length ? cleanedPlans : undefined,
         deliveryFields: cleanedFields
       });
@@ -245,6 +248,18 @@ export default function BackofficeProductDetailsPage() {
                 <div className="space-y-2">
                   <Label htmlFor="edit-product-stock">Stock</Label>
                   <Input id="edit-product-stock" type="number" min={0} value={form.stock} onChange={(event) => setForm((prev) => ({ ...prev, stock: Number(event.target.value) }))} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-product-outofstock" className="flex items-center gap-2 h-full pt-4">
+                    <input
+                      id="edit-product-outofstock"
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                      checked={form.isOutOfStock}
+                      onChange={(event) => setForm((prev) => ({ ...prev, isOutOfStock: event.target.checked }))}
+                    />
+                    <span>Force Out of Stock</span>
+                  </Label>
                 </div>
               </div>
 

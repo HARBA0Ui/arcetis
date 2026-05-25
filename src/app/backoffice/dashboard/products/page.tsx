@@ -112,7 +112,11 @@ export default function BackofficeProductsPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={reward.stock > 0 ? "secondary" : "outline"}>{reward.stock}</Badge>
+                      {reward.isOutOfStock ? (
+                        <Badge variant="outline" className="uppercase text-[0.65rem] tracking-wider border-red-500/20 text-red-500 bg-red-500/10">Forced OOS ({reward.stock})</Badge>
+                      ) : (
+                        <Badge variant={reward.stock > 0 ? "secondary" : "outline"}>{reward.stock}</Badge>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Button asChild size="sm" variant="outline">

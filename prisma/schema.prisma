@@ -247,6 +247,7 @@ model Reward {
   minLevel      Int
   minAccountAge Int          @default(0)
   stock         Int
+  isOutOfStock  Boolean      @default(false)
   createdAt     DateTime     @default(now())
   redemptions   Redemption[]
 }

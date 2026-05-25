@@ -104,7 +104,7 @@ function getAccountAgeDays(createdAt?: string) {
 }
 
 function getProductState(reward: Reward, user?: Pick<User, "points" | "level" | "createdAt"> | null) {
-  if (reward.stock <= 0) {
+  if (reward.stock <= 0 || reward.isOutOfStock) {
     return {
       label: "Unavailable",
       detail: "This product is currently unavailable.",
@@ -154,9 +154,7 @@ export function LatestProductsCarousel({
 }) {
   const rewardSlides = useMemo(() => {
     const rewardList = rewards ?? [];
-    const source = rewardList.some((reward) => reward.stock > 0)
-      ? rewardList.filter((reward) => reward.stock > 0)
-      : rewardList;
+    const source = rewardList;
 
     return [...source]
       .sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime())

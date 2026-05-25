@@ -488,7 +488,7 @@ export async function listRewards() {
   await ensureExpiredRedemptionsAreFresh();
 
   return prisma.reward.findMany({
-    where: { stock: { gt: 0 } },
+    where: {},
     orderBy: [{ pointsCost: "asc" }]
   });
 }
@@ -498,7 +498,6 @@ export async function listRewardCatalog(query: RewardCatalogQuery) {
 
   const trimmedQuery = query.q?.trim();
   const where: Prisma.RewardWhereInput = {
-    stock: { gt: 0 },
     ...(trimmedQuery
       ? {
           OR: [
@@ -618,7 +617,7 @@ export async function redeemReward(
     throw new ApiError(404, "Reward not found");
   }
 
-  if (reward.stock <= 0) {
+  if (reward.stock <= 0 || reward.isOutOfStock) {
     throw new ApiError(400, "Reward out of stock");
   }
 
@@ -769,7 +768,7 @@ export async function checkoutCart(
   const processedItems = payload.items.map((item) => {
     const reward = rewardMap.get(item.rewardId);
     if (!reward) throw new ApiError(404, `Reward not found: ${item.rewardId}`);
-    if (reward.stock <= 0) throw new ApiError(400, `Reward out of stock: ${reward.title}`);
+    if (reward.stock <= 0 || reward.isOutOfStock) throw new ApiError(400, `Reward out of stock: ${reward.title}`);
 
     const plans = getRewardPlans(reward);
     const selectedPlan = item.planId ? plans.find((plan) => plan.id === item.planId) : plans[0];

@@ -156,7 +156,7 @@ export default function RewardsPage() {
                   </div>
                   <CardHeader>
                     <div className="flex flex-wrap items-center gap-2">
-
+                      {reward.stock <= 0 || reward.isOutOfStock ? <Badge variant="outline">{t("outOfStock")}</Badge> : null}
                       {reward.plans?.length ? <Badge variant="outline">{reward.plans.length} {t("plans").toLowerCase()}</Badge> : null}
                     </div>
                     <CardTitle className="text-base sm:text-lg">{reward.title}</CardTitle>

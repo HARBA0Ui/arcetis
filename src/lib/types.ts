@@ -133,6 +133,7 @@ export type Reward = {
   minLevel: number;
   minAccountAge: number;
   stock: number;
+  isOutOfStock: boolean;
   createdAt: string;
 };
 

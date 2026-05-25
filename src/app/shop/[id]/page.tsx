@@ -130,6 +130,7 @@ export default function RewardDetailPage() {
     !!reward &&
     !!selectedPlan &&
     reward.stock > 0 &&
+    !reward.isOutOfStock &&
     !missingRequiredInfo;
   const summaryFacts: any[] = [];
 
@@ -168,7 +169,7 @@ export default function RewardDetailPage() {
                         <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">{reward.description}</p>
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {reward.stock <= 0 ? <Badge variant="outline">{t("outOfStock")}</Badge> : null}
+                        {reward.stock <= 0 || reward.isOutOfStock ? <Badge variant="outline">{t("outOfStock")}</Badge> : null}
                         {planOptions.length > 1 ? <Badge variant="outline">{planOptions.length} {t("plans").toLowerCase()}</Badge> : null}
                       </div>
                     </div>
@@ -281,7 +282,7 @@ export default function RewardDetailPage() {
                         {selectedPlan?.label ?? detailCopy.standardPlan}
                       </Badge>
                     ) : null}
-                    {reward.stock <= 0 ? <Badge variant="outline" className="px-2.5 py-1 text-[0.68rem] uppercase tracking-[0.18em]">{t("outOfStock")}</Badge> : null}
+                    {reward.stock <= 0 || reward.isOutOfStock ? <Badge variant="outline" className="px-2.5 py-1 text-[0.68rem] uppercase tracking-[0.18em]">{t("outOfStock")}</Badge> : null}
                   </div>
                 </div>
               </CardHeader>
@@ -305,7 +306,7 @@ export default function RewardDetailPage() {
                       setKashyModalOpen(true);
                     }}
                   >
-                    {reward && reward.stock <= 0 ? (
+                    {reward && (reward.stock <= 0 || reward.isOutOfStock) ? (
                       <span className="inline-flex items-center gap-2">
                         <X className="h-4 w-4" />
                         {t("outOfStock")}

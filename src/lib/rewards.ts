@@ -50,7 +50,7 @@ export function getAccountAgeDays(createdAt?: string | null) {
 }
 
 export function canUserRedeemReward(reward: Reward, user?: RewardTargetUser | null) {
-  if (!reward || reward.stock <= 0) {
+  if (!reward || reward.stock <= 0 || reward.isOutOfStock) {
     return false;
   }
 
@@ -62,7 +62,7 @@ export function canUserRedeemReward(reward: Reward, user?: RewardTargetUser | nu
 }
 
 export function getNextRewardTarget(rewards: Reward[], user?: RewardTargetUser | null): RewardTarget | null {
-  const stockedRewards = rewards.filter((reward) => reward.stock > 0);
+  const stockedRewards = rewards.filter((reward) => reward.stock > 0 && !reward.isOutOfStock);
   if (!stockedRewards.length) {
     return null;
   }

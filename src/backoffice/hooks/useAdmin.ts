@@ -418,6 +418,7 @@ export function useCreateReward() {
       minLevel: number;
       minAccountAge?: number;
       stock: number;
+      isOutOfStock?: boolean;
     }) => {
       const response = await api.post<{ reward: Reward }>("/admin/reward", payload);
       return response.data;
@@ -461,6 +462,7 @@ export function useUpdateReward() {
       minLevel?: number;
       minAccountAge?: number;
       stock?: number;
+      isOutOfStock?: boolean;
     }) => {
       const { id, ...data } = payload;
       const response = await api.patch<{ reward: RewardDetails }>(`/admin/reward/${id}`, data);

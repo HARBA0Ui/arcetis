@@ -93,7 +93,8 @@ export default function BackofficeCreateProductPage() {
     usdPrice: 0,
     minLevel: 1,
     minAccountAge: 0,
-    stock: 10
+    stock: 10,
+    isOutOfStock: false
   });
   const [plans, setPlans] = useState<EditablePlan[]>([createPlan(1)]);
   const [deliveryFields, setDeliveryFields] = useState<EditableField[]>([]);
@@ -136,6 +137,7 @@ export default function BackofficeCreateProductPage() {
         pointsCost: effectivePointsCost,
         tndPrice: tndValues.length ? Math.min(...tndValues) : form.tndPrice || undefined,
         usdPrice: usdValues.length ? Math.min(...usdValues) : form.usdPrice || undefined,
+        isOutOfStock: form.isOutOfStock,
         plans: cleanedPlans.length ? cleanedPlans : undefined,
         deliveryFields: cleanedFields.length ? cleanedFields : undefined,
         imageUrl
@@ -229,6 +231,18 @@ export default function BackofficeCreateProductPage() {
                   value={form.stock}
                   onChange={(event) => setForm((prev) => ({ ...prev, stock: Number(event.target.value) }))}
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="create-product-outofstock" className="flex items-center gap-2 h-full pt-4">
+                  <input
+                    id="create-product-outofstock"
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    checked={form.isOutOfStock}
+                    onChange={(event) => setForm((prev) => ({ ...prev, isOutOfStock: event.target.checked }))}
+                  />
+                  <span>Force Out of Stock</span>
+                </Label>
               </div>
             </div>
 

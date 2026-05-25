@@ -33,9 +33,7 @@ export function MobileShopPreview({
 }) {
   const { currency, formatPrice } = useCurrency();
   const featuredRewards = useMemo(() => {
-    const source = rewards.some((reward) => reward.stock > 0)
-      ? rewards.filter((reward) => reward.stock > 0)
-      : rewards;
+    const source = rewards;
 
     return [...source]
       .sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime())
@@ -90,12 +88,18 @@ export function MobileShopPreview({
                   <p className="mt-2 line-clamp-2 text-sm font-semibold leading-5">{reward.title}</p>
                   <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-muted-foreground">{reward.description}</p>
 
-                  <Button asChild size="sm" className="mt-3 h-9 rounded-full px-4">
-                    <Link href={itemActionHref(reward)}>
-                      {itemActionLabel}
-                      <ArrowRight className="ml-2 h-3.5 w-3.5" />
-                    </Link>
-                  </Button>
+                  {reward.stock <= 0 || reward.isOutOfStock ? (
+                    <Badge variant="outline" className="mt-3 px-3 py-1.5 text-[0.68rem] uppercase tracking-[0.18em]">
+                      Out of stock
+                    </Badge>
+                  ) : (
+                    <Button asChild size="sm" className="mt-3 h-9 rounded-full px-4">
+                      <Link href={itemActionHref(reward)}>
+                        {itemActionLabel}
+                        <ArrowRight className="ml-2 h-3.5 w-3.5" />
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
