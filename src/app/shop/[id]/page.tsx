@@ -442,7 +442,9 @@ export default function RewardDetailPage() {
                 toast.success(t("requestCreated"), "Your code has been generated. Please send us your screenshot!");
               }
 
-              const nextPath = `/requests/${created.id}${guestEmail ? "?byCode=true" : ""}`;
+              const nextPath = guestEmail && created.requestCode 
+                ? `/requests/${created.requestCode}?byCode=true` 
+                : `/requests/${created.id}`;
               startNavigation(nextPath);
               router.push(nextPath);
             } catch (error) {
