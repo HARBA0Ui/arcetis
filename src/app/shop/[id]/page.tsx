@@ -12,6 +12,7 @@ import { KashyPaymentModal } from "@/components/rewards/kashy-payment-modal";
 import { Spinner } from "@/components/common/spinner";
 import { SyncBanner } from "@/components/common/sync-banner";
 import { useToast } from "@/components/common/toast-center";
+import { useGuestOrders } from "@/hooks/use-guest-orders";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -99,6 +100,7 @@ export default function RewardDetailPage() {
   const [isTndModalOpen, setTndModalOpen] = useState(false);
   const [isKashyModalOpen, setKashyModalOpen] = useState(false);
   const [isRedeemConfirmOpen, setRedeemConfirmOpen] = useState(false);
+  const guestOrders = useGuestOrders();
 
   useEffect(() => {
     if (!isTndModalOpen && !isKashyModalOpen) {
@@ -283,6 +285,19 @@ export default function RewardDetailPage() {
               </CardHeader>
               <CardContent className="space-y-5">
                 <div className="grid gap-3 pt-2">
+                  {selectedPlan?.tndPrice != null || selectedPlan?.usdPrice != null ? (
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      {selectedPlan.tndPrice != null && (
+                        <span className="text-xl font-bold tracking-tight text-foreground">{formatNumber(selectedPlan.tndPrice)} DT</span>
+                      )}
+                      {selectedPlan.tndPrice != null && selectedPlan.usdPrice != null && (
+                        <span className="text-muted-foreground">/</span>
+                      )}
+                      {selectedPlan.usdPrice != null && (
+                        <span className="text-xl font-bold tracking-tight text-foreground">${formatNumber(selectedPlan.usdPrice)}</span>
+                      )}
+                    </div>
+                  ) : null}
                   <Button
                     className="h-12 w-full"
                     disabled={!canRedeem}
@@ -403,8 +418,22 @@ export default function RewardDetailPage() {
               });
 
               setKashyModalOpen(false);
+              
+              if (!stats.data?.user && guestEmail) {
+                guestOrders.addOrder({
+                  id: created.id,
+                  requestCode: created.requestCode ?? "UNKNOWN",
+                  rewardTitle: reward.title
+                });
+                toast.success(
+                  "Order Placed as Guest",
+                  "Your request code is saved to this browser. We highly recommend taking a screenshot of the code page so you don't lose it!"
+                );
+              } else {
+                toast.success(t("requestCreated"), "Your code has been generated. Please send us your screenshot!");
+              }
+
               const nextPath = `/requests/${created.id}${guestEmail ? "?byCode=true" : ""}`;
-              toast.success(t("requestCreated"), "Your code has been generated. Please send us your screenshot!");
               startNavigation(nextPath);
               router.push(nextPath);
             } catch (error) {

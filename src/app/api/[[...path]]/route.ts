@@ -841,9 +841,17 @@ async function handlePost(request: NextRequest, path: string[]) {
   }
 
   if (path[0] === "rewards" && path[1] === "redeem" && path.length === 2) {
-    const auth = requireAuth(request);
+    let auth = null;
+    try {
+      auth = requireAuth(request);
+    } catch {
+      // Guest
+    }
     const payload = await parseJsonBody(request, redeemRewardSchema);
-    const redemption = await redeemReward(auth.userId, payload.rewardId, payload.planId, payload.requestedInfo, payload.paymentMethod);
+    if (!auth?.userId && !payload.guestEmail) {
+      return NextResponse.json({ error: "Email is required for guest checkout" }, { status: 400 });
+    }
+    const redemption = await redeemReward(auth?.userId, payload.rewardId, payload.planId, payload.requestedInfo, payload.paymentMethod, payload.guestEmail);
     return NextResponse.json({ redemption }, { status: 201 });
   }
 

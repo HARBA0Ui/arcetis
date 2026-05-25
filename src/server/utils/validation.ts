@@ -84,7 +84,8 @@ export const redeemRewardSchema = z.object({
   rewardId: z.string().min(1),
   planId: z.string().min(1).optional(),
   requestedInfo: z.record(z.string(), z.string().max(500)).optional(),
-  paymentMethod: z.enum(["points", "kashy"]).optional()
+  paymentMethod: z.enum(["points", "kashy"]).optional(),
+  guestEmail: z.string().email().optional()
 });
 
 export const checkoutSchema = z.object({

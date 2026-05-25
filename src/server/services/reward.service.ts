@@ -595,16 +595,21 @@ export async function getRedemptionsByRequestCode(requestCode: string) {
 }
 
 export async function redeemReward(
-  userId: string,
+  userId: string | undefined,
   rewardId: string,
   planId?: string,
   requestedInfo?: Record<string, string>,
-  paymentMethod?: "points" | "kashy"
+  paymentMethod?: "points" | "kashy",
+  guestEmail?: string
 ) {
   await ensureExpiredRedemptionsAreFresh();
 
-  const [user, reward, config] = await Promise.all([
-    getUserOrThrow(userId),
+  let user = null;
+  if (userId) {
+    user = await getUserOrThrow(userId);
+  }
+
+  const [reward, config] = await Promise.all([
     prisma.reward.findUnique({ where: { id: rewardId } }),
     getPlatformConfig()
   ]);
@@ -627,8 +632,8 @@ export async function redeemReward(
   const isKashy = paymentMethod === "kashy";
   const pointsCost = isKashy ? 0 : (selectedPlan.pointsCost ?? getStartingPointsCost(reward));
 
-  if (!isKashy && user.points < pointsCost) {
-    throw new ApiError(400, "Not enough points");
+  if (!isKashy && (!user || user.points < pointsCost)) {
+    throw new ApiError(400, "Not enough points or not connected");
   }
 
   const deliveryFields = getDeliveryFields(reward);
@@ -646,7 +651,8 @@ export async function redeemReward(
   const redemption = await prisma.$transaction(async (tx) => {
     const created = await tx.redemption.create({
       data: {
-        userId,
+        userId: userId ?? null,
+        guestEmail: guestEmail ?? null,
         rewardId,
         status: "pending",
         requestCode,
@@ -660,7 +666,7 @@ export async function redeemReward(
       include: { reward: true }
     });
 
-    if (pointsCost > 0) {
+    if (pointsCost > 0 && userId) {
       await tx.pointsTransaction.create({
         data: {
           userId,
@@ -670,7 +676,7 @@ export async function redeemReward(
       });
     }
 
-    if (pointsCost > 0) {
+    if (pointsCost > 0 && userId) {
       await tx.user.update({
         where: { id: userId },
         data: {
@@ -692,12 +698,13 @@ export async function redeemReward(
   await createNotificationForAdmins({
     type: "ADMIN_REDEMPTION_REQUIRED",
     title: "Redemption review required",
-    message: `${user.username} requested ${reward.title}${selectedPlan.label ? ` - ${selectedPlan.label}` : ""}. Code: ${requestCode}.`,
+    message: `${user ? user.username : (guestEmail || "Guest")} requested ${reward.title}${selectedPlan.label ? ` - ${selectedPlan.label}` : ""}. Code: ${requestCode}.`,
     link: `/backoffice/dashboard/redemptions?code=${encodeURIComponent(requestCode)}`,
     metadata: {
       redemptionId: redemption.id,
       rewardId: reward.id,
-      userId: user.id,
+      userId: user?.id,
+      guestEmail: guestEmail,
       requestCode,
       planId: selectedPlan.id,
       planLabel: selectedPlan.label,
@@ -705,18 +712,20 @@ export async function redeemReward(
     }
   });
 
-  await createNotification({
-    userId,
-    type: "SYSTEM",
-    title: "Instagram request code ready",
-    message: `Send code ${requestCode} to the official Arcetis Instagram. Do not give this code to anyone.`,
-    link: `/requests/${redemption.id}`,
-    metadata: {
-      redemptionId: redemption.id,
-      rewardId: reward.id,
-      requestCode
-    }
-  });
+  if (userId) {
+    await createNotification({
+      userId,
+      type: "SYSTEM",
+      title: "Instagram request code ready",
+      message: `Send code ${requestCode} to the official Arcetis Instagram. Do not give this code to anyone.`,
+      link: `/requests/${redemption.id}`,
+      metadata: {
+        redemptionId: redemption.id,
+        rewardId: reward.id,
+        requestCode
+      }
+    });
+  }
 
   return toUserFacingRedemption(redemption);
 }
