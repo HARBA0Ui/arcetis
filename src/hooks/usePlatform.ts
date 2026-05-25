@@ -567,7 +567,7 @@ export function useRedeemReward() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: { rewardId: string; planId?: string; requestedInfo?: Record<string, string>; paymentMethod?: "points" | "kashy" }) => {
+    mutationFn: async (payload: { rewardId: string; planId?: string; requestedInfo?: Record<string, string>; paymentMethod?: "points" | "kashy"; guestEmail?: string }) => {
       const response = await api.post<{ redemption: Redemption }>("/rewards/redeem", payload);
       return response.data.redemption;
     },

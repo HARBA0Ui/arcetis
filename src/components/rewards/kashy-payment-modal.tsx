@@ -10,8 +10,9 @@ interface KashyPaymentModalProps {
   planLabel: string;
   paymentLink: string;
   isPending: boolean;
+  isGuest?: boolean;
   onClose: () => void;
-  onConfirm: () => Promise<void>;
+  onConfirm: (guestEmail?: string) => Promise<void>;
 }
 
 export function KashyPaymentModal({
@@ -20,12 +21,29 @@ export function KashyPaymentModal({
   planLabel,
   paymentLink,
   isPending,
+  isGuest,
   onClose,
   onConfirm
 }: KashyPaymentModalProps) {
-  const [step, setStep] = useState<"initial" | "payment">("initial");
+  const [step, setStep] = useState<"email" | "initial" | "payment">(isGuest ? "email" : "initial");
+  const [emailInput, setEmailInput] = useState("");
+  const [emailConfirm, setEmailConfirm] = useState("");
+  const [emailError, setEmailError] = useState("");
 
   if (!open) return null;
+
+  const handleEmailSubmit = () => {
+    setEmailError("");
+    if (!emailInput || !emailInput.includes("@")) {
+      setEmailError("Please enter a valid email address");
+      return;
+    }
+    if (emailInput !== emailConfirm) {
+      setEmailError("Emails do not match");
+      return;
+    }
+    setStep("initial");
+  };
 
   const handleProceed = () => {
     // Open Kashy link in a centered popup window to simulate an iframe
@@ -40,12 +58,16 @@ export function KashyPaymentModal({
   };
 
   const handleConfirm = async () => {
-    await onConfirm();
-    setStep("initial");
+    await onConfirm(isGuest ? emailInput : undefined);
+    setStep(isGuest ? "email" : "initial");
+    setEmailInput("");
+    setEmailConfirm("");
   };
 
   const handleCancel = () => {
-    setStep("initial");
+    setStep(isGuest ? "email" : "initial");
+    setEmailInput("");
+    setEmailConfirm("");
     onClose();
   };
 
@@ -65,7 +87,7 @@ export function KashyPaymentModal({
                 Secure Checkout
               </Badge>
               <h2 className="mt-4 text-2xl font-semibold tracking-tight">
-                {step === "initial" ? "Ready to Pay?" : "Payment Verification"}
+                {step === "email" ? "Guest Checkout" : step === "initial" ? "Ready to Pay?" : "Payment Verification"}
               </h2>
             </div>
             <Button
@@ -84,7 +106,48 @@ export function KashyPaymentModal({
             <p className="mt-1 text-muted-foreground">Plan: {planLabel}</p>
           </div>
 
-          {step === "initial" ? (
+          {step === "email" ? (
+            <div className="mt-6">
+              <div className="mb-6 space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Email address</label>
+                  <input
+                    type="email"
+                    className="w-full rounded-xl border border-border/70 bg-background/50 px-4 py-2.5 outline-none focus:border-primary"
+                    placeholder="name@example.com"
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">We need your email to process your guest order.</p>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Confirm email address</label>
+                  <input
+                    type="email"
+                    className="w-full rounded-xl border border-border/70 bg-background/50 px-4 py-2.5 outline-none focus:border-primary"
+                    placeholder="name@example.com"
+                    value={emailConfirm}
+                    onChange={(e) => setEmailConfirm(e.target.value)}
+                  />
+                </div>
+                {emailError && (
+                  <p className="text-sm text-red-400">{emailError}</p>
+                )}
+              </div>
+              <div className="flex flex-col gap-3">
+                <Button 
+                  className="h-12 bg-primary text-primary-foreground hover:bg-primary/90" 
+                  onClick={handleEmailSubmit}
+                >
+                  Continue to Payment
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button variant="outline" className="h-12" onClick={handleCancel}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : step === "initial" ? (
             <div className="mt-6">
               <div className="mb-6 rounded-2xl bg-[hsl(var(--arcetis-ember))]/10 p-4 border border-[hsl(var(--arcetis-ember))]/20">
                 <p className="text-sm font-medium text-[hsl(var(--arcetis-ember))]">

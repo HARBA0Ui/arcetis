@@ -12,7 +12,6 @@ import { KashyPaymentModal } from "@/components/rewards/kashy-payment-modal";
 import { Spinner } from "@/components/common/spinner";
 import { SyncBanner } from "@/components/common/sync-banner";
 import { useToast } from "@/components/common/toast-center";
-import { useCart } from "@/hooks/use-cart";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -100,7 +99,6 @@ export default function RewardDetailPage() {
   const [isTndModalOpen, setTndModalOpen] = useState(false);
   const [isKashyModalOpen, setKashyModalOpen] = useState(false);
   const [isRedeemConfirmOpen, setRedeemConfirmOpen] = useState(false);
-  const cart = useCart();
 
   useEffect(() => {
     if (!isTndModalOpen && !isKashyModalOpen) {
@@ -290,31 +288,7 @@ export default function RewardDetailPage() {
                     disabled={!canRedeem}
                     onClick={() => {
                       if (!reward || !selectedPlan) return;
-                      const hasPoints = typeof selectedPlan.pointsCost === "number";
-                      const hasKashy = !!selectedPlan.paymentLink;
-                      const hasTnd = typeof selectedPlan.tndPrice === "number";
-                      const hasUsd = typeof selectedPlan.usdPrice === "number";
-
-                      let method: "kashy" | undefined = undefined;
-                      // Determine primary payment method based on plan settings
-                      if (hasKashy || hasTnd || hasUsd) {
-                        method = "kashy";
-                      }
-
-                      cart.addItem({
-                        rewardId: reward.id,
-                        planId: selectedPlan.id,
-                        requestedInfo: deliveryInfo,
-                        paymentMethod: method,
-                        title: reward.title,
-                        imageUrl: reward.imageUrl,
-                        planLabel: selectedPlan.label,
-                        pointsCost: selectedPlan.pointsCost,
-                        tndPrice: selectedPlan.tndPrice ?? undefined,
-                        usdPrice: selectedPlan.usdPrice ?? undefined,
-                      });
-                      
-                      toast.success("Added to cart", `${reward.title} has been added to your cart.`);
+                      setKashyModalOpen(true);
                     }}
                   >
                     {reward && reward.stock <= 0 ? (
@@ -324,8 +298,8 @@ export default function RewardDetailPage() {
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-2">
-                        <ShoppingCart className="h-4 w-4" />
-                        Add to Cart
+                        <CreditCard className="h-4 w-4" />
+                        {t("buyWithDt").replace(" dt", "")}
                       </span>
                     )}
                   </Button>
@@ -416,18 +390,20 @@ export default function RewardDetailPage() {
           planLabel={selectedPlan.label}
           paymentLink={selectedPlan.paymentLink}
           isPending={redeem.isPending}
+          isGuest={!stats.data?.user}
           onClose={() => setKashyModalOpen(false)}
-          onConfirm={async () => {
+          onConfirm={async (guestEmail?: string) => {
             try {
               const created = await redeem.mutateAsync({
                 rewardId: reward.id,
                 planId: selectedPlan.id,
                 requestedInfo: deliveryInfo,
-                paymentMethod: "kashy"
+                paymentMethod: "kashy",
+                guestEmail
               });
 
               setKashyModalOpen(false);
-              const nextPath = `/requests/${created.id}`;
+              const nextPath = `/requests/${created.id}${guestEmail ? "?byCode=true" : ""}`;
               toast.success(t("requestCreated"), "Your code has been generated. Please send us your screenshot!");
               startNavigation(nextPath);
               router.push(nextPath);
