@@ -34,7 +34,8 @@ import { useUserStats } from "@/hooks/usePlatform";
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/shop", label: "Shop", icon: CircleDollarSign }
+  { href: "/shop", label: "Shop", icon: CircleDollarSign },
+  { href: "/giveaways", label: "Giveaways", icon: PartyPopper }
 ];
 
 function isActiveRoute(pathname: string, href: string) {

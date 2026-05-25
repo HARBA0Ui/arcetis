@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleDollarSign, Home, Menu } from "lucide-react";
+import { CircleDollarSign, Home, Menu, PartyPopper } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArcetisLogo } from "@/components/common/arcetis-logo";
@@ -13,7 +13,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/shop", label: "Shop", icon: CircleDollarSign }
+  { href: "/shop", label: "Shop", icon: CircleDollarSign },
+  { href: "/giveaways", label: "Giveaways", icon: PartyPopper }
 ];
 
 function isActiveRoute(pathname: string, href: string) {

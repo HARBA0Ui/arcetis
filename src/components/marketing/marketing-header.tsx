@@ -2,7 +2,7 @@
 
 import type { MouseEvent } from "react";
 import { useState } from "react";
-import { CircleDollarSign, ClipboardList, Home, LogOut, Menu, UserRound } from "lucide-react";
+import { CircleDollarSign, ClipboardList, Home, LogOut, Menu, UserRound, PartyPopper } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ArcetisLogo } from "@/components/common/arcetis-logo";
@@ -56,7 +56,8 @@ export function MarketingHeader() {
 
   const links = [
     { href: "/", label: copy.home, icon: Home },
-    { href: "/shop", label: shopLabel, icon: CircleDollarSign }
+    { href: "/shop", label: shopLabel, icon: CircleDollarSign },
+    { href: "/giveaways", label: "Giveaways", icon: PartyPopper }
   ];
   const mobileLinks = links.filter((link) => link.href !== "/");
 

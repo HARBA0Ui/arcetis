@@ -27,6 +27,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { normalizeAssetUrl } from "@/lib/assets";
 import { useMe } from "@/hooks/useAuth";
+import { useAuthToken } from "@/hooks/use-auth-token";
 import { useCountdown } from "@/hooks/use-countdown";
 import { useSmoothBusy } from "@/hooks/use-smooth-busy";
 import { useApplyGiveaway, useGiveawayById, useUpdateGiveawayEntry } from "@/hooks/usePlatform";
@@ -117,7 +118,8 @@ function getEntryStatusMeta(status?: "pending" | "selected" | "rejected") {
 export default function GiveawayDetailPage() {
   const params = useParams<{ id: string }>();
   const giveawayId = params?.id ?? "";
-  const { data: viewer } = useMe();
+  const sessionHint = useAuthToken();
+  const { data: viewer, isLoading: isViewerLoading } = useMe({ bootstrap: !sessionHint });
   const giveawayQuery = useGiveawayById(giveawayId);
   const giveaway = giveawayQuery.data;
   const applyMutation = useApplyGiveaway();
@@ -215,7 +217,18 @@ export default function GiveawayDetailPage() {
       return null;
     }
 
-    if (!viewer) {
+    const isGuest = !sessionHint && !viewer && !isViewerLoading;
+
+    if (isGuest) {
+      return {
+        canEnter: false,
+        isChecking: false,
+        isGuest: true,
+        blockers: ["You need to sign in to enter this giveaway."]
+      };
+    }
+
+    if (!viewer || isViewerLoading) {
       return {
         canEnter: false,
         isChecking: true,
@@ -551,133 +564,152 @@ export default function GiveawayDetailPage() {
 
                 {!hasApplied || canEditEntry ? (
                   <div className="space-y-4">
-                    {eligibility ? (
-                      <div className="rounded-[1.15rem] border border-dashed border-border/70 bg-background/50 p-3 text-sm text-muted-foreground">
-                        {eligibility.isChecking ? (
-                          <p>{eligibility.blockers[0]}</p>
-                        ) : eligibility.canEnter ? (
-                          <p>You already meet this giveaway&apos;s level and account-age requirements.</p>
-                        ) : (
-                          <div className="space-y-2">
-                            <p className="font-medium text-foreground">This account cannot enter yet.</p>
-                            {eligibility.blockers.map((blocker) => (
-                              <p key={blocker}>{blocker}</p>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ) : null}
-
-                    {(giveaway.inputFields ?? []).map((field) => (
-                      <div key={field.id} className="space-y-2">
-                        <Label htmlFor={`giveaway-field-${field.id}`}>
-                          {field.label}
-                          {field.required === false ? "" : " *"}
-                        </Label>
-                        <Input
-                          id={`giveaway-field-${field.id}`}
-                          type={getFieldInputType(field.type)}
-                          value={answers[field.id] ?? ""}
-                          placeholder={field.placeholder ?? `Enter ${field.label.toLowerCase()}`}
-                          onChange={(event) =>
-                            setAnswers((current) => ({
-                              ...current,
-                              [field.id]: event.target.value
-                            }))
-                          }
-                        />
-                      </div>
-                    ))}
-
-                    {giveaway.requiresJustification ? (
-                      <div className="space-y-3">
-                        <div className="space-y-2">
-                          <Label>{giveaway.justificationLabel || "Upload 1 to 3 proof images"} *</Label>
-                          <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-border/70 bg-background/55 px-4 py-3 text-sm text-muted-foreground hover:border-[hsl(var(--arcetis-ember))]/40 hover:text-foreground">
-                            <Upload className="h-4 w-4" />
-                            <span>Add proof images</span>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              multiple
-                              className="hidden"
-                              onChange={(event) => {
-                                const incoming = Array.from(event.target.files ?? []);
-                                setNewJustificationFiles((current) =>
-                                  [...current, ...incoming].slice(0, Math.max(0, MAX_GIVEAWAY_PROOF_IMAGES - keptJustificationImageUrls.length))
-                                );
-                                event.target.value = "";
-                              }}
-                            />
-                          </label>
-                          <p className="text-xs text-muted-foreground">
-                            Upload between 1 and {MAX_GIVEAWAY_PROOF_IMAGES} images. Current total: {formatNumber(totalProofImages)}.
+                    {eligibility?.isGuest ? (
+                      <div className="space-y-3 rounded-[1.3rem] border border-border/70 bg-background/65 p-4 text-sm text-muted-foreground">
+                        <div className="flex items-start gap-3">
+                          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[hsl(var(--arcetis-ember))]" />
+                          <p>
+                            You must be signed in to enter this giveaway.
                           </p>
                         </div>
-
-                        {keptJustificationImageUrls.length || newFilePreviews.length ? (
-                          <div className="grid gap-3 sm:grid-cols-3">
-                            {keptJustificationImageUrls.map((imageUrl) => (
-                              <div key={imageUrl} className="relative overflow-hidden rounded-xl border border-border/70 bg-background/65">
-                                <img
-                                  src={normalizeAssetUrl(imageUrl)}
-                                  alt="Saved proof"
-                                  className="aspect-square w-full object-cover"
-                                />
-                                <button
-                                  type="button"
-                                  className="absolute right-2 top-2 rounded-full bg-black/70 p-1 text-white"
-                                  onClick={() =>
-                                    setKeptJustificationImageUrls((current) => current.filter((value) => value !== imageUrl))
-                                  }
-                                >
-                                  <X className="h-3.5 w-3.5" />
-                                </button>
+                        <Button asChild className="w-full">
+                          <Link href={`/login?redirect=/giveaways/${giveaway.id}`}>
+                            Sign in to enter
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        {eligibility ? (
+                          <div className="rounded-[1.15rem] border border-dashed border-border/70 bg-background/50 p-3 text-sm text-muted-foreground">
+                            {eligibility.isChecking ? (
+                              <p>{eligibility.blockers[0]}</p>
+                            ) : eligibility.canEnter ? (
+                              <p>You already meet this giveaway&apos;s level and account-age requirements.</p>
+                            ) : (
+                              <div className="space-y-2">
+                                <p className="font-medium text-foreground">This account cannot enter yet.</p>
+                                {eligibility.blockers.map((blocker) => (
+                                  <p key={blocker}>{blocker}</p>
+                                ))}
                               </div>
-                            ))}
-                            {newFilePreviews.map((preview) => (
-                              <div key={`${preview.file.name}-${preview.file.size}`} className="relative overflow-hidden rounded-xl border border-border/70 bg-background/65">
-                                <img
-                                  src={preview.url}
-                                  alt={preview.file.name}
-                                  className="aspect-square w-full object-cover"
-                                />
-                                <button
-                                  type="button"
-                                  className="absolute right-2 top-2 rounded-full bg-black/70 p-1 text-white"
-                                  onClick={() =>
-                                    setNewJustificationFiles((current) => current.filter((file) => file !== preview.file))
-                                  }
-                                >
-                                  <X className="h-3.5 w-3.5" />
-                                </button>
-                              </div>
-                            ))}
+                            )}
                           </div>
                         ) : null}
 
-                        <div className="space-y-2">
-                          <Label htmlFor="giveaway-note">Optional note</Label>
-                          <Textarea
-                            id="giveaway-note"
-                            rows={3}
-                            value={justification}
-                            onChange={(event) => setJustification(event.target.value)}
-                            placeholder="Add a short note only if it helps explain the screenshots."
-                          />
+                        {(giveaway.inputFields ?? []).map((field) => (
+                          <div key={field.id} className="space-y-2">
+                            <Label htmlFor={`giveaway-field-${field.id}`}>
+                              {field.label}
+                              {field.required === false ? "" : " *"}
+                            </Label>
+                            <Input
+                              id={`giveaway-field-${field.id}`}
+                              type={getFieldInputType(field.type)}
+                              value={answers[field.id] ?? ""}
+                              placeholder={field.placeholder ?? `Enter ${field.label.toLowerCase()}`}
+                              onChange={(event) =>
+                                setAnswers((current) => ({
+                                  ...current,
+                                  [field.id]: event.target.value
+                                }))
+                              }
+                            />
+                          </div>
+                        ))}
+
+                        {giveaway.requiresJustification ? (
+                          <div className="space-y-3">
+                            <div className="space-y-2">
+                              <Label>{giveaway.justificationLabel || "Upload 1 to 3 proof images"} *</Label>
+                              <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-border/70 bg-background/55 px-4 py-3 text-sm text-muted-foreground hover:border-[hsl(var(--arcetis-ember))]/40 hover:text-foreground">
+                                <Upload className="h-4 w-4" />
+                                <span>Add proof images</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  multiple
+                                  className="hidden"
+                                  onChange={(event) => {
+                                    const incoming = Array.from(event.target.files ?? []);
+                                    setNewJustificationFiles((current) =>
+                                      [...current, ...incoming].slice(0, Math.max(0, MAX_GIVEAWAY_PROOF_IMAGES - keptJustificationImageUrls.length))
+                                    );
+                                    event.target.value = "";
+                                  }}
+                                />
+                              </label>
+                              <p className="text-xs text-muted-foreground">
+                                Upload between 1 and {MAX_GIVEAWAY_PROOF_IMAGES} images. Current total: {formatNumber(totalProofImages)}.
+                              </p>
+                            </div>
+
+                            {keptJustificationImageUrls.length || newFilePreviews.length ? (
+                              <div className="grid gap-3 sm:grid-cols-3">
+                                {keptJustificationImageUrls.map((imageUrl) => (
+                                  <div key={imageUrl} className="relative overflow-hidden rounded-xl border border-border/70 bg-background/65">
+                                    <img
+                                      src={normalizeAssetUrl(imageUrl)}
+                                      alt="Saved proof"
+                                      className="aspect-square w-full object-cover"
+                                    />
+                                    <button
+                                      type="button"
+                                      className="absolute right-2 top-2 rounded-full bg-black/70 p-1 text-white"
+                                      onClick={() =>
+                                        setKeptJustificationImageUrls((current) => current.filter((value) => value !== imageUrl))
+                                      }
+                                    >
+                                      <X className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
+                                ))}
+                                {newFilePreviews.map((preview) => (
+                                  <div key={`${preview.file.name}-${preview.file.size}`} className="relative overflow-hidden rounded-xl border border-border/70 bg-background/65">
+                                    <img
+                                      src={preview.url}
+                                      alt={preview.file.name}
+                                      className="aspect-square w-full object-cover"
+                                    />
+                                    <button
+                                      type="button"
+                                      className="absolute right-2 top-2 rounded-full bg-black/70 p-1 text-white"
+                                      onClick={() =>
+                                        setNewJustificationFiles((current) => current.filter((file) => file !== preview.file))
+                                      }
+                                    >
+                                      <X className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : null}
+
+                            <div className="space-y-2">
+                              <Label htmlFor="giveaway-note">Optional note</Label>
+                              <Textarea
+                                id="giveaway-note"
+                                rows={3}
+                                value={justification}
+                                onChange={(event) => setJustification(event.target.value)}
+                                placeholder="Add a short note only if it helps explain the screenshots."
+                              />
+                            </div>
+                          </div>
+                        ) : null}
+
+                        <div className="rounded-[1.15rem] border border-dashed border-border/70 bg-background/50 p-3 text-sm text-muted-foreground">
+                          {giveaway.allowEntryEdits
+                            ? "If your entry stays pending, you can come back and edit it before the deadline."
+                            : "This giveaway only accepts one final submission, so double-check your info before sending it."}
                         </div>
-                      </div>
-                    ) : null}
 
-                    <div className="rounded-[1.15rem] border border-dashed border-border/70 bg-background/50 p-3 text-sm text-muted-foreground">
-                      {giveaway.allowEntryEdits
-                        ? "If your entry stays pending, you can come back and edit it before the deadline."
-                        : "This giveaway only accepts one final submission, so double-check your info before sending it."}
-                    </div>
-
-                    <Button className="w-full" disabled={!canSubmit || isSubmitting} onClick={handleSubmit}>
-                      {submitLabel}
-                    </Button>
+                        <Button className="w-full" disabled={!canSubmit || isSubmitting} onClick={handleSubmit}>
+                          {submitLabel}
+                        </Button>
+                      </>
+                    )}
                   </div>
                 ) : (
                   <div className="space-y-3 rounded-[1.3rem] border border-border/70 bg-background/65 p-4 text-sm text-muted-foreground">
