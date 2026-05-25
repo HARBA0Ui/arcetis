@@ -29,7 +29,7 @@ export function ProtectedShellLoading({ message }: { message: string }) {
         <header className="sticky top-4 z-50 rounded-[1.75rem] border border-border/70 bg-background/78 px-3 py-3 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.65)] backdrop-blur sm:rounded-[2rem] sm:px-4 sm:py-4 xl:px-6">
           <div className="flex items-center justify-between gap-3 sm:hidden">
             <Link href="/" className="shrink-0">
-              <ArcetisLogo className="h-10" />
+              <ArcetisLogo className="h-12.5" />
             </Link>
 
             <div className="flex items-center gap-2">
@@ -49,7 +49,7 @@ export function ProtectedShellLoading({ message }: { message: string }) {
 
           <div className="hidden sm:flex sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
             <Link href="/" className="shrink-0">
-              <ArcetisLogo className="h-12 md:h-16" />
+              <ArcetisLogo className="h-15 md:h-20" />
             </Link>
 
             <nav className="-mx-1 flex flex-1 items-center gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
@@ -71,8 +71,8 @@ export function ProtectedShellLoading({ message }: { message: string }) {
             </nav>
 
             <div className="flex w-full items-center justify-end gap-2 sm:ml-auto sm:w-auto">
-              <CurrencyToggle iconOnly className="h-9 w-9 rounded-full border-border/70 bg-background/70" />
-              <ThemeToggle iconOnly className="h-9 w-9 rounded-full border-border/70 bg-background/70" />
+              <CurrencyToggle iconOnly className="h-12 w-12 rounded-2xl border-border/70 bg-background/70" />
+              <ThemeToggle iconOnly className="h-12 w-12 rounded-2xl border-border/70 bg-background/70" />
               <GuestOrdersDrawer />
               <Skeleton className="h-12 w-12 rounded-2xl border border-border/70 bg-card" />
               <Skeleton className="h-12 min-w-[12.25rem] rounded-full border border-border/70 bg-card" />

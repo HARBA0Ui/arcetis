@@ -6,9 +6,10 @@ import Link from "next/link";
 import { ShoppingBag, X, ArrowRight, Clock } from "lucide-react";
 import { useGuestOrders } from "@/hooks/use-guest-orders";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { formatDateTime } from "@/lib/format";
 
-export function GuestOrdersDrawer() {
+export function GuestOrdersDrawer({ className }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const { orders, isLoaded } = useGuestOrders();
   const [mounted, setMounted] = useState(false);
@@ -23,7 +24,10 @@ export function GuestOrdersDrawer() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/70 bg-background/70 text-foreground transition-colors hover:bg-card/80 sm:h-10 sm:w-10"
+        className={cn(
+          "relative inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-border/70 bg-background/70 text-foreground transition-colors hover:bg-card/80 sm:h-12 sm:w-12",
+          className
+        )}
         aria-label="My Orders"
       >
         <ShoppingBag className="h-4.5 w-4.5" />

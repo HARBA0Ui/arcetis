@@ -19,7 +19,7 @@ function formatTime(input: string) {
   return formatDateTime(input);
 }
 
-export function NotificationCenter() {
+export function NotificationCenter({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -70,8 +70,9 @@ export function NotificationCenter() {
         variant="secondary"
         size="sm"
         className={cn(
-          "relative h-12 w-12 overflow-visible rounded-2xl border border-border/70 bg-card px-0 transition-all hover:border-border hover:bg-accent/70",
-          unreadCount > 0 && "border-red-500/25 shadow-[0_16px_28px_-24px_rgba(239,68,68,0.95)]"
+          "relative h-10 w-10 sm:h-12 sm:w-12 overflow-visible rounded-2xl border border-border/70 bg-card px-0 transition-all hover:border-border hover:bg-accent/70",
+          unreadCount > 0 && "border-red-500/25 shadow-[0_16px_28px_-24px_rgba(239,68,68,0.95)]",
+          className
         )}
         aria-label="Open notifications"
         title="Notifications"
