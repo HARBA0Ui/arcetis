@@ -28,7 +28,7 @@ function getLandingCopy(language: AppLanguage) {
       introBadge: "منتجات مع حافز يومي",
       introTitle: "سبب واضح يجعلك تسجل الدخول قبل أن يضيع يومك.",
       introDescription:
-        "Arcetis يحول النشاط اليومي إلى سلسلة دخول ونقاط وخبرة وعجلة ومكافآت حقيقية. سجل الدخول وواصل التقدم، أو أنشئ حسابك وابدأ من أول فوز.",
+        "Arcetis يحول النشاط اليومي إلى سلسلة دخول وخبرة وعجلة ومكافآت حقيقية. سجل الدخول وواصل التقدم، أو أنشئ حسابك وابدأ من أول فوز.",
       introPrimary: "سجل الدخول وتابع",
       introSecondary: "إنشاء حساب",
       introHighlights: ["مهام يومية", "تعزيزات الإحالة", "نزولات المنتجات"],
@@ -36,7 +36,7 @@ function getLandingCopy(language: AppLanguage) {
       proofStrip: [
         { label: "دورة مباشرة", value: "مهام، سلسلة دخول، عجلة" },
         { label: "دخول سريع", value: "إيميل أو Google" },
-        { label: "فائدة واضحة", value: "نقاط، خبرة، طلبات منتجات" }
+        { label: "فائدة واضحة", value: "خبرة، طلبات منتجات" }
       ],
       nextSession: "الجلسة القادمة",
       nextSessionTitle: "ما الذي سيفتح لك بعد تسجيل الدخول",
@@ -50,7 +50,7 @@ function getLandingCopy(language: AppLanguage) {
         },
         {
           title: "مهمة مكتملة",
-          value: "+120 pts",
+          value: "+120 XP",
           description: "أنهِ مهمة واقترب أكثر من المنتج التالي.",
           icon: Star
         },
@@ -71,7 +71,7 @@ function getLandingCopy(language: AppLanguage) {
         },
         {
           title: "منتجات تشعرك بالتقدم",
-          description: "النقاط والخبرة والمفاجآت تجعل التقدم واضحًا بدل أن يكون مخفيًا في القوائم.",
+          description: "الخبرة والمفاجآت تجعل التقدم واضحًا بدل أن يكون مخفيًا في القوائم.",
           icon: Gift
         },
         {
@@ -91,7 +91,7 @@ function getLandingCopy(language: AppLanguage) {
         {
           step: "02",
           title: "ابنِ الزخم",
-          description: "أكمل الأنشطة واجمع النقاط والخبرة وحافظ على حركة الحساب في كل زيارة."
+          description: "أكمل الأنشطة واجمع الخبرة وحافظ على حركة الحساب في كل زيارة."
         },
         {
           step: "03",
@@ -120,7 +120,7 @@ function getLandingCopy(language: AppLanguage) {
     introBadge: "Rewards with momentum",
     introTitle: "A reason to sign in before the day gets away from you.",
     introDescription:
-      "Arcetis turns everyday actions into streaks, XP, points, spins, and real reward momentum. Sign in to keep climbing, or create an account and start from your first win.",
+      "Arcetis turns everyday actions into streaks, XP, spins, and real reward momentum. Sign in to keep climbing, or create an account and start from your first win.",
     introPrimary: "Sign in and continue",
     introSecondary: "Create account",
     introHighlights: ["Daily quests", "Referral boosts", "Reward drops"],
@@ -128,7 +128,7 @@ function getLandingCopy(language: AppLanguage) {
     proofStrip: [
       { label: "Live loop", value: "Tasks, streaks, spins" },
       { label: "Fast entry", value: "Email or Google sign-in" },
-      { label: "Clear upside", value: "Points, XP, product requests" }
+      { label: "Clear upside", value: "XP, product requests" }
     ],
     nextSession: "Next session",
     nextSessionTitle: "What unlocks when you sign in",
@@ -142,7 +142,7 @@ function getLandingCopy(language: AppLanguage) {
       },
       {
         title: "Quest completed",
-        value: "+120 pts",
+        value: "+120 XP",
         description: "Finish a challenge and move closer to your next claim.",
         icon: Star
       },
@@ -163,7 +163,7 @@ function getLandingCopy(language: AppLanguage) {
       },
       {
         title: "Rewards that feel earned",
-        description: "Points, XP, and surprise drops keep progress visible instead of hiding value behind menus.",
+        description: "XP and surprise drops keep progress visible instead of hiding value behind menus.",
         icon: Gift
       },
       {
@@ -183,7 +183,7 @@ function getLandingCopy(language: AppLanguage) {
       {
         step: "02",
         title: "Build momentum",
-        description: "Complete actions, stack points + XP, and keep the account moving every time you show up."
+        description: "Complete actions, stack XP, and keep the account moving every time you show up."
       },
       {
         step: "03",

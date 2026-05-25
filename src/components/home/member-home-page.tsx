@@ -90,8 +90,8 @@ function getHomeCopy(language: "en" | "ar") {
       ready: "جاهز",
       syncingDailyLogin: "جارٍ مزامنة اختصار تسجيل الدخول اليومي.",
       dailyLoginUnavailable: "مهمة تسجيل الدخول اليومي غير متاحة الآن.",
-      dailyLoginClaimed: `لقد حصلت اليوم بالفعل على +${DAILY_LOGIN_POINTS_REWARD} نقطة و +${DAILY_LOGIN_XP_REWARD} خبرة.`,
-      dailyLoginReady: `احصل على +${DAILY_LOGIN_POINTS_REWARD} نقطة و +${DAILY_LOGIN_XP_REWARD} خبرة قبل إعادة ضبط المؤقت اليومي.`,
+      dailyLoginClaimed: `لقد حصلت اليوم بالفعل على +${DAILY_LOGIN_XP_REWARD} خبرة.`,
+      dailyLoginReady: `احصل على +${DAILY_LOGIN_XP_REWARD} خبرة قبل إعادة ضبط المؤقت اليومي.`,
       spinChecking: "جارٍ التحقق من نافذة عجلة اليوم.",
       spinReady: "جاهز",
       spinCooling: "تبريد",
@@ -118,7 +118,7 @@ function getHomeCopy(language: "en" | "ar") {
         `المستوى ${level} يفتح لك مساحة أكبر للمهام والعجلة والتقدم نحو المنتجات.`,
       keepGoing: "واصل التقدم",
       dailyLoginClaimedToast: "تم استلام تسجيل الدخول اليومي",
-      dailyLoginClaimedToastHint: `+${DAILY_LOGIN_POINTS_REWARD} نقطة و +${DAILY_LOGIN_XP_REWARD} خبرة تمت إضافتها.`,
+      dailyLoginClaimedToastHint: `+${DAILY_LOGIN_XP_REWARD} خبرة تمت إضافتها.`,
       dailyLoginFailedToast: "تعذر استلام تسجيل الدخول اليومي",
       introBadge: "اليوم",
       introTitle: "هل أنت جاهز لليوم؟",
@@ -192,8 +192,8 @@ function getHomeCopy(language: "en" | "ar") {
     ready: "Ready",
     syncingDailyLogin: "Syncing your daily login shortcut.",
     dailyLoginUnavailable: "The daily login task is not available right now.",
-    dailyLoginClaimed: `You already secured +${DAILY_LOGIN_POINTS_REWARD} pts and +${DAILY_LOGIN_XP_REWARD} XP today.`,
-    dailyLoginReady: `Claim +${DAILY_LOGIN_POINTS_REWARD} pts and +${DAILY_LOGIN_XP_REWARD} XP before the daily timer resets.`,
+    dailyLoginClaimed: `You already secured +${DAILY_LOGIN_XP_REWARD} XP today.`,
+    dailyLoginReady: `Claim +${DAILY_LOGIN_XP_REWARD} XP before the daily timer resets.`,
     spinChecking: "Checking today's spin window.",
     spinReady: "Ready",
     spinCooling: "Cooling",
@@ -220,7 +220,7 @@ function getHomeCopy(language: "en" | "ar") {
       `Level ${level} opens more room for quests, spins, and reward progress.`,
     keepGoing: "Keep Going",
     dailyLoginClaimedToast: "Daily login claimed",
-    dailyLoginClaimedToastHint: `+${DAILY_LOGIN_POINTS_REWARD} pts and +${DAILY_LOGIN_XP_REWARD} XP secured.`,
+    dailyLoginClaimedToastHint: `+${DAILY_LOGIN_XP_REWARD} XP secured.`,
     dailyLoginFailedToast: "Daily login unavailable",
     introBadge: "Today",
     introTitle: "Ready for today?",
@@ -289,9 +289,6 @@ function getHomeCopy(language: "en" | "ar") {
 
 function getLocalizedRewardTargetStatusLabel(target: RewardTarget, copy: ReturnType<typeof getHomeCopy>) {
   if (target.canRedeemNow) return copy.readyNow;
-  if (!target.levelNeeded && !target.daysNeeded && target.pointsNeeded > 0) {
-    return copy.needsPoints(formatCompactNumber(target.pointsNeeded));
-  }
   if (target.levelNeeded > 0) return copy.levelShort(target.reward.minLevel);
   if (target.daysNeeded > 0) return copy.dayLock(target.daysNeeded);
   return copy.nextUp;
@@ -309,7 +306,6 @@ function getLocalizedRewardTargetSummary(
   const blockers: string[] = [];
   if (target.levelNeeded > 0) blockers.push(copy.reachLevel(target.reward.minLevel));
   if (target.daysNeeded > 0) blockers.push(copy.waitDays(target.daysNeeded));
-  if (target.pointsNeeded > 0) blockers.push(copy.bankPoints(formatCompactNumber(target.pointsNeeded)));
 
   return blockers.length ? copy.unlockSummary(blockers.join(language === "ar" ? " و " : " and ")) : copy.nextRewardTargetSummary;
 }

@@ -74,7 +74,7 @@ export function GuestOrdersDrawer() {
                       {order.requestCode.slice(0, 16)}...
                     </div>
                     <Button asChild size="sm" variant="ghost" onClick={() => setIsOpen(false)}>
-                      <Link href={`/requests/${order.requestCode}?byCode=true`} className="text-xs">
+                      <Link href={`/orders/${order.requestCode}?byCode=true`} className="text-xs">
                         View <ArrowRight className="w-3.5 h-3.5 ml-1" />
                       </Link>
                     </Button>

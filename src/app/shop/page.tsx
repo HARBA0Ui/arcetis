@@ -264,7 +264,7 @@ export default function RewardsPage() {
             try {
               const created = await redeem.mutateAsync({ rewardId: confirmState.rewardId });
               setConfirmState(null);
-              const nextPath = `/requests/${created.id}`;
+              const nextPath = `/orders/${created.id}`;
               toast.success("Request created", "Your product request page is ready.");
               startNavigation(nextPath);
               router.push(nextPath);

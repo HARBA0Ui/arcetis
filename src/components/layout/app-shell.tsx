@@ -21,7 +21,7 @@ import { NotificationCenter } from "@/components/common/notification-center";
 import { ThemeToggle } from "@/components/common/theme-toggle";
 import { CurrencyToggle } from "@/components/common/currency-toggle";
 import { MobileNavSidebar } from "@/components/layout/mobile-nav-sidebar";
-import { GuestOrdersDrawer } from "@/components/requests/guest-orders-drawer";
+import { GuestOrdersDrawer } from "@/components/orders/guest-orders-drawer";
 import { UserMenu } from "@/components/common/user-menu";
 import { ProtectedShellLoading } from "@/components/layout/protected-shell-loading";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -34,8 +34,7 @@ import { useUserStats } from "@/hooks/usePlatform";
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/shop", label: "Shop", icon: CircleDollarSign },
-  { href: "/giveaways", label: "Giveaways", icon: PartyPopper }
+  { href: "/shop", label: "Shop", icon: CircleDollarSign }
 ];
 
 function isActiveRoute(pathname: string, href: string) {
@@ -50,15 +49,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const sessionHint = useAuthToken();
   const { data: user, error, isError, isFetched } = useMe({ bootstrap: !sessionHint });
   const stats = useUserStats();
-  const features = stats.data?.features ?? { tasksEnabled: true, pointsEnabled: true, spinEnabled: true };
   const prefetchedRoutesRef = useRef(false);
   const logoutTarget = pathname === "/" ? "/" : "/login";
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   
-  const filteredNavItems = navItems.filter((item) => {
-    if (item.href === "/spin" && !features.spinEnabled) return false;
-    return true;
-  });
+  const filteredNavItems = navItems;
   
   const mobileNavItems = filteredNavItems.filter((item) => item.href !== "/");
   const hasVerifiedSession = !!sessionHint || !!user;
@@ -134,7 +129,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       const warmRoutes = new Set([
         ...navItems.map((item) => item.href),
         "/profile",
-        "/requests",
+        "/orders",
         "/giveaways/mine"
       ]);
 
@@ -246,20 +241,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 Profile
               </Link>
               <Link
-                href="/requests"
+                href="/orders"
                 onClick={() => setIsMobileNavOpen(false)}
                 className="flex items-center gap-3 rounded-[1rem] border border-white/10 bg-white/[0.04] px-3.5 py-3 text-sm text-white/78 transition-colors hover:bg-white/[0.08] hover:text-white"
               >
                 <ClipboardList className="h-4 w-4" />
-                Requests
-              </Link>
-              <Link
-                href="/giveaways/mine"
-                onClick={() => setIsMobileNavOpen(false)}
-                className="flex items-center gap-3 rounded-[1rem] border border-white/10 bg-white/[0.04] px-3.5 py-3 text-sm text-white/78 transition-colors hover:bg-white/[0.08] hover:text-white"
-              >
-                <PartyPopper className="h-4 w-4" />
-                My giveaways
+                Orders
               </Link>
               <button
                 type="button"

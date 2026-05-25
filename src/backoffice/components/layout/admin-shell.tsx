@@ -27,7 +27,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     { href: "/backoffice/dashboard/giveaways", label: "Giveaways", icon: PartyPopper },
     { href: "/backoffice/dashboard/sponsors", label: "Sponsors", icon: Shield },
     { href: "/backoffice/dashboard/products", label: "Products", icon: Package2 },
-    { href: "/backoffice/dashboard/redemptions", label: "Redemptions", icon: ClipboardList },
+    { href: "/backoffice/dashboard/orders", label: "Orders", icon: ClipboardList },
     { href: "/backoffice/dashboard/users", label: "Users", icon: Users },
     { href: "/backoffice/dashboard/config", label: "Config", icon: Settings2 },
     { href: "/backoffice/dashboard/admins", label: "Admins", icon: Shield }

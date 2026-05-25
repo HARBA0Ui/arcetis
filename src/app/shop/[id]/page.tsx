@@ -396,7 +396,7 @@ export default function RewardDetailPage() {
               });
 
               setRedeemConfirmOpen(false);
-              const nextPath = `/requests/${created.id}`;
+              const nextPath = `/orders/${created.id}`;
               toast.success(t("requestCreated"), t("requestPageReady"));
               startNavigation(nextPath);
               router.push(nextPath);
@@ -443,8 +443,8 @@ export default function RewardDetailPage() {
               }
 
               const nextPath = guestEmail && created.requestCode 
-                ? `/requests/${created.requestCode}?byCode=true` 
-                : `/requests/${created.id}`;
+                ? `/orders/${created.requestCode}?byCode=true` 
+                : `/orders/${created.id}`;
               startNavigation(nextPath);
               router.push(nextPath);
             } catch (error) {

@@ -104,20 +104,12 @@ export function UserMenu({ user, className, onLogout }: UserMenuProps) {
               {t("menuProfile")}
             </Link>
             <Link
-              href="/requests"
+              href="/orders"
               className="flex items-center gap-2 rounded-md px-2 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               onClick={() => setOpen(false)}
             >
               <ClipboardList className="h-4 w-4" />
               {t("menuRequests")}
-            </Link>
-            <Link
-              href="/giveaways/mine"
-              className="flex items-center gap-2 rounded-md px-2 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              onClick={() => setOpen(false)}
-            >
-              <PartyPopper className="h-4 w-4" />
-              My giveaways
             </Link>
             <button
               type="button"

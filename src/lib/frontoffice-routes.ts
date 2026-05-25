@@ -1,7 +1,7 @@
 export const frontofficeProtectedRoutePrefixes = [
   "/spin",
   "/giveaways",
-  "/requests",
+  "/orders",
   "/referrals",
   "/profile"
 ] as const;
@@ -15,7 +15,7 @@ export function matchesRoutePrefix(pathname: string, prefix: string) {
 }
 
 export function isFrontofficeProtectedRoute(pathname: string) {
-  if (pathname.startsWith("/requests/") && pathname.length > "/requests/".length) {
+  if (pathname.startsWith("/orders/") && pathname.length > "/orders/".length) {
     return false; // Allow guests to view specific requests via code
   }
   return frontofficeProtectedRoutePrefixes.some((prefix) => matchesRoutePrefix(pathname, prefix));

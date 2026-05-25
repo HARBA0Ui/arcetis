@@ -11,8 +11,8 @@ describe("frontoffice route protection", () => {
   it("keeps giveaways and requests inside the protected route map", () => {
     expect(isFrontofficeProtectedRoute("/giveaways")).toBe(true);
     expect(isFrontofficeProtectedRoute("/giveaways/mine")).toBe(true);
-    expect(isFrontofficeProtectedRoute("/requests")).toBe(true);
-    expect(isFrontofficeProtectedRoute("/requests/entry-1")).toBe(true);
+    expect(isFrontofficeProtectedRoute("/orders")).toBe(true);
+    expect(isFrontofficeProtectedRoute("/orders/entry-1")).toBe(true);
     expect(isFrontofficeProtectedRoute("/login")).toBe(false);
   });
 });

@@ -193,7 +193,12 @@ export default function BackofficeRedemptionsPage() {
                     {redemption.user?.username ?? "Unknown user"}
                     {redemption.planLabel ? ` | ${redemption.planLabel}` : ""}
                   </p>
-                  <p className="mt-3 text-xs text-muted-foreground">{formatDate(redemption.createdAt)}</p>
+                  <div className="mt-3 flex items-center justify-between">
+                    <p className="text-xs text-muted-foreground">{formatDate(redemption.createdAt)}</p>
+                    <Badge variant="outline" className="px-1.5 py-0.5 text-[10px] font-semibold border-white/10 bg-white/5">
+                      {typeof redemption.pointsSpent === "number" ? "🪙 Points" : "💰 Kashy"}
+                    </Badge>
+                  </div>
                 </button>
               ))
             ) : (
@@ -229,7 +234,7 @@ export default function BackofficeRedemptionsPage() {
                     {selectedRedemption.planLabel ?? "Standard"}
                     {typeof selectedRedemption.pointsSpent === "number"
                       ? ` | ${formatNumber(selectedRedemption.pointsSpent)} pts`
-                      : ""}
+                      : selectedRedemption.reward?.tndPrice ? ` | ${selectedRedemption.reward.tndPrice} TND` : ""}
                   </CardDescription>
                 </div>
                 <Badge className={statusTone[selectedRedemption.status]} variant="outline">
@@ -319,7 +324,7 @@ export default function BackofficeRedemptionsPage() {
 
                   <div className="rounded-[1.3rem] border border-border/70 bg-background/60 p-4">
                     <p className="text-sm leading-6 text-muted-foreground">
-                      Rejecting this request will automatically refund the user&apos;s points and return the product to stock.
+                      Rejecting this request will automatically refund the user&apos;s points (if applicable) and return the product to stock.
                     </p>
 
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">

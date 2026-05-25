@@ -166,7 +166,7 @@ export default function RequestsPage() {
 
 
                     <Button asChild className="w-full justify-between">
-                      <Link href={`/requests/${request.id}`}>
+                      <Link href={`/orders/${request.id}`}>
                         {t("openDetails")}
                         <ArrowRight className="h-4 w-4" />
                       </Link>

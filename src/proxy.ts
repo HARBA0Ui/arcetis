@@ -92,7 +92,7 @@ export const config = {
     "/spin/:path*",
     "/giveaways/:path*",
     "/rewards/:path*",
-    "/requests/:path*",
+    "/orders/:path*",
     "/referrals/:path*",
     "/profile/:path*",
     "/backoffice/:path*",

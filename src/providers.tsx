@@ -7,7 +7,7 @@ import { ToastProvider } from "@/components/common/toast-center";
 import { LanguageProvider } from "@/components/i18n/language-provider";
 import { CurrencyProvider } from "@/components/common/currency-provider";
 import { NavigationProvider } from "@/components/navigation/navigation-provider";
-import { GuestOrdersSync } from "@/components/requests/guest-orders-sync";
+import { GuestOrdersSync } from "@/components/orders/guest-orders-sync";
 
 const ThemeProvider = NextThemesProvider as ComponentType<PropsWithChildren<ThemeProviderProps>>;
 

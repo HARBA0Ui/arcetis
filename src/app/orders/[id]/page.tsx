@@ -83,7 +83,7 @@ export default function RequestDetailPage() {
         subtitle={t("requestDetailsSubtitle")}
         right={
           <Button asChild variant="outline" size="sm">
-            <Link href="/requests">{t("backToRequests")}</Link>
+            <Link href="/orders">{t("backToRequests")}</Link>
           </Button>
         }
       />
