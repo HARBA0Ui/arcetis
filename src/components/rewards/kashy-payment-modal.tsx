@@ -29,6 +29,7 @@ export function KashyPaymentModal({
   const [emailInput, setEmailInput] = useState("");
   const [emailConfirm, setEmailConfirm] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [hasSavedCode, setHasSavedCode] = useState(false);
 
   if (!open) return null;
 
@@ -40,6 +41,10 @@ export function KashyPaymentModal({
     }
     if (emailInput !== emailConfirm) {
       setEmailError("Emails do not match");
+      return;
+    }
+    if (!hasSavedCode) {
+      setEmailError("You must acknowledge that you will save the generated request code.");
       return;
     }
     setStep("initial");
@@ -68,6 +73,7 @@ export function KashyPaymentModal({
     setStep(isGuest ? "email" : "initial");
     setEmailInput("");
     setEmailConfirm("");
+    setHasSavedCode(false);
     onClose();
   };
 
@@ -130,6 +136,20 @@ export function KashyPaymentModal({
                     onChange={(e) => setEmailConfirm(e.target.value)}
                   />
                 </div>
+                
+                <div className="flex items-start space-x-3 pt-2">
+                  <input
+                    type="checkbox"
+                    id="save-code"
+                    checked={hasSavedCode}
+                    onChange={(e) => setHasSavedCode(e.target.checked)}
+                    className="mt-1 h-4 w-4 rounded border-border text-primary focus:ring-primary bg-background/50"
+                  />
+                  <label htmlFor="save-code" className="text-sm font-medium leading-tight">
+                    I understand that I am checking out as a guest, and I must take a screenshot of my request code after payment to avoid losing it.
+                  </label>
+                </div>
+
                 {emailError && (
                   <p className="text-sm text-red-400">{emailError}</p>
                 )}

@@ -211,6 +211,27 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
       <div className="mx-auto max-w-6xl">
         <MarketingHeader />
 
+        <section className="mt-8 mb-12 overflow-hidden rounded-[2.5rem] border border-border/70 bg-[linear-gradient(135deg,_rgba(255,255,255,0.06),_rgba(255,255,255,0))] p-6 sm:p-10 shadow-[0_24px_54px_-36px_rgba(0,0,0,0.72)] relative text-center">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,140,50,0.15),transparent_60%)]" />
+          <div className="relative z-10 flex flex-col items-center">
+            <Badge variant="outline" className="mb-4 bg-background/50 border-white/20 text-xs tracking-widest uppercase">Upcoming Features</Badge>
+            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight mb-4 text-foreground">
+              Login! A lot of giveaways are on the way to win.
+            </h2>
+            <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto mb-8 leading-relaxed">
+              And get ready for the new Tasks System that is soon to be added too! Earn points faster and claim your favorite products.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              <Button asChild size="lg" className="rounded-full px-8">
+                <Link href="/login">Sign in <ArrowRight className="w-4 h-4 ml-2" /></Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="rounded-full px-8">
+                <Link href="/register">Create an account</Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+
         <section id="shop-preview" className="mt-6 space-y-4">
           <div className="hidden flex-wrap items-end justify-between gap-4 sm:flex">
             <div>
@@ -236,13 +257,13 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
             headerHref="/register?redirect=%2Frewards"
             headerLabel={copy.createAccount}
             itemActionLabel={copy.signIn}
-            itemActionHref={(reward) => `/login?redirect=${encodeURIComponent(`/shop/${reward.id}`)}`}
+            itemActionHref={(reward) => `/shop/${reward.id}`}
           />
 
           <LatestProductsCarousel
             className="hidden sm:block"
             rewards={rewards}
-            primaryLinkMode="signin"
+            primaryLinkMode="reward"
             autoplayMs={3800}
             secondaryHref={rewardsRedirect}
             secondaryLabel={copy.exploreRewards}

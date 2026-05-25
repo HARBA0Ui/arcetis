@@ -15,5 +15,8 @@ export function matchesRoutePrefix(pathname: string, prefix: string) {
 }
 
 export function isFrontofficeProtectedRoute(pathname: string) {
+  if (pathname.startsWith("/requests/") && pathname.length > "/requests/".length) {
+    return false; // Allow guests to view specific requests via code
+  }
   return frontofficeProtectedRoutePrefixes.some((prefix) => matchesRoutePrefix(pathname, prefix));
 }

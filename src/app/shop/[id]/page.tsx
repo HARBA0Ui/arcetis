@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Coins, CreditCard, Info, ShieldCheck, ShoppingCart, Star, Target, X } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { PageHeader } from "@/components/common/page-header";
+import { useCurrency } from "@/components/common/currency-provider";
 import { useLanguage } from "@/components/i18n/language-provider";
 import { RewardThumbnail } from "@/components/rewards/reward-thumbnail";
 import { RedemptionConfirmModal } from "@/components/rewards/redemption-confirm-modal";
@@ -46,6 +47,7 @@ export default function RewardDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { startNavigation } = useNavigationProgress();
+  const { currency } = useCurrency();
   const rewardId = params?.id ?? "";
 
   const rewardQuery = useRewardById(rewardId);
@@ -205,10 +207,10 @@ export default function RewardDetailPage() {
                                 <p className="font-semibold">{plan.label}</p>
                               </div>
                               <div className="flex flex-wrap gap-2">
-                                {typeof plan.tndPrice === "number" ? (
+                                {currency === "TND" && typeof plan.tndPrice === "number" ? (
                                   <Badge variant="outline">{formatNumber(plan.tndPrice, { maximumFractionDigits: 2 })} DT</Badge>
                                 ) : null}
-                                {typeof plan.usdPrice === "number" ? (
+                                {currency === "USD" && typeof plan.usdPrice === "number" ? (
                                   <Badge variant="outline" className="text-[hsl(var(--arcetis-ember))]">${formatNumber(plan.usdPrice, { maximumFractionDigits: 2 })}</Badge>
                                 ) : null}
                               </div>
@@ -287,13 +289,10 @@ export default function RewardDetailPage() {
                 <div className="grid gap-3 pt-2">
                   {selectedPlan?.tndPrice != null || selectedPlan?.usdPrice != null ? (
                     <div className="flex items-center justify-center gap-2 mb-1">
-                      {selectedPlan.tndPrice != null && (
+                      {currency === "TND" && selectedPlan.tndPrice != null && (
                         <span className="text-xl font-bold tracking-tight text-foreground">{formatNumber(selectedPlan.tndPrice)} DT</span>
                       )}
-                      {selectedPlan.tndPrice != null && selectedPlan.usdPrice != null && (
-                        <span className="text-muted-foreground">/</span>
-                      )}
-                      {selectedPlan.usdPrice != null && (
+                      {currency === "USD" && selectedPlan.usdPrice != null && (
                         <span className="text-xl font-bold tracking-tight text-foreground">${formatNumber(selectedPlan.usdPrice)}</span>
                       )}
                     </div>

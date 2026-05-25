@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { ShoppingBag, X, ArrowRight, Clock } from "lucide-react";
 import { useGuestOrders } from "@/hooks/use-guest-orders";
@@ -10,6 +11,11 @@ import { formatDateTime } from "@/lib/format";
 export function GuestOrdersDrawer() {
   const [isOpen, setIsOpen] = useState(false);
   const { orders, isLoaded } = useGuestOrders();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (!isLoaded || orders.length === 0) return null;
 
@@ -26,7 +32,7 @@ export function GuestOrdersDrawer() {
         </span>
       </button>
 
-      {isOpen && (
+      {isOpen && mounted && createPortal(
         <div className="fixed inset-0 z-[100] flex justify-end">
           <div 
             className="absolute inset-0 bg-background/80 backdrop-blur-sm"
@@ -77,7 +83,8 @@ export function GuestOrdersDrawer() {
               ))}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
