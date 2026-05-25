@@ -62,7 +62,7 @@ export default function RequestDetailPage() {
   const requestedInfoEntries = Object.entries(request?.requestedInfo ?? {});
 
   return (
-    <>
+    <div className="container max-w-6xl mx-auto py-8 px-4 md:px-8">
       {!token && request && (
         <div className="mb-6 rounded-lg border border-primary/50 bg-primary/10 p-4 flex gap-4">
           <LogIn className="w-5 h-5 text-primary mt-0.5 shrink-0" />
@@ -125,9 +125,6 @@ export default function RequestDetailPage() {
 
                     <div className="mt-5 flex flex-wrap gap-2">
                       {request.planLabel ? <Badge variant="outline">{request.planLabel}</Badge> : null}
-                      {typeof request.pointsSpent === "number" ? (
-                        <Badge variant="outline">{formatNumber(request.pointsSpent)} pts</Badge>
-                      ) : null}
                       <Badge variant="outline">{t("created")} {formatDate(request.createdAt)}</Badge>
                     </div>
                   </div>
@@ -275,6 +272,6 @@ export default function RequestDetailPage() {
           </CardContent>
         </Card>
       )}
-    </>
+    </div>
   );
 }
