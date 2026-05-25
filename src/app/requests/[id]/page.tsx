@@ -18,7 +18,6 @@ import { formatDateTime, formatNumber } from "@/lib/format";
 import { getDisplayRequestCode } from "@/lib/request-code";
 
 import { useAuthToken } from "@/hooks/use-auth-token";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { LogIn } from "lucide-react";
 
 const INSTAGRAM_URL = "https://www.instagram.com/arcetis_shop/";
@@ -65,16 +64,18 @@ export default function RequestDetailPage() {
   return (
     <>
       {!token && request && (
-        <Alert className="mb-6 border-primary/50 bg-primary/10">
-          <LogIn className="w-5 h-5 text-primary" />
-          <AlertTitle className="text-primary font-semibold">Save this order permanently</AlertTitle>
-          <AlertDescription className="text-muted-foreground mt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <span>You're currently viewing a guest order. Log in to automatically sync it to your account so you don't lose access.</span>
-            <Button asChild size="sm" variant="default" className="shrink-0">
-              <Link href="/login">Log In / Register</Link>
-            </Button>
-          </AlertDescription>
-        </Alert>
+        <div className="mb-6 rounded-lg border border-primary/50 bg-primary/10 p-4 flex gap-4">
+          <LogIn className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+          <div className="flex-1">
+            <h5 className="text-primary font-semibold tracking-tight">Save this order permanently</h5>
+            <div className="text-muted-foreground mt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-sm">
+              <span>You're currently viewing a guest order. Log in to automatically sync it to your account so you don't lose access.</span>
+              <Button asChild size="sm" variant="default" className="shrink-0">
+                <Link href="/login">Log In / Register</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
 
       <PageHeader
