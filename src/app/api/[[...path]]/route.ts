@@ -64,7 +64,9 @@ import {
   listRewardCatalog,
   listRewards,
   listUserRedemptions,
-  redeemReward
+  redeemReward,
+  checkoutCart,
+  getRedemptionsByRequestCode
 } from "@/server/services/reward.service";
 import {
   createSponsorRequest,
@@ -124,6 +126,7 @@ import {
   questSubmissionsQuerySchema,
   questsQuerySchema,
   redeemRewardSchema,
+  checkoutSchema,
   rewardCatalogQuerySchema,
   reviewGiveawayEntrySchema,
   registerSchema,
@@ -317,6 +320,11 @@ async function handleGet(request: NextRequest, path: string[]) {
     const auth = requireAuth(request);
     const redemption = await getUserRedemptionById(auth.userId, path[1]);
     return NextResponse.json({ redemption });
+  }
+
+  if (path[0] === "requests" && path[1] === "by-code" && path.length === 3) {
+    const redemptions = await getRedemptionsByRequestCode(path[2]);
+    return NextResponse.json({ redemptions });
   }
 
   if (path[0] === "referral" && path[1] === "stats" && path.length === 2) {
@@ -837,6 +845,22 @@ async function handlePost(request: NextRequest, path: string[]) {
     const payload = await parseJsonBody(request, redeemRewardSchema);
     const redemption = await redeemReward(auth.userId, payload.rewardId, payload.planId, payload.requestedInfo, payload.paymentMethod);
     return NextResponse.json({ redemption }, { status: 201 });
+  }
+
+  if (path[0] === "checkout" && path.length === 1) {
+    // Attempt to get user auth if it exists
+    let auth = null;
+    try {
+      auth = requireAuth(request);
+    } catch {
+      // Guest checkout
+    }
+    const payload = await parseJsonBody(request, checkoutSchema);
+    if (!auth?.userId && !payload.guestEmail) {
+      return NextResponse.json({ error: "Email is required for guest checkout" }, { status: 400 });
+    }
+    const redemptions = await checkoutCart(payload, auth?.userId);
+    return NextResponse.json({ redemptions }, { status: 201 });
   }
 
   if (path[0] === "giveaways" && path[2] === "apply" && path.length === 3) {

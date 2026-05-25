@@ -302,10 +302,11 @@ model GiveawayEntry {
 
 model Redemption {
   id        String           @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String           @db.ObjectId
+  userId    String?          @db.ObjectId
+  guestEmail String?
   rewardId  String           @db.ObjectId
   reviewedById String?       @db.ObjectId
-  user      User             @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user      User?            @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   reward    Reward           @relation(fields: [rewardId], references: [id])
   reviewedBy User?           @relation("ReviewedRedemptions", fields: [reviewedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
   status    RedemptionStatus @default(pending)

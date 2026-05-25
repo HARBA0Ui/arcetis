@@ -69,8 +69,6 @@ export default function BackofficeGiveawaysPage() {
     imageUrl: "",
     durationDays: 7,
     winnerCount: 1,
-    minLevel: 1,
-    minAccountAge: 0,
     allowEntryEdits: false,
     requiresJustification: false,
     justificationLabel: "Upload 1 to 3 screenshots that support your entry"
@@ -114,8 +112,6 @@ export default function BackofficeGiveawaysPage() {
         imageUrl,
         durationDays: form.durationDays,
         winnerCount: form.winnerCount,
-        minLevel: form.minLevel,
-        minAccountAge: form.minAccountAge,
         allowEntryEdits: form.allowEntryEdits,
         requiresJustification: form.requiresJustification,
         justificationLabel: form.requiresJustification ? form.justificationLabel : undefined,
@@ -130,8 +126,6 @@ export default function BackofficeGiveawaysPage() {
         imageUrl: "",
         durationDays: 7,
         winnerCount: 1,
-        minLevel: 1,
-        minAccountAge: 0,
         allowEntryEdits: false,
         requiresJustification: false,
         justificationLabel: "Upload 1 to 3 screenshots that support your entry"
@@ -263,45 +257,6 @@ export default function BackofficeGiveawaysPage() {
                         }))
                       }
                     />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="giveaway-min-level">Minimum level</Label>
-                    <Input
-                      id="giveaway-min-level"
-                      type="number"
-                      min={1}
-                      max={100}
-                      value={form.minLevel}
-                      onChange={(event) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          minLevel: Math.max(1, Math.min(100, Number(event.target.value) || 1))
-                        }))
-                      }
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="giveaway-min-account-age">Minimum account age</Label>
-                    <div className="relative">
-                      <Input
-                        id="giveaway-min-account-age"
-                        type="number"
-                        min={0}
-                        max={3650}
-                        value={form.minAccountAge}
-                        onChange={(event) =>
-                          setForm((prev) => ({
-                            ...prev,
-                            minAccountAge: Math.max(0, Math.min(3650, Number(event.target.value) || 0))
-                          }))
-                        }
-                      />
-                      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                        days
-                      </span>
-                    </div>
                   </div>
                 </div>
 

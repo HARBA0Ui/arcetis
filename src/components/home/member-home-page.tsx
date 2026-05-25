@@ -541,17 +541,11 @@ export function MemberHomePage() {
         <CardDescription className="text-[11px] uppercase tracking-[0.34em] text-white/56">{copy.progressSnapshot}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-3 px-5 pb-5 sm:px-6 sm:pb-6">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3">
           <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.06] p-3.5">
             <p className="text-[11px] uppercase tracking-[0.22em] text-white/56">{t("level")}</p>
             <p className="mt-2 text-[2rem] leading-none font-semibold tracking-tight">
               {t("minimumLevel", { level: stats.data.user.level }).replace("+", "")}
-            </p>
-          </div>
-          <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.06] p-3.5">
-            <p className="text-[11px] uppercase tracking-[0.22em] text-white/56">{t("menuPoints")}</p>
-            <p className="mt-2 text-[2rem] leading-none font-semibold tracking-tight">
-              {formatCompactNumber(stats.data.user.points)}
             </p>
           </div>
         </div>
@@ -694,9 +688,6 @@ export function MemberHomePage() {
                       </p>
                     </div>
                   </div>
-                  <span className="inline-flex w-fit shrink-0 items-center rounded-full border border-border/70 bg-background/75 px-3 py-1 text-sm font-semibold sm:justify-self-end">
-                    {formatCompactNumber(entry.points)} {copy.pointsUnit}
-                  </span>
                 </div>
               );
             })}
@@ -727,9 +718,6 @@ export function MemberHomePage() {
                       </p>
                     </div>
                   </div>
-                  <span className="inline-flex w-fit shrink-0 items-center rounded-full border border-primary/20 bg-background/75 px-3 py-1 text-sm font-semibold sm:justify-self-end">
-                    {formatCompactNumber(stats.data.user.points)} {copy.pointsUnit}
-                  </span>
                 </div>
               </>
             ) : null}

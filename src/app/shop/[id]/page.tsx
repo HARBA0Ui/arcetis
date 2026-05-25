@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Coins, CreditCard, Info, ShieldCheck, Star, Target, X } from "lucide-react";
+import { Coins, CreditCard, Info, ShieldCheck, ShoppingCart, Star, Target, X } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { PageHeader } from "@/components/common/page-header";
 import { useLanguage } from "@/components/i18n/language-provider";
@@ -12,6 +12,7 @@ import { KashyPaymentModal } from "@/components/rewards/kashy-payment-modal";
 import { Spinner } from "@/components/common/spinner";
 import { SyncBanner } from "@/components/common/sync-banner";
 import { useToast } from "@/components/common/toast-center";
+import { useCart } from "@/hooks/use-cart";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -99,6 +100,7 @@ export default function RewardDetailPage() {
   const [isTndModalOpen, setTndModalOpen] = useState(false);
   const [isKashyModalOpen, setKashyModalOpen] = useState(false);
   const [isRedeemConfirmOpen, setRedeemConfirmOpen] = useState(false);
+  const cart = useCart();
 
   useEffect(() => {
     if (!isTndModalOpen && !isKashyModalOpen) {
@@ -127,17 +129,7 @@ export default function RewardDetailPage() {
     !!selectedPlan &&
     reward.stock > 0 &&
     !missingRequiredInfo;
-  const summaryFacts = reward
-    ? [
-        ...(stats.data?.features.pointsEnabled !== false ? [{
-          id: "points-remaining",
-          label: t("remaining"),
-          value: stats.data && selectedPlan ? `${formatNumber(remainingPoints)} pts` : "...",
-          icon: Target,
-          iconClassName: remainingPoints > 0 ? "text-[hsl(var(--arcetis-ember))]" : "text-emerald-300"
-        }] : [])
-      ]
-    : [];
+  const summaryFacts: any[] = [];
 
   return (
     <>
@@ -211,18 +203,8 @@ export default function RewardDetailPage() {
                             <div className="flex flex-wrap items-center justify-between gap-3">
                               <div>
                                 <p className="font-semibold">{plan.label}</p>
-                                {stats.data?.features.pointsEnabled !== false ? (
-                                  <p className="mt-1 text-xs text-muted-foreground">
-                                    {formatNumber(plan.pointsCost)} {t("menuPoints").toLowerCase()}
-                                  </p>
-                                ) : null}
                               </div>
                               <div className="flex flex-wrap gap-2">
-                                {stats.data?.features.pointsEnabled !== false ? (
-                                  <Badge variant={isActive ? "default" : "outline"}>
-                                    {formatNumber(plan.pointsCost)} pts
-                                  </Badge>
-                                ) : null}
                                 {typeof plan.tndPrice === "number" ? (
                                   <Badge variant="outline">{formatNumber(plan.tndPrice, { maximumFractionDigits: 2 })} DT</Badge>
                                 ) : null}
@@ -288,14 +270,7 @@ export default function RewardDetailPage() {
                 <div className="flex flex-col items-center gap-2">
                   <div>
                     <CardTitle className="flex items-center justify-center gap-2 text-[1.8rem] leading-none tabular-nums">
-                      {stats.data?.features.pointsEnabled !== false ? (
-                        <>
-                          <Coins className="h-5 w-5 text-[hsl(var(--arcetis-ember))]" />
-                          {selectedPlan ? `${formatNumber(selectedPlan.pointsCost)} pts` : "-"}
-                        </>
-                      ) : (
-                        <span className="text-xl">{reward.title}</span>
-                      )}
+                      <span className="text-xl">{reward.title}</span>
                     </CardTitle>
                   </div>
                   <div className="flex flex-wrap justify-center gap-1.5">
@@ -309,73 +284,50 @@ export default function RewardDetailPage() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-5">
-                <div className="grid grid-cols-2 gap-3 border-y border-border/60 py-4">
-                  {summaryFacts.map((fact) => {
-                    const Icon = fact.icon;
-
-                    return (
-                      <div
-                        key={fact.id}
-                        title={fact.label}
-                        aria-label={`${fact.label}: ${fact.value}`}
-                        className="flex flex-col items-center text-center"
-                      >
-                        <Icon className={`h-4 w-4 ${fact.iconClassName}`} />
-                        <p className="mt-2 text-[0.62rem] uppercase tracking-[0.16em] text-muted-foreground">
-                          {fact.label}
-                        </p>
-                        <p className="mt-2 text-sm font-semibold leading-5 tracking-tight tabular-nums">
-                          {fact.value}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="grid gap-3">
-                  {stats.data?.features.pointsEnabled !== false ? (
-                    <Button
-                      className="h-12 w-full"
-                      disabled={!canRedeem || redeem.isPending}
-                      onClick={() => setRedeemConfirmOpen(true)}
-                    >
-                      {redeem.isPending ? (
-                        <span className="inline-flex items-center gap-2">
-                          <Spinner /> {t("processing")}
-                        </span>
-                      ) : reward.stock <= 0 ? (
-                        <span className="inline-flex items-center gap-2">
-                          <X className="h-4 w-4" />
-                          {t("outOfStock")}
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-2">
-                          <Coins className="h-4 w-4" />
-                          {t("getProduct")}
-                        </span>
-                      )}
-                    </Button>
-                  ) : null}
-
+                <div className="grid gap-3 pt-2">
                   <Button
-                    type="button"
-                    variant="outline"
                     className="h-12 w-full"
-                    disabled={(!selectedPlan?.paymentLink && typeof selectedPlan?.tndPrice !== "number" && typeof selectedPlan?.usdPrice !== "number") || !canRedeem}
+                    disabled={!canRedeem}
                     onClick={() => {
-                      if (selectedPlan?.paymentLink) {
-                        setKashyModalOpen(true);
-                      } else {
-                        setTndModalOpen(true);
+                      if (!reward || !selectedPlan) return;
+                      const hasPoints = typeof selectedPlan.pointsCost === "number";
+                      const hasKashy = !!selectedPlan.paymentLink;
+                      const hasTnd = typeof selectedPlan.tndPrice === "number";
+                      const hasUsd = typeof selectedPlan.usdPrice === "number";
+
+                      let method: "kashy" | undefined = undefined;
+                      // Determine primary payment method based on plan settings
+                      if (hasKashy || hasTnd || hasUsd) {
+                        method = "kashy";
                       }
+
+                      cart.addItem({
+                        rewardId: reward.id,
+                        planId: selectedPlan.id,
+                        requestedInfo: deliveryInfo,
+                        paymentMethod: method,
+                        title: reward.title,
+                        imageUrl: reward.imageUrl,
+                        planLabel: selectedPlan.label,
+                        pointsCost: selectedPlan.pointsCost,
+                        tndPrice: selectedPlan.tndPrice ?? undefined,
+                        usdPrice: selectedPlan.usdPrice ?? undefined,
+                      });
+                      
+                      toast.success("Added to cart", `${reward.title} has been added to your cart.`);
                     }}
                   >
-                    <span className="inline-flex items-center gap-2">
-                      <CreditCard className="h-4 w-4" />
-                      {selectedPlan?.paymentLink || typeof selectedPlan?.tndPrice === "number" || typeof selectedPlan?.usdPrice === "number"
-                        ? "Buy"
-                        : t("unavailableDt")}
-                    </span>
+                    {reward && reward.stock <= 0 ? (
+                      <span className="inline-flex items-center gap-2">
+                        <X className="h-4 w-4" />
+                        {t("outOfStock")}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-2">
+                        <ShoppingCart className="h-4 w-4" />
+                        Add to Cart
+                      </span>
+                    )}
                   </Button>
                 </div>
 

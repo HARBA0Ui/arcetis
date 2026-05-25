@@ -239,7 +239,7 @@ export default function BackofficeGiveawayDetailPage() {
                   <div className="rounded-xl border border-border/70 bg-background/60 p-3">
                     <p className="text-xs uppercase tracking-[0.18em]">Public rules</p>
                     <p className="mt-2 text-foreground">
-                      Level {formatNumber(giveaway.data.minLevel ?? 1)}+ • {formatAccountAge(giveaway.data.minAccountAge)}
+                      No minimum requirements
                     </p>
                   </div>
                   <div className="rounded-xl border border-border/70 bg-background/60 p-3">

@@ -444,7 +444,8 @@ export async function listRedemptions(query: AdminCollectionQuery & { status?: R
                   ]
                 }
               }
-            }
+            },
+            { guestEmail: stringContains(trimmedQuery) }
           ]
         }
       : {})
@@ -536,22 +537,24 @@ export async function updateRedemptionStatus(
   });
 
   if (updated) {
-    await createNotification({
-      userId: redemption.userId,
-      type: "REDEMPTION_REVIEWED",
-      title: status === "approved" ? "Request delivered" : "Request rejected",
-      message:
-        status === "approved"
-          ? `${redemption.reward.title} was marked delivered by the admin team.`
-          : `${redemption.reward.title} was rejected. Your points were refunded automatically.`,
-      link: `/requests/${redemption.id}`,
-      metadata: {
-        redemptionId: redemption.id,
-        rewardId: redemption.rewardId,
-        requestCode: redemption.requestCode,
-        status
-      }
-    });
+    if (redemption.userId) {
+      await createNotification({
+        userId: redemption.userId,
+        type: "REDEMPTION_REVIEWED",
+        title: status === "approved" ? "Request delivered" : "Request rejected",
+        message:
+          status === "approved"
+            ? `${redemption.reward.title} was marked delivered by the admin team.`
+            : `${redemption.reward.title} was rejected. Your points were refunded automatically.`,
+        link: `/requests/${redemption.id}`,
+        metadata: {
+          redemptionId: redemption.id,
+          rewardId: redemption.rewardId,
+          requestCode: redemption.requestCode,
+          status
+        }
+      });
+    }
 
     return materializeAdminRedemption(updated);
   }

@@ -99,6 +99,11 @@ async function fetchRedemptions() {
   return response.data.redemptions;
 }
 
+async function fetchRedemptionsByCode(code: string) {
+  const response = await api.get<{ redemptions: Redemption[] }>(`/requests/by-code/${code}`);
+  return response.data.redemptions;
+}
+
 async function fetchQuestSubmissions(status?: QuestSubmissionStatus) {
   const response = await api.get<{ submissions: QuestSubmission[] }>("/quests/submissions", {
     params: status ? { status } : undefined
@@ -534,6 +539,15 @@ export function useRedemptionById(redemptionId: string) {
     initialData: () =>
       queryClient.getQueryData<Redemption[]>(redemptionsQueryKey)?.find((redemption) => redemption.id === redemptionId),
     initialDataUpdatedAt: () => queryClient.getQueryState(redemptionsQueryKey)?.dataUpdatedAt
+  });
+}
+
+export function useRedemptionsByCode(code: string) {
+  return useQuery({
+    queryKey: ["redemptions-by-code", code],
+    enabled: !!code,
+    queryFn: () => fetchRedemptionsByCode(code),
+    staleTime: ONE_MINUTE
   });
 }
 

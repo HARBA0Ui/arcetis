@@ -163,12 +163,7 @@ export default function RequestsPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between text-muted-foreground">
-                      <span>{t("pointsSpent")}</span>
-                      <span className="font-medium text-foreground">
-                        {typeof request.pointsSpent === "number" ? formatNumber(request.pointsSpent) : "-"} pts
-                      </span>
-                    </div>
+
 
                     <Button asChild className="w-full justify-between">
                       <Link href={`/requests/${request.id}`}>

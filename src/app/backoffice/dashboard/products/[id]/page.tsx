@@ -163,7 +163,7 @@ export default function BackofficeProductDetailsPage() {
         tndPrice: tndValues.length ? Math.min(...tndValues) : form.tndPrice || undefined,
         usdPrice: usdValues.length ? Math.min(...usdValues) : form.usdPrice || undefined,
         plans: cleanedPlans.length ? cleanedPlans : undefined,
-        deliveryFields: cleanedFields.length ? cleanedFields : undefined
+        deliveryFields: cleanedFields
       });
 
       toast.success("Product updated", form.title);

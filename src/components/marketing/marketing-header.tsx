@@ -8,6 +8,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ArcetisLogo } from "@/components/common/arcetis-logo";
 import { ThemeToggle } from "@/components/common/theme-toggle";
 import { CurrencyToggle } from "@/components/common/currency-toggle";
+import { CartButton } from "@/components/cart/cart-button";
 import { useLanguage } from "@/components/i18n/language-provider";
 import { MobileNavSidebar } from "@/components/layout/mobile-nav-sidebar";
 import { useNavigationProgress } from "@/components/navigation/navigation-provider";
@@ -85,6 +86,7 @@ export function MarketingHeader() {
           <div className="flex items-center gap-2">
             <CurrencyToggle iconOnly className="h-10 w-10 rounded-2xl border-border/70 bg-background/70" />
             <ThemeToggle iconOnly className="h-10 w-10 rounded-2xl border-border/70 bg-background/70" />
+            <CartButton className="h-10 w-10 rounded-2xl border-border/70 bg-background/70" />
             <button
               type="button"
               onClick={() => setIsMobileNavOpen(true)}
@@ -122,6 +124,7 @@ export function MarketingHeader() {
           <div className="flex w-full flex-wrap items-center gap-2 sm:ml-auto sm:w-auto sm:justify-end">
             <CurrencyToggle iconOnly className="rounded-full border-border/70 bg-background/70 h-9 w-9" />
             <ThemeToggle iconOnly className="rounded-full border-border/70 bg-background/70" />
+            <CartButton className="rounded-full border-border/70 bg-background/70 h-9 w-9" />
             <Button asChild variant="ghost" className="min-w-[8.5rem] flex-1 rounded-full px-5 sm:min-w-0 sm:flex-none">
               <Link href="/login">{copy.signIn}</Link>
             </Button>

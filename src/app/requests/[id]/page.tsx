@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Copy, ExternalLink, ShieldAlert } from "lucide-react";
 import { PageHeader } from "@/components/common/page-header";
@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSmoothBusy } from "@/hooks/use-smooth-busy";
-import { useRedemptionById } from "@/hooks/usePlatform";
+import { useRedemptionById, useRedemptionsByCode } from "@/hooks/usePlatform";
 import { formatDateTime, formatNumber } from "@/lib/format";
 import { getDisplayRequestCode } from "@/lib/request-code";
 
@@ -39,11 +39,19 @@ function formatDate(value?: string | null) {
 
 export default function RequestDetailPage() {
   const params = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
   const requestId = params?.id ?? "";
-  const requestQuery = useRedemptionById(requestId);
-  const request = requestQuery.data;
+  const byCode = searchParams?.get("byCode") === "true";
+  
+  const idQuery = useRedemptionById(byCode ? "" : requestId);
+  const codeQuery = useRedemptionsByCode(byCode ? requestId : "");
+  
+  const query = byCode ? codeQuery : idQuery;
+  const requests = byCode ? codeQuery.data : (idQuery.data ? [idQuery.data] : undefined);
+  const request = requests?.[0]; // Primary request for status/info
+  
   const { t } = useLanguage();
-  const showSyncBanner = useSmoothBusy(!!request && requestQuery.isFetching);
+  const showSyncBanner = useSmoothBusy(!!request && query.isFetching);
   const [copied, setCopied] = useState(false);
   const displayCode = getDisplayRequestCode(request?.requestCode, request?.id);
 
@@ -107,6 +115,36 @@ export default function RequestDetailPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {requests && requests.length > 1 && (
+              <Card className="rounded-[2rem] border-border/70 bg-card/95 overflow-hidden">
+                <CardHeader>
+                  <CardTitle>Other Items in this Order</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 border-t border-border/50 divide-y divide-border/50">
+                  {requests.slice(1).map(req => (
+                    <div key={req.id} className="flex gap-4 p-4">
+                      {req.reward?.imageUrl ? (
+                        <img 
+                          src={req.reward.imageUrl} 
+                          alt={req.reward.title}
+                          className="w-16 h-16 rounded-xl object-cover"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 rounded-xl bg-muted/50" />
+                      )}
+                      <div>
+                        <h4 className="font-medium">{req.reward?.title}</h4>
+                        <div className="flex gap-2 mt-1">
+                          <Badge variant="outline" className="text-xs">{req.planLabel || "Standard"}</Badge>
+                          <Badge className={statusTone[req.status]} variant="outline">{req.status}</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
 
             <Card className="rounded-[2rem] border-border/70 bg-card/95">
               <CardHeader>
@@ -200,7 +238,7 @@ export default function RequestDetailPage() {
             </Card>
           </div>
         </div>
-      ) : requestQuery.isLoading ? (
+      ) : query.isLoading ? (
         <Card className="max-w-3xl">
           <CardHeader>
             <Skeleton className="h-7 w-40" />

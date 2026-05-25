@@ -5,6 +5,7 @@ import { RouteShell } from "@/components/layout/route-shell";
 import { Providers } from "@/providers";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { CartDrawer } from "@/components/cart/cart-drawer";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${poppins.variable} font-sans`}>
         <Providers>
           <RouteShell>{children}</RouteShell>
+          <CartDrawer />
         </Providers>
         <Analytics />
         <SpeedInsights />

@@ -366,20 +366,22 @@ async function reverseRedemption(
       }
     });
 
-    await tx.user.update({
-      where: { id: redemption.userId },
-      data: {
-        points: { increment: redemption.pointsSpent ?? redemption.reward.pointsCost }
-      }
-    });
+    if (redemption.userId) {
+      await tx.user.update({
+        where: { id: redemption.userId },
+        data: {
+          points: { increment: redemption.pointsSpent ?? redemption.reward.pointsCost }
+        }
+      });
 
-    await tx.pointsTransaction.create({
-      data: {
-        userId: redemption.userId,
-        amount: redemption.pointsSpent ?? redemption.reward.pointsCost,
-        source: status === "expired" ? "REDEMPTION_EXPIRED_REFUND" : "REDEMPTION_REFUND"
-      }
-    });
+      await tx.pointsTransaction.create({
+        data: {
+          userId: redemption.userId,
+          amount: redemption.pointsSpent ?? redemption.reward.pointsCost,
+          source: status === "expired" ? "REDEMPTION_EXPIRED_REFUND" : "REDEMPTION_REFUND"
+        }
+      });
+    }
 
     await tx.reward.update({
       where: { id: redemption.rewardId },
@@ -441,19 +443,21 @@ export async function expirePendingRedemptions() {
       "Request expired before the Instagram handoff was completed."
     );
 
-    await createNotification({
-      userId: redemption.userId,
-      type: "REDEMPTION_REVIEWED",
-      title: "Request expired",
-      message: `${redemption.reward.title} expired before the admin handoff. Your points were refunded automatically.`,
-      link: `/requests/${redemption.id}`,
-      metadata: {
-        redemptionId: redemption.id,
-        rewardId: redemption.rewardId,
-        requestCode: redemption.requestCode,
-        status: "expired"
-      }
-    });
+    if (redemption.userId) {
+      await createNotification({
+        userId: redemption.userId,
+        type: "REDEMPTION_REVIEWED",
+        title: "Request expired",
+        message: `${redemption.reward.title} expired before the admin handoff. Your points were refunded automatically.`,
+        link: `/requests/${redemption.id}`,
+        metadata: {
+          redemptionId: redemption.id,
+          rewardId: redemption.rewardId,
+          requestCode: redemption.requestCode,
+          status: "expired"
+        }
+      });
+    }
   }
 
   return expired.length;
@@ -566,6 +570,28 @@ export async function getUserRedemptionById(userId: string, redemptionId: string
   }
 
   return toUserFacingRedemption(redemption);
+}
+
+export async function getRedemptionsByRequestCode(requestCode: string) {
+  await ensureExpiredRedemptionsAreFresh();
+
+  const redemptions = await prisma.redemption.findMany({
+    where: {
+      requestCode
+    },
+    include: {
+      reward: true
+    },
+    orderBy: {
+      createdAt: "desc"
+    }
+  });
+
+  if (!redemptions.length) {
+    throw new ApiError(404, "Requests not found");
+  }
+
+  return redemptions.map((redemption) => toUserFacingRedemption(redemption));
 }
 
 export async function redeemReward(
@@ -697,4 +723,144 @@ export async function redeemReward(
 
 export function materializeAdminRedemption<T extends RedemptionWithSecureInfo>(redemption: T) {
   return withAdminVisibleRequestedInfo(redemption);
+}
+
+export async function checkoutCart(
+  payload: {
+    items: Array<{
+      rewardId: string;
+      planId?: string;
+      requestedInfo?: Record<string, string>;
+      paymentMethod?: "points" | "kashy";
+    }>;
+    guestEmail?: string;
+  },
+  userId?: string
+) {
+  await ensureExpiredRedemptionsAreFresh();
+
+  const config = await getPlatformConfig();
+  const requestCode = await generateUniqueRequestCode();
+  const expiresAt = new Date(Date.now() + config.redemptionRequestExpiryHours * 60 * 60 * 1000);
+
+  let user = null;
+  if (userId) {
+    user = await getUserOrThrow(userId);
+  }
+
+  const rewardIds = payload.items.map((i) => i.rewardId);
+  const rewards = await prisma.reward.findMany({
+    where: { id: { in: rewardIds } }
+  });
+
+  const rewardMap = new Map(rewards.map((r) => [r.id, r]));
+
+  let totalPointsCost = 0;
+  
+  const processedItems = payload.items.map((item) => {
+    const reward = rewardMap.get(item.rewardId);
+    if (!reward) throw new ApiError(404, `Reward not found: ${item.rewardId}`);
+    if (reward.stock <= 0) throw new ApiError(400, `Reward out of stock: ${reward.title}`);
+
+    const plans = getRewardPlans(reward);
+    const selectedPlan = item.planId ? plans.find((plan) => plan.id === item.planId) : plans[0];
+    if (!selectedPlan) throw new ApiError(400, `Selected plan is invalid for ${reward.title}`);
+
+    const isKashy = item.paymentMethod === "kashy";
+    const pointsCost = isKashy ? 0 : (selectedPlan.pointsCost ?? getStartingPointsCost(reward));
+
+    totalPointsCost += pointsCost;
+
+    const deliveryFields = getDeliveryFields(reward);
+    const injectedInfo = {
+      ...item.requestedInfo,
+      ...(isKashy ? { _paymentMethod: "KASHY_LINK" } : {})
+    };
+    
+    const requestedInfoPayload = buildRequestedInfoPayload(deliveryFields, injectedInfo);
+
+    return {
+      reward,
+      selectedPlan,
+      pointsCost,
+      requestedInfoPayload
+    };
+  });
+
+  if (totalPointsCost > 0 && (!user || user.points < totalPointsCost)) {
+    throw new ApiError(400, "Not enough points to complete this checkout");
+  }
+
+  const redemptions = await prisma.$transaction(async (tx) => {
+    const createdRedemptions = [];
+
+    for (const item of processedItems) {
+      const created = await tx.redemption.create({
+        data: {
+          userId: userId || undefined,
+          guestEmail: !userId && payload.guestEmail ? payload.guestEmail : undefined,
+          rewardId: item.reward.id,
+          status: "pending",
+          requestCode,
+          planId: item.selectedPlan.id,
+          planLabel: item.selectedPlan.label,
+          pointsSpent: item.pointsCost,
+          requestedInfo: item.requestedInfoPayload.requestedInfo,
+          secureRequestedInfo: item.requestedInfoPayload.secureRequestedInfo,
+          expiresAt
+        },
+        include: { reward: true }
+      });
+      createdRedemptions.push(created);
+
+      await tx.reward.update({
+        where: { id: item.reward.id },
+        data: { stock: { decrement: 1 } }
+      });
+    }
+
+    if (totalPointsCost > 0 && userId) {
+      await tx.pointsTransaction.create({
+        data: {
+          userId,
+          amount: -totalPointsCost,
+          source: "REDEMPTION"
+        }
+      });
+
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          points: { decrement: totalPointsCost }
+        }
+      });
+    }
+
+    return createdRedemptions;
+  });
+
+  await createNotificationForAdmins({
+    type: "ADMIN_REDEMPTION_REQUIRED",
+    title: "New order received",
+    message: `${user ? user.username : payload.guestEmail || "Guest"} requested ${redemptions.length} item(s). Code: ${requestCode}.`,
+    link: `/backoffice/dashboard/redemptions?code=${encodeURIComponent(requestCode)}`,
+    metadata: {
+      requestCode,
+      itemCount: redemptions.length,
+      guestEmail: payload.guestEmail
+    }
+  });
+
+  if (userId) {
+    await createNotification({
+      userId,
+      type: "SYSTEM",
+      title: "Instagram request code ready",
+      message: `Send code ${requestCode} to the official Arcetis Instagram.`,
+      link: `/requests/${redemptions[0].id}`,
+      metadata: { requestCode }
+    });
+  }
+
+  return redemptions.map(toUserFacingRedemption);
 }

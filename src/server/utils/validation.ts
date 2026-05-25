@@ -87,6 +87,11 @@ export const redeemRewardSchema = z.object({
   paymentMethod: z.enum(["points", "kashy"]).optional()
 });
 
+export const checkoutSchema = z.object({
+  items: z.array(redeemRewardSchema).min(1),
+  guestEmail: z.string().email().optional()
+});
+
 export const useReferralSchema = z.object({
   referralCode: z.string().min(4).max(20)
 });

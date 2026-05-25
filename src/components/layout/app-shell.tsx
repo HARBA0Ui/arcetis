@@ -20,6 +20,7 @@ import { ArcetisLogo } from "@/components/common/arcetis-logo";
 import { NotificationCenter } from "@/components/common/notification-center";
 import { ThemeToggle } from "@/components/common/theme-toggle";
 import { CurrencyToggle } from "@/components/common/currency-toggle";
+import { CartButton } from "@/components/cart/cart-button";
 import { MobileNavSidebar } from "@/components/layout/mobile-nav-sidebar";
 import { UserMenu } from "@/components/common/user-menu";
 import { ProtectedShellLoading } from "@/components/layout/protected-shell-loading";
@@ -171,6 +172,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-2">
               <CurrencyToggle iconOnly className="h-10 w-10 rounded-2xl border-border/70 bg-background/70" />
               <ThemeToggle iconOnly className="h-10 w-10 rounded-2xl border-border/70 bg-background/70" />
+              <CartButton />
               <NotificationCenter />
               <button
                 type="button"
@@ -209,6 +211,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div className="flex w-full items-center justify-end gap-2 sm:ml-auto sm:w-auto">
               <CurrencyToggle iconOnly className="rounded-full border-border/70 bg-background/70 h-9 w-9" />
               <ThemeToggle iconOnly className="rounded-full border-border/70 bg-background/70" />
+              <CartButton className="rounded-full border-border/70 bg-background/70 h-9 w-9" />
               <NotificationCenter />
               <UserMenu user={user ?? undefined} onLogout={() => void handleLogout()} />
             </div>
