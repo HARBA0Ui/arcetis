@@ -62,7 +62,7 @@ export default function RequestDetailPage() {
   const requestedInfoEntries = Object.entries(request?.requestedInfo ?? {});
 
   return (
-    <div className="container max-w-6xl mx-auto py-8 px-4 md:px-8">
+    <>
       {!token && request && (
         <div className="mb-6 rounded-lg border border-primary/50 bg-primary/10 p-4 flex gap-4">
           <LogIn className="w-5 h-5 text-primary mt-0.5 shrink-0" />
@@ -272,6 +272,6 @@ export default function RequestDetailPage() {
           </CardContent>
         </Card>
       )}
-    </div>
+    </>
   );
 }
