@@ -140,10 +140,10 @@ export function MarketingHeader() {
               </>
             ) : (
               <>
-                <Button asChild variant="ghost" className="min-w-[8.5rem] flex-1 rounded-full px-5 sm:min-w-0 sm:flex-none">
+                <Button asChild variant="ghost" className="h-12 min-w-[8.5rem] flex-1 rounded-full px-5 sm:min-w-0 sm:flex-none">
                   <Link href="/login">{copy.signIn}</Link>
                 </Button>
-                <Button asChild className="min-w-[8.5rem] flex-1 rounded-full px-5 sm:min-w-0 sm:flex-none">
+                <Button asChild className="h-12 min-w-[8.5rem] flex-1 rounded-full px-5 sm:min-w-0 sm:flex-none">
                   <Link href="/register">{copy.createAccount}</Link>
                 </Button>
               </>
