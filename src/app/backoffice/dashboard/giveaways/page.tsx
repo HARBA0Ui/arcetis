@@ -9,6 +9,7 @@ import { LoadingCard } from "@/backoffice/components/backoffice/loading-card";
 import {
   useAdminGiveaways,
   useCreateGiveaway,
+  useDeleteGiveaway,
   useUploadGiveawayImage
 } from "@/backoffice/hooks/useAdmin";
 import { Spinner } from "@/components/common/spinner";
@@ -84,8 +85,19 @@ export default function BackofficeGiveawaysPage() {
   });
   const createGiveaway = useCreateGiveaway();
   const uploadGiveawayImage = useUploadGiveawayImage();
+  const deleteGiveaway = useDeleteGiveaway();
   const toast = useToast();
   const cleanedFields = useMemo(() => cleanFields(fields), [fields]);
+
+  async function handleDelete(id: string, title: string) {
+    if (!window.confirm(`Delete ${title}?`)) return;
+    try {
+      await deleteGiveaway.mutateAsync(id);
+      toast.success("Giveaway deleted", title);
+    } catch (error) {
+      toast.error("Delete failed", getApiError(error));
+    }
+  }
 
   useEffect(() => {
     return () => {
@@ -529,12 +541,22 @@ export default function BackofficeGiveawaysPage() {
                     </TableCell>
                     <TableCell>{formatDate(giveaway.endsAt)}</TableCell>
                     <TableCell>
-                      <Button asChild size="sm" variant="outline">
-                        <Link href={`/backoffice/dashboard/giveaways/${giveaway.id}`}>
-                          Open details
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button asChild size="sm" variant="outline">
+                          <Link href={`/backoffice/dashboard/giveaways/${giveaway.id}`}>
+                            Open details
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                          </Link>
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => void handleDelete(giveaway.id, giveaway.title)}
+                          disabled={deleteGiveaway.isPending}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
