@@ -44,7 +44,7 @@ export function KashyPaymentModal({
       return;
     }
     if (!hasSavedCode) {
-      setEmailError("You must acknowledge that you will save the generated request code.");
+      setEmailError("You must acknowledge that you will take a screenshot of the payment tab.");
       return;
     }
     setStep("initial");
@@ -146,7 +146,7 @@ export function KashyPaymentModal({
                     className="mt-1 h-4 w-4 rounded border-border text-primary focus:ring-primary bg-background/50"
                   />
                   <label htmlFor="save-code" className="text-sm font-medium leading-tight">
-                    I understand that I am checking out as a guest, and I must take a screenshot of my request code after payment to avoid losing it.
+                    I understand that I am checking out as a guest, and I must take a screenshot of the successful payment tab before closing it.
                   </label>
                 </div>
 
@@ -170,14 +170,24 @@ export function KashyPaymentModal({
           ) : step === "initial" ? (
             <div className="mt-6">
               <div className="mb-6 rounded-2xl bg-[hsl(var(--arcetis-ember))]/10 p-4 border border-[hsl(var(--arcetis-ember))]/20">
-                <p className="text-sm font-medium text-[hsl(var(--arcetis-ember))]">
-                  Important: Please take a screenshot of your payment confirmation screen before closing the payment window.
-                </p>
+                <div className="flex items-start space-x-3">
+                  <input
+                    type="checkbox"
+                    id="save-code-initial"
+                    checked={hasSavedCode}
+                    onChange={(e) => setHasSavedCode(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-border text-[hsl(var(--arcetis-ember))] focus:ring-[hsl(var(--arcetis-ember))] bg-background/50 accent-[hsl(var(--arcetis-ember))]"
+                  />
+                  <label htmlFor="save-code-initial" className="text-sm font-medium text-[hsl(var(--arcetis-ember))]">
+                    Important: Please take a screenshot of your payment confirmation screen before closing the payment window.
+                  </label>
+                </div>
               </div>
               <div className="flex flex-col gap-3">
                 <Button 
                   className="h-12 bg-[hsl(var(--arcetis-ember))] text-black hover:bg-[rgba(255,122,24,0.92)]" 
                   onClick={handleProceed}
+                  disabled={!hasSavedCode}
                 >
                   <CreditCard className="mr-2 h-4 w-4" />
                   Proceed to Payment

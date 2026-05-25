@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Coins, CreditCard, Info, ShoppingCart, Star, Target, X } from "lucide-react";
+import { Coins, CreditCard, Info, ShieldCheck, ShoppingCart, Star, Target, X } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { PageHeader } from "@/components/common/page-header";
 import { useCurrency } from "@/components/common/currency-provider";
@@ -103,7 +103,6 @@ export default function RewardDetailPage() {
   const [isTndModalOpen, setTndModalOpen] = useState(false);
   const [isKashyModalOpen, setKashyModalOpen] = useState(false);
   const [isRedeemConfirmOpen, setRedeemConfirmOpen] = useState(false);
-  const [isDisclaimerChecked, setIsDisclaimerChecked] = useState(false);
   const guestOrders = useGuestOrders();
 
   useEffect(() => {
@@ -133,8 +132,7 @@ export default function RewardDetailPage() {
     !!selectedPlan &&
     reward.stock > 0 &&
     !reward.isOutOfStock &&
-    !missingRequiredInfo &&
-    isDisclaimerChecked;
+    !missingRequiredInfo;
   const summaryFacts: any[] = [];
 
   return (
@@ -331,17 +329,12 @@ export default function RewardDetailPage() {
                   </Button>
                 </div>
 
-                <label className="flex items-start gap-3 text-sm text-[hsl(var(--arcetis-ember))] cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={isDisclaimerChecked}
-                    onChange={(e) => setIsDisclaimerChecked(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-[hsl(var(--arcetis-ember))]/50 bg-background accent-[hsl(var(--arcetis-ember))]"
-                  />
-                  <p className="opacity-90 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-start gap-3 text-sm text-muted-foreground">
+                  <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[hsl(var(--arcetis-ember))]" />
+                  <p>
                     {t("makeSureInfoMatches")}
                   </p>
-                </label>
+                </div>
 
                 {deliveryFields.length ? (
                   <div className="text-sm">
