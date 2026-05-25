@@ -66,7 +66,8 @@ import {
   listUserRedemptions,
   redeemReward,
   checkoutCart,
-  getRedemptionsByRequestCode
+  getRedemptionsByRequestCode,
+  claimGuestRedemptions
 } from "@/server/services/reward.service";
 import {
   createSponsorRequest,
@@ -325,6 +326,18 @@ async function handleGet(request: NextRequest, path: string[]) {
   if (path[0] === "requests" && path[1] === "by-code" && path.length === 3) {
     const redemptions = await getRedemptionsByRequestCode(path[2]);
     return NextResponse.json({ redemptions });
+  }
+
+  if (path[0] === "requests" && path[1] === "claim" && path.length === 2 && request.method === "POST") {
+    const auth = requireAuth(request);
+    const body = await request.json();
+    
+    if (!body.requestCodes || !Array.isArray(body.requestCodes)) {
+      throw new ApiError(400, "Invalid requestCodes");
+    }
+
+    const result = await claimGuestRedemptions(auth.userId, body.requestCodes);
+    return NextResponse.json(result);
   }
 
   if (path[0] === "referral" && path[1] === "stats" && path.length === 2) {

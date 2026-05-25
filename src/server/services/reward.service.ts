@@ -873,3 +873,21 @@ export async function checkoutCart(
 
   return redemptions.map(toUserFacingRedemption);
 }
+
+export async function claimGuestRedemptions(userId: string, requestCodes: string[]) {
+  if (!requestCodes.length) return { count: 0 };
+
+  const result = await prisma.redemption.updateMany({
+    where: {
+      userId: null,
+      requestCode: {
+        in: requestCodes
+      }
+    },
+    data: {
+      userId
+    }
+  });
+
+  return result;
+}

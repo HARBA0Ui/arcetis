@@ -74,13 +74,23 @@ export function GuestOrdersDrawer() {
                       {order.requestCode.slice(0, 16)}...
                     </div>
                     <Button asChild size="sm" variant="ghost" onClick={() => setIsOpen(false)}>
-                      <Link href={`/requests/${order.id}?byCode=true`} className="text-xs">
+                      <Link href={`/requests/${order.requestCode}?byCode=true`} className="text-xs">
                         View <ArrowRight className="w-3.5 h-3.5 ml-1" />
                       </Link>
                     </Button>
                   </div>
                 </div>
               ))}
+              <div className="pt-6 border-t border-border/30 mt-6">
+                <Button asChild className="w-full bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30" onClick={() => setIsOpen(false)}>
+                  <Link href="/login">
+                    Sign in to save orders permanently
+                  </Link>
+                </Button>
+                <p className="text-center text-[11px] text-muted-foreground mt-3">
+                  Guest orders are saved locally and can be lost if you clear your browser data. Logging in automatically syncs them to your account.
+                </p>
+              </div>
             </div>
           </div>
         </div>,

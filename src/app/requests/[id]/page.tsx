@@ -17,6 +17,10 @@ import { useRedemptionById, useRedemptionsByCode } from "@/hooks/usePlatform";
 import { formatDateTime, formatNumber } from "@/lib/format";
 import { getDisplayRequestCode } from "@/lib/request-code";
 
+import { useAuthToken } from "@/hooks/use-auth-token";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { LogIn } from "lucide-react";
+
 const INSTAGRAM_URL = "https://www.instagram.com/arcetis_shop/";
 
 const statusLabel = {
@@ -54,11 +58,25 @@ export default function RequestDetailPage() {
   const showSyncBanner = useSmoothBusy(!!request && query.isFetching);
   const [copied, setCopied] = useState(false);
   const displayCode = getDisplayRequestCode(request?.requestCode, request?.id);
+  const token = useAuthToken();
 
   const requestedInfoEntries = Object.entries(request?.requestedInfo ?? {});
 
   return (
     <>
+      {!token && request && (
+        <Alert className="mb-6 border-primary/50 bg-primary/10">
+          <LogIn className="w-5 h-5 text-primary" />
+          <AlertTitle className="text-primary font-semibold">Save this order permanently</AlertTitle>
+          <AlertDescription className="text-muted-foreground mt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <span>You're currently viewing a guest order. Log in to automatically sync it to your account so you don't lose access.</span>
+            <Button asChild size="sm" variant="default" className="shrink-0">
+              <Link href="/login">Log In / Register</Link>
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <PageHeader
         title={request?.reward?.title ?? t("requestDetailsFallback")}
         subtitle={t("requestDetailsSubtitle")}

@@ -37,9 +37,19 @@ export function useGuestOrders() {
     });
   };
 
+  const clearOrders = () => {
+    setOrders([]);
+    try {
+      localStorage.removeItem("arcetis_guest_orders");
+    } catch (e) {
+      console.error("Failed to clear guest orders", e);
+    }
+  };
+
   return {
     orders,
     addOrder,
+    clearOrders,
     isLoaded,
   };
 }

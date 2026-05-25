@@ -581,6 +581,20 @@ export function useRedeemReward() {
   });
 }
 
+export function useClaimGuestOrders() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: { requestCodes: string[] }) => {
+      const response = await api.post("/requests/claim", payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: redemptionsQueryKey });
+    }
+  });
+}
+
 export function useReferralStats() {
   const token = useAuthToken();
 
