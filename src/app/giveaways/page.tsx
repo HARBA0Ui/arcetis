@@ -48,17 +48,35 @@ function GiveawayCountdown({
 }) {
   const countdown = useCountdown(status === "CLOSED" ? null : endsAt ?? null);
 
-  let label = "No deadline";
   if (status === "CLOSED") {
-    label = "Closed";
-  } else if (endsAt) {
-    label = countdown.isReady ? "Closing now" : `Ends in ${long ? countdown.longLabel : countdown.shortLabel}`;
+    return (
+      <span className={cn("inline-flex items-center gap-1.5 sm:gap-2 text-sm text-muted-foreground", className)}>
+        <Clock3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[hsl(var(--arcetis-ember))]" />
+        Closed
+      </span>
+    );
+  }
+
+  if (!endsAt) {
+    return (
+      <span className={cn("inline-flex items-center gap-1.5 sm:gap-2 text-sm text-muted-foreground", className)}>
+        <Clock3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[hsl(var(--arcetis-ember))]" />
+        No deadline
+      </span>
+    );
   }
 
   return (
-    <span className={cn("inline-flex items-center gap-2 text-sm text-muted-foreground", className)}>
-      <Clock3 className="h-4 w-4 text-[hsl(var(--arcetis-ember))]" />
-      {label}
+    <span className={cn("inline-flex items-center gap-1.5 sm:gap-2 text-sm text-muted-foreground", className)}>
+      <Clock3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[hsl(var(--arcetis-ember))]" />
+      {countdown.isReady ? (
+        "Closing now"
+      ) : (
+        <>
+          <span className={long ? "hidden sm:inline" : ""}>{`Ends in ${long ? countdown.longLabel : countdown.shortLabel}`}</span>
+          {long ? <span className="sm:hidden">{`Ends in ${countdown.shortLabel}`}</span> : null}
+        </>
+      )}
     </span>
   );
 }
@@ -279,22 +297,27 @@ export default function GiveawaysPage() {
                     </div>
                   )}
 
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-[1.15rem] border border-white/10 bg-white/8 p-3.5 sm:p-4">
-                      <p className="text-xs uppercase tracking-[0.18em] text-white/60">Winners</p>
-                      <p className="mt-2 text-2xl font-semibold">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                    <div className="rounded-xl border border-white/10 bg-white/8 p-2.5 sm:p-4 text-center sm:text-left">
+                      <p className="text-[0.62rem] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.18em] text-white/60">Winners</p>
+                      <p className="mt-1 sm:mt-2 text-sm sm:text-2xl font-semibold">
                         {formatNumber(currentGiveaway.selectedCount ?? 0)} / {formatNumber(currentGiveaway.winnerCount ?? 1)}
                       </p>
                     </div>
-                    <div className="rounded-[1.15rem] border border-white/10 bg-white/8 p-3.5 sm:p-4">
-                      <p className="text-xs uppercase tracking-[0.18em] text-white/60">Entries</p>
-                      <p className="mt-2 text-2xl font-semibold">{formatNumber(currentGiveaway.entryCount ?? 0)}</p>
+                    <div className="rounded-xl border border-white/10 bg-white/8 p-2.5 sm:p-4 text-center sm:text-left">
+                      <p className="text-[0.62rem] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.18em] text-white/60">Entries</p>
+                      <p className="mt-1 sm:mt-2 text-sm sm:text-2xl font-semibold">{formatNumber(currentGiveaway.entryCount ?? 0)}</p>
                     </div>
-                    <div className="rounded-[1.15rem] border border-white/10 bg-white/8 p-3.5 sm:p-4">
-                      <p className="text-xs uppercase tracking-[0.18em] text-white/60">Countdown</p>
-                      <p className="mt-2 text-sm font-semibold">
-                        <GiveawayCountdown endsAt={currentGiveaway.endsAt} status={currentGiveaway.status} long />
-                      </p>
+                    <div className="rounded-xl border border-white/10 bg-white/8 p-2.5 sm:p-4 text-center sm:text-left flex flex-col justify-center sm:justify-start">
+                      <p className="text-[0.62rem] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.18em] text-white/60">Countdown</p>
+                      <div className="mt-1 sm:mt-2">
+                        <GiveawayCountdown
+                          endsAt={currentGiveaway.endsAt}
+                          status={currentGiveaway.status}
+                          className="text-[0.68rem] sm:text-sm font-semibold text-white justify-center sm:justify-start"
+                          long
+                        />
+                      </div>
                     </div>
                   </div>
 

@@ -33,6 +33,8 @@ import { useSmoothBusy } from "@/hooks/use-smooth-busy";
 import { useApplyGiveaway, useGiveawayById, useUpdateGiveawayEntry } from "@/hooks/usePlatform";
 import { getApiError } from "@/lib/api";
 import { formatDateTime, formatNumber } from "@/lib/format";
+import { cn } from "@/lib/utils";
+
 
 const MAX_GIVEAWAY_PROOF_IMAGES = 3;
 
@@ -84,7 +86,18 @@ function GiveawayCountdown({ endsAt, status, long = false }: { endsAt?: string |
     return <span>No deadline</span>;
   }
 
-  return <span>{countdown.isReady ? "Closing now" : `Ends in ${long ? countdown.longLabel : countdown.shortLabel}`}</span>;
+  return (
+    <span>
+      {countdown.isReady ? (
+        "Closing now"
+      ) : (
+        <>
+          <span className={long ? "hidden sm:inline" : ""}>{`Ends in ${long ? countdown.longLabel : countdown.shortLabel}`}</span>
+          {long ? <span className="sm:hidden">{`Ends in ${countdown.shortLabel}`}</span> : null}
+        </>
+      )}
+    </span>
+  );
 }
 
 function getEntryStatusMeta(status?: "pending" | "selected" | "rejected") {
@@ -332,33 +345,33 @@ export default function GiveawayDetailPage() {
 
       {giveaway ? (
         <div className="space-y-6">
-            {entryStatus ? (
-              <Card className="rounded-[1.8rem] border-[rgba(255,122,24,0.22)] bg-[linear-gradient(135deg,rgba(28,20,15,0.96),rgba(18,18,18,0.98))]">
-                <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <Badge variant={entryStatus.variant}>{entryStatus.label}</Badge>
-                    <p className="mt-3 text-lg font-semibold text-foreground">{entryStatus.title}</p>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">{entryStatus.description}</p>
-                  </div>
-                  {canEditEntry ? (
-                    <Badge variant="outline" className="gap-1 self-start">
-                      <PencilLine className="h-3.5 w-3.5" />
-                      Editing still open
-                    </Badge>
-                  ) : null}
-                </CardContent>
-              </Card>
-            ) : null}
+             {entryStatus ? (
+               <Card className="rounded-[1.8rem] border-[rgba(255,122,24,0.22)] bg-[linear-gradient(135deg,rgba(28,20,15,0.96),rgba(18,18,18,0.98))]">
+                 <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-start sm:justify-between sm:p-5">
+                   <div>
+                     <Badge variant={entryStatus.variant}>{entryStatus.label}</Badge>
+                     <p className="mt-3 text-base sm:text-lg font-semibold text-foreground">{entryStatus.title}</p>
+                     <p className="mt-2 text-xs sm:text-sm leading-5 sm:leading-6 text-muted-foreground">{entryStatus.description}</p>
+                   </div>
+                   {canEditEntry ? (
+                     <Badge variant="outline" className="gap-1 self-start shrink-0 text-xs">
+                       <PencilLine className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                       Editing still open
+                     </Badge>
+                   ) : null}
+                 </CardContent>
+               </Card>
+             ) : null}
 
             <Card className="overflow-hidden rounded-[2rem] border-border/70 bg-card/95">
               {giveaway.imageUrl ? (
                 <img
                   src={normalizeAssetUrl(giveaway.imageUrl)}
                   alt={giveaway.title}
-                  className="aspect-[16/8] w-full object-cover"
+                  className="aspect-[16/10] sm:aspect-[16/8] w-full object-cover"
                 />
               ) : null}
-              <CardContent className="space-y-5 p-6 sm:p-7">
+              <CardContent className="space-y-5 p-4 sm:p-7">
                 <div className="max-w-3xl">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant={giveaway.status === "ACTIVE" ? "secondary" : "outline"}>
@@ -367,18 +380,18 @@ export default function GiveawayDetailPage() {
                     {isClosed ? <Badge variant="outline">Closed</Badge> : null}
                     {giveaway.requiresJustification ? <Badge variant="outline">1-3 proof images required</Badge> : null}
                   </div>
-                  <h2 className="mt-4 text-3xl font-semibold tracking-tight">{giveaway.title}</h2>
+                  <h2 className="mt-4 text-2xl sm:text-3xl font-semibold tracking-tight">{giveaway.title}</h2>
                   <p className="mt-3 text-sm leading-7 text-muted-foreground">{giveaway.description}</p>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-2 lg:max-w-xl">
-                  <div className="rounded-[1.2rem] border border-border/70 bg-background/65 p-4">
-                    <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Prize</p>
-                    <p className="mt-2 font-semibold">{giveaway.prizeSummary || "See description"}</p>
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:max-w-xl">
+                  <div className="rounded-xl sm:rounded-[1.2rem] border border-border/70 bg-background/65 p-3 sm:p-4">
+                    <p className="text-[0.62rem] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.16em] text-muted-foreground">Prize</p>
+                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm font-semibold">{giveaway.prizeSummary || "See description"}</p>
                   </div>
-                  <div className="rounded-[1.2rem] border border-border/70 bg-background/65 p-4">
-                    <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Countdown</p>
-                    <p className="mt-2 font-semibold">
+                  <div className="rounded-xl sm:rounded-[1.2rem] border border-border/70 bg-background/65 p-3 sm:p-4">
+                    <p className="text-[0.62rem] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.16em] text-muted-foreground">Countdown</p>
+                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm font-semibold">
                       <GiveawayCountdown endsAt={giveaway.endsAt} status={giveaway.status} long />
                     </p>
                   </div>
@@ -387,69 +400,69 @@ export default function GiveawayDetailPage() {
             </Card>
 
             <Card className="rounded-[2rem] border-border/70 bg-card/95">
-              <CardHeader>
-                <CardTitle>Rules before you enter</CardTitle>
-                <CardDescription>See the exact limits and proof rules before you submit anything.</CardDescription>
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="text-xl sm:text-2xl">Rules before you enter</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">See the exact limits and proof rules before you submit anything.</CardDescription>
               </CardHeader>
-              <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                <div className="rounded-[1.35rem] border border-border/70 bg-background/65 p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border/70 bg-card/70">
-                    <Trophy className="h-4 w-4 text-[hsl(var(--arcetis-ember))]" />
+              <CardContent className="grid grid-cols-2 gap-2 p-4 pt-0 sm:gap-4 sm:p-6 sm:pt-0 md:grid-cols-2 xl:grid-cols-3">
+                <div className="rounded-xl sm:rounded-[1.35rem] border border-border/70 bg-background/65 p-3 sm:p-4">
+                  <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl sm:rounded-2xl border border-border/70 bg-card/70">
+                    <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[hsl(var(--arcetis-ember))]" />
                   </div>
-                  <p className="mt-4 text-sm font-medium">Winner slots</p>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  <p className="mt-3 sm:mt-4 text-xs sm:text-sm font-medium">Winner slots</p>
+                  <p className="mt-1 sm:mt-2 text-[0.68rem] sm:text-sm leading-5 sm:leading-6 text-muted-foreground">
                     {formatNumber(winnerCount)} winner{winnerCount === 1 ? "" : "s"} will be selected. {formatNumber(selectedCount)} already locked in.
                   </p>
                 </div>
-                <div className="rounded-[1.35rem] border border-border/70 bg-background/65 p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border/70 bg-card/70">
-                    <Clock3 className="h-4 w-4 text-[hsl(var(--arcetis-ember))]" />
+                <div className="rounded-xl sm:rounded-[1.35rem] border border-border/70 bg-background/65 p-3 sm:p-4">
+                  <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl sm:rounded-2xl border border-border/70 bg-card/70">
+                    <Clock3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[hsl(var(--arcetis-ember))]" />
                   </div>
-                  <p className="mt-4 text-sm font-medium">Countdown</p>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  <p className="mt-3 sm:mt-4 text-xs sm:text-sm font-medium">Countdown</p>
+                  <p className="mt-1 sm:mt-2 text-[0.68rem] sm:text-sm leading-5 sm:leading-6 text-muted-foreground">
                     <GiveawayCountdown endsAt={giveaway.endsAt} status={giveaway.status} long />
                   </p>
                 </div>
-                <div className="rounded-[1.35rem] border border-border/70 bg-background/65 p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border/70 bg-card/70">
-                    <Users2 className="h-4 w-4 text-[hsl(var(--arcetis-ember))]" />
+                <div className="rounded-xl sm:rounded-[1.35rem] border border-border/70 bg-background/65 p-3 sm:p-4">
+                  <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl sm:rounded-2xl border border-border/70 bg-card/70">
+                    <Users2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[hsl(var(--arcetis-ember))]" />
                   </div>
-                  <p className="mt-4 text-sm font-medium">Entry rules</p>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  <p className="mt-3 sm:mt-4 text-xs sm:text-sm font-medium">Entry rules</p>
+                  <p className="mt-1 sm:mt-2 text-[0.68rem] sm:text-sm leading-5 sm:leading-6 text-muted-foreground">
                     Level {formatNumber(Math.max(giveaway.minLevel ?? 1, 1))}+ • {formatAccountAge(giveaway.minAccountAge)}
                   </p>
                 </div>
-                <div className="rounded-[1.35rem] border border-border/70 bg-background/65 p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border/70 bg-card/70">
-                    <Ticket className="h-4 w-4 text-[hsl(var(--arcetis-ember))]" />
+                <div className="rounded-xl sm:rounded-[1.35rem] border border-border/70 bg-background/65 p-3 sm:p-4">
+                  <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl sm:rounded-2xl border border-border/70 bg-card/70">
+                    <Ticket className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[hsl(var(--arcetis-ember))]" />
                   </div>
-                  <p className="mt-4 text-sm font-medium">Custom info</p>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  <p className="mt-3 sm:mt-4 text-xs sm:text-sm font-medium">Custom info</p>
+                  <p className="mt-1 sm:mt-2 text-[0.68rem] sm:text-sm leading-5 sm:leading-6 text-muted-foreground">
                     {(giveaway.inputFields?.length ?? 0) > 0
                       ? `${formatNumber(giveaway.inputFields?.length ?? 0)} field${(giveaway.inputFields?.length ?? 0) === 1 ? "" : "s"} must match exactly what this giveaway asks for.`
-                      : "This giveaway does not ask for any extra fields beyond your account application."}
+                      : "This giveaway does not ask for any extra fields."}
                   </p>
                 </div>
-                <div className="rounded-[1.35rem] border border-border/70 bg-background/65 p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border/70 bg-card/70">
-                    <ImageIcon className="h-4 w-4 text-[hsl(var(--arcetis-ember))]" />
+                <div className="rounded-xl sm:rounded-[1.35rem] border border-border/70 bg-background/65 p-3 sm:p-4">
+                  <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl sm:rounded-2xl border border-border/70 bg-card/70">
+                    <ImageIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[hsl(var(--arcetis-ember))]" />
                   </div>
-                  <p className="mt-4 text-sm font-medium">Proof images</p>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  <p className="mt-3 sm:mt-4 text-xs sm:text-sm font-medium">Proof images</p>
+                  <p className="mt-1 sm:mt-2 text-[0.68rem] sm:text-sm leading-5 sm:leading-6 text-muted-foreground">
                     {giveaway.requiresJustification
-                      ? giveaway.justificationLabel || "Upload 1 to 3 screenshots that support your entry."
-                      : "No proof images are required for this giveaway."}
+                      ? giveaway.justificationLabel || "Upload 1 to 3 screenshots."
+                      : "No proof images are required."}
                   </p>
                 </div>
-                <div className="rounded-[1.35rem] border border-border/70 bg-background/65 p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border/70 bg-card/70">
-                    <ShieldCheck className="h-4 w-4 text-[hsl(var(--arcetis-ember))]" />
+                <div className="rounded-xl sm:rounded-[1.35rem] border border-border/70 bg-background/65 p-3 sm:p-4">
+                  <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl sm:rounded-2xl border border-border/70 bg-card/70">
+                    <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[hsl(var(--arcetis-ember))]" />
                   </div>
-                  <p className="mt-4 text-sm font-medium">Edit policy</p>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  <p className="mt-3 sm:mt-4 text-xs sm:text-sm font-medium">Edit policy</p>
+                  <p className="mt-1 sm:mt-2 text-[0.68rem] sm:text-sm leading-5 sm:leading-6 text-muted-foreground">
                     {giveaway.allowEntryEdits
-                      ? "You can update a pending entry until the giveaway closes."
-                      : "This giveaway only allows one final submission, so check your info before sending it."}
+                      ? "You can update a pending entry."
+                      : "Only one final submission."}
                   </p>
                 </div>
               </CardContent>
@@ -457,18 +470,18 @@ export default function GiveawayDetailPage() {
 
             {(giveaway.inputFields?.length ?? 0) > 0 ? (
               <Card className="rounded-[2rem] border-border/70 bg-card/95">
-                <CardHeader>
-                  <CardTitle>Info this giveaway asks for</CardTitle>
-                  <CardDescription>These are the extra fields the admin added for this giveaway.</CardDescription>
+                <CardHeader className="p-4 sm:p-6">
+                  <CardTitle className="text-xl sm:text-2xl">Info this giveaway asks for</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">These are the extra fields the admin added for this giveaway.</CardDescription>
                 </CardHeader>
-                <CardContent className="grid gap-3 sm:grid-cols-2">
+                <CardContent className="grid grid-cols-2 gap-2 p-4 pt-0 sm:gap-3 sm:p-6 sm:pt-0">
                   {giveaway.inputFields?.map((field) => (
-                    <div key={field.id} className="rounded-[1.2rem] border border-border/70 bg-background/65 p-4">
+                    <div key={field.id} className="rounded-xl border border-border/70 bg-background/65 p-3 sm:p-4">
                       <div className="flex items-center justify-between gap-3">
-                        <p className="font-medium">{field.label}</p>
-                        <Badge variant="outline">{field.required === false ? "Optional" : "Required"}</Badge>
+                        <p className="text-xs sm:text-sm font-medium">{field.label}</p>
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">{field.required === false ? "Optional" : "Required"}</Badge>
                       </div>
-                      <p className="mt-2 text-sm text-muted-foreground">{field.placeholder || "No extra placeholder added."}</p>
+                      <p className="mt-1.5 text-[0.68rem] sm:text-sm text-muted-foreground">{field.placeholder || "No extra placeholder added."}</p>
                     </div>
                   ))}
                 </CardContent>
@@ -477,12 +490,12 @@ export default function GiveawayDetailPage() {
 
             {hasApplied && giveaway.viewerEntry ? (
               <Card className="rounded-[2rem] border-border/70 bg-card/95">
-                <CardHeader>
-                  <CardTitle>Your entry</CardTitle>
-                  <CardDescription>Everything you already submitted is saved right here.</CardDescription>
+                <CardHeader className="p-4 sm:p-6">
+                  <CardTitle className="text-xl sm:text-2xl">Your entry</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">Everything you already submitted is saved right here.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex flex-wrap gap-2">
+                <CardContent className="space-y-4 p-4 pt-0 sm:p-6 sm:pt-0">
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
                     <Badge variant={entryStatus?.variant ?? "secondary"}>{entryStatus?.label ?? giveaway.viewerEntry.status}</Badge>
                     <Badge variant="outline">Sent {formatDateTime(giveaway.viewerEntry.createdAt)}</Badge>
                     {giveaway.viewerEntry.reviewedAt ? (
@@ -491,13 +504,13 @@ export default function GiveawayDetailPage() {
                   </div>
 
                   {Object.entries(giveaway.viewerEntry.answers ?? {}).length ? (
-                    <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
                       {Object.entries(giveaway.viewerEntry.answers ?? {}).map(([fieldId, value]) => {
                         const field = giveaway.inputFields?.find((item) => item.id === fieldId);
                         return (
-                          <div key={fieldId} className="rounded-[1.2rem] border border-border/70 bg-background/65 p-4">
-                            <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">{field?.label ?? fieldId}</p>
-                            <p className="mt-2 break-all text-sm">{value}</p>
+                          <div key={fieldId} className="rounded-xl border border-border/70 bg-background/65 p-3 sm:p-4">
+                            <p className="text-[0.62rem] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.16em] text-muted-foreground">{field?.label ?? fieldId}</p>
+                            <p className="mt-1.5 break-all text-xs sm:text-sm">{value}</p>
                           </div>
                         );
                       })}
@@ -505,14 +518,14 @@ export default function GiveawayDetailPage() {
                   ) : null}
 
                   {giveaway.viewerEntry.justification ? (
-                    <div className="rounded-[1.2rem] border border-border/70 bg-background/65 p-4">
-                      <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Optional note</p>
-                      <p className="mt-2 whitespace-pre-line text-sm leading-6">{giveaway.viewerEntry.justification}</p>
+                    <div className="rounded-xl border border-border/70 bg-background/65 p-3 sm:p-4">
+                      <p className="text-[0.62rem] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.16em] text-muted-foreground">Optional note</p>
+                      <p className="mt-1.5 whitespace-pre-line text-xs sm:text-sm leading-5 sm:leading-6">{giveaway.viewerEntry.justification}</p>
                     </div>
                   ) : null}
 
                   {giveaway.viewerEntry.justificationImageUrls?.length ? (
-                    <div className="grid gap-3 sm:grid-cols-3">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3">
                       {giveaway.viewerEntry.justificationImageUrls.map((imageUrl) => (
                         <a
                           key={imageUrl}
@@ -534,11 +547,11 @@ export default function GiveawayDetailPage() {
               </Card>
             ) : null}
             <Card className="rounded-[2rem] border-border/70 bg-card/95">
-              <CardHeader>
-                <CardTitle>
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="text-xl sm:text-2xl">
                   {canEditEntry ? "Update your entry" : hasApplied ? "Entry received" : isClosed ? "Giveaway closed" : "Enter now"}
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-xs sm:text-sm">
                   {canEditEntry
                     ? "Your entry is still pending, so you can fix or improve it before the deadline."
                     : hasApplied
@@ -548,7 +561,7 @@ export default function GiveawayDetailPage() {
                         : "Send one complete entry so the team does not need to chase missing info."}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-5">
+              <CardContent className="space-y-5 p-4 pt-0 sm:p-6 sm:pt-0">
                 <div className="grid grid-cols-2 gap-3 border-y border-border/60 py-4 text-sm">
                   <div className="text-center">
                     <Users2 className="mx-auto h-4 w-4 text-[hsl(var(--arcetis-ember))]" />
