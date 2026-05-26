@@ -100,7 +100,7 @@ async function fetchRedemptions() {
 }
 
 async function fetchRedemptionsByCode(code: string) {
-  const response = await api.get<{ redemptions: Redemption[] }>(`/orders/by-code/${code}`);
+  const response = await api.get<{ redemptions: Redemption[] }>(`/requests/by-code/${code}`);
   return response.data.redemptions;
 }
 
@@ -599,7 +599,7 @@ export function useClaimGuestOrders() {
 
   return useMutation({
     mutationFn: async (payload: { requestCodes: string[] }) => {
-      const response = await api.post("/orders/claim", payload);
+      const response = await api.post("/requests/claim", payload);
       return response.data;
     },
     onSuccess: () => {
