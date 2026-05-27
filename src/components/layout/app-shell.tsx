@@ -159,10 +159,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen overflow-x-hidden pb-12">
       <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6 lg:px-8">
-        <header className="rounded-[1.75rem] border border-border/70 bg-background/78 px-3 py-1.5 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.65)] backdrop-blur sm:rounded-[2rem] sm:px-4 sm:py-4 xl:px-6 sticky top-2 sm:top-4 z-50">
+        <header className="rounded-[1.75rem] border border-border/70 bg-background/78 px-3 py-1 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.65)] backdrop-blur sm:rounded-[2rem] sm:px-4 sm:py-2 xl:px-6 sticky top-2 sm:top-4 z-50">
           <div className="flex items-center justify-between gap-3 sm:hidden">
             <Link href="/" onClick={handleHomeNavigation} className="shrink-0">
-              <ArcetisLogo className="h-[45px]" />
+              <ArcetisLogo className="h-[40px]" />
             </Link>
 
             <div className="flex items-center gap-2">
@@ -183,7 +183,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
           <div className="hidden sm:flex sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
             <Link href="/" onClick={handleHomeNavigation} className="shrink-0">
-              <ArcetisLogo className="h-[75px] md:h-[100px]" />
+              <ArcetisLogo className="h-[60px] md:h-[80px]" />
             </Link>
 
             <nav className="-mx-1 flex flex-1 items-center gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">

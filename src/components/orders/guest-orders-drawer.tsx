@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { ShoppingBag, X, ArrowRight, Clock } from "lucide-react";
 import { useGuestOrders } from "@/hooks/use-guest-orders";
+import { useAuthToken } from "@/hooks/use-auth-token";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatDateTime } from "@/lib/format";
@@ -13,6 +14,7 @@ export function GuestOrdersDrawer({ className }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const { orders, isLoaded } = useGuestOrders();
   const [mounted, setMounted] = useState(false);
+  const token = useAuthToken();
 
   useEffect(() => {
     setMounted(true);
@@ -85,16 +87,18 @@ export function GuestOrdersDrawer({ className }: { className?: string }) {
                   </div>
                 </div>
               ))}
-              <div className="pt-6 border-t border-border/30 mt-6">
-                <Button asChild className="w-full bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30" onClick={() => setIsOpen(false)}>
-                  <Link href="/login">
-                    Sign in to save orders permanently
-                  </Link>
-                </Button>
-                <p className="text-center text-[11px] text-muted-foreground mt-3">
-                  Guest orders are saved locally and can be lost if you clear your browser data. Logging in automatically syncs them to your account.
-                </p>
-              </div>
+              {!token ? (
+                <div className="pt-6 border-t border-border/30 mt-6">
+                  <Button asChild className="w-full bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30" onClick={() => setIsOpen(false)}>
+                    <Link href="/login">
+                      Sign in to save orders permanently
+                    </Link>
+                  </Button>
+                  <p className="text-center text-[11px] text-muted-foreground mt-3">
+                    Guest orders are saved locally and can be lost if you clear your browser data. Logging in automatically syncs them to your account.
+                  </p>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>,
