@@ -21,24 +21,35 @@ export function ThemeToggle({ iconOnly = false, className }: ThemeToggleProps) {
 
   if (!mounted) {
     return (
-      <Button variant="outline" size="sm" className={cn(iconOnly ? "w-9 px-0" : "", className)}>
-        {iconOnly ? <Moon className="h-4 w-4" /> : "Theme"}
-      </Button>
+      <button
+        type="button"
+        disabled
+        className={cn(
+          "inline-flex items-center justify-center rounded-2xl border border-border/70 bg-background/70 text-foreground transition-colors hover:bg-card/80",
+          iconOnly ? "" : "gap-2 px-4 py-2",
+          className
+        )}
+      >
+        {iconOnly ? <Moon className="h-4.5 w-4.5" /> : "Theme"}
+      </button>
     );
   }
 
   const dark = theme !== "light";
 
   return (
-    <Button
-      variant="outline"
-      size="sm"
+    <button
+      type="button"
       onClick={() => setTheme(dark ? "light" : "dark")}
       aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-      className={cn(iconOnly ? "w-9 px-0" : "gap-2", className)}
+      className={cn(
+        "inline-flex items-center justify-center rounded-2xl border border-border/70 bg-background/70 text-foreground transition-colors hover:bg-card/80",
+        iconOnly ? "" : "gap-2 px-4 py-2",
+        className
+      )}
     >
-      {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      {dark ? <Sun className="h-4.5 w-4.5" /> : <Moon className="h-4.5 w-4.5" />}
       {iconOnly ? null : dark ? "Light" : "Dark"}
-    </Button>
+    </button>
   );
 }

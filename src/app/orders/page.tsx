@@ -27,10 +27,10 @@ const statusLabel: Record<RedemptionStatus, string> = {
 };
 
 const statusTone: Record<RedemptionStatus, string> = {
-  pending: "border-[rgba(255,122,24,0.28)] bg-[rgba(255,122,24,0.08)] text-foreground",
-  approved: "border-emerald-400/30 bg-emerald-400/12 text-emerald-100",
-  rejected: "border-red-400/30 bg-red-400/12 text-red-100",
-  expired: "border-slate-400/30 bg-slate-400/12 text-slate-100"
+  pending: "border-[rgba(255,122,24,0.28)] bg-[rgba(255,122,24,0.08)] text-[hsl(var(--arcetis-ember))] dark:text-foreground",
+  approved: "border-emerald-500/30 bg-emerald-500/12 text-emerald-700 dark:text-emerald-300",
+  rejected: "border-red-500/30 bg-red-500/12 text-red-700 dark:text-red-300",
+  expired: "border-slate-500/30 bg-slate-500/12 text-slate-700 dark:text-slate-300"
 };
 
 function formatDate(value?: string | null) {
@@ -183,7 +183,7 @@ export default function RequestsPage() {
             </CardContent>
           </Card>
         )
-      ) : requests.isLoading ? (
+      ) : requests.isPending ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, index) => (
             <Card key={index} className="overflow-hidden rounded-[1.7rem] border-border/70 bg-card/95">

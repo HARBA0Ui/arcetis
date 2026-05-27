@@ -66,11 +66,10 @@ export function NotificationCenter({ className }: { className?: string }) {
 
   return (
     <div ref={containerRef} className="relative">
-      <Button
-        variant="secondary"
-        size="sm"
+      <button
+        type="button"
         className={cn(
-          "relative h-10 w-10 sm:h-12 sm:w-12 overflow-visible rounded-2xl border border-border/70 bg-card px-0 transition-all hover:border-border hover:bg-accent/70",
+          "relative inline-flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 overflow-visible rounded-2xl border border-border/70 bg-background/70 text-foreground transition-colors hover:bg-card/80",
           unreadCount > 0 && "border-red-500/25 shadow-[0_16px_28px_-24px_rgba(239,68,68,0.95)]",
           className
         )}
@@ -84,7 +83,7 @@ export function NotificationCenter({ className }: { className?: string }) {
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         ) : null}
-      </Button>
+      </button>
 
       {open ? (
         <div className="arcetis-dropdown absolute right-0 top-[calc(100%+0.55rem)] z-[70] w-[min(92vw,24rem)] rounded-xl border border-border/90 bg-card p-3 shadow-arcetis">

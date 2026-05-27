@@ -19,7 +19,7 @@ export function CurrencyToggle({ className, iconOnly = false }: { className?: st
         type="button"
         onClick={toggle}
         aria-label="Toggle currency"
-        className={cn("inline-flex items-center justify-center transition-colors hover:bg-muted/70", className)}
+        className={cn("inline-flex items-center justify-center transition-colors hover:bg-card/80 text-foreground", className)}
         title={currency === "TND" ? "Switch to USD" : "Switch to TND"}
       >
         <span className="font-bold text-[11px] tracking-widest">{label}</span>
