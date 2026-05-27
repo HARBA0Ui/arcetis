@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { FormEvent, useMemo, useState } from "react";
 import { BriefcaseBusiness, Globe2, Megaphone, ShieldCheck, XCircle } from "lucide-react";
@@ -206,11 +206,9 @@ export default function ProfilePage() {
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow>
                 <TableHead>{copy.rank}</TableHead>
                 <TableHead>{copy.user}</TableHead>
                 <TableHead>{copy.level}</TableHead>
-                <TableHead>{copy.pointsLabel}</TableHead>
                 <TableHead>{copy.xpLabel}</TableHead>
               </TableRow>
             </TableHeader>
@@ -225,9 +223,6 @@ export default function ProfilePage() {
                   </TableCell>
                   <TableCell>
                     <Skeleton className="h-4 w-10" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-16" />
                   </TableCell>
                   <TableCell>
                     <Skeleton className="h-4 w-16" />
@@ -503,7 +498,6 @@ export default function ProfilePage() {
                     <TableHead>{copy.rank}</TableHead>
                     <TableHead>{copy.user}</TableHead>
                     <TableHead>{copy.level}</TableHead>
-                    <TableHead>{copy.pointsLabel}</TableHead>
                     <TableHead>{copy.xpLabel}</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -514,7 +508,6 @@ export default function ProfilePage() {
                           <TableCell>{index + 1}</TableCell>
                           <TableCell>{entry.username}</TableCell>
                           <TableCell>{entry.level}</TableCell>
-                          <TableCell>{entry.points}</TableCell>
                           <TableCell>{entry.xp}</TableCell>
                         </TableRow>
                       ))
@@ -533,14 +526,11 @@ export default function ProfilePage() {
                             <TableCell>
                               <Skeleton className="h-4 w-16" />
                             </TableCell>
-                            <TableCell>
-                              <Skeleton className="h-4 w-16" />
-                            </TableCell>
                           </TableRow>
                         ))
                       : (
                           <TableRow>
-                            <TableCell colSpan={5} className="text-sm text-muted-foreground">
+                            <TableCell colSpan={4} className="text-sm text-muted-foreground">
                               {copy.leaderboardUnavailable}
                             </TableCell>
                           </TableRow>

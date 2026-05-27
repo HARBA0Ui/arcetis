@@ -128,8 +128,7 @@ export default function BackofficeUsersPage() {
                       data={[
                         { key: "Completions", value: selectedUserStats.data.stats.completionsCount },
                         { key: "Redemptions", value: selectedUserStats.data.stats.redemptionsTotal },
-                        { key: "Referrals", value: selectedUserStats.data.stats.referralsSent },
-                        { key: "Points", value: selectedUserStats.data.stats.totalPointsDelta }
+                        { key: "Referrals", value: selectedUserStats.data.stats.referralsSent }
                       ]}
                       margin={{ top: 8, right: 8, left: -18, bottom: 0 }}
                     >
@@ -162,10 +161,7 @@ export default function BackofficeUsersPage() {
                     <p className="text-muted-foreground">Referrals sent</p>
                     <p className="text-xl font-semibold">{selectedUserStats.data.stats.referralsSent}</p>
                   </div>
-                  <div className="rounded-md border border-border p-3">
-                    <p className="text-muted-foreground">Total points delta</p>
-                    <p className="text-xl font-semibold">{selectedUserStats.data.stats.totalPointsDelta}</p>
-                  </div>
+
                 </div>
               </div>
             ) : (

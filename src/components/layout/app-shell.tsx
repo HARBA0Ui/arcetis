@@ -84,14 +84,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       startNavigation(logoutTarget);
       await logout();
 
-      if (logoutTarget === pathname) {
-        router.refresh();
-        return;
-      }
-
-      router.replace(logoutTarget);
+      startNavigation(logoutTarget);
+      await logout();
+      window.location.href = logoutTarget;
     })();
-  }, [error, hasVerifiedSession, isError, isFetched, logout, logoutTarget, pathname, router, startNavigation]);
+  }, [error, hasVerifiedSession, isError, isFetched, logout, logoutTarget, pathname, startNavigation]);
 
   useEffect(() => {
     if (!sessionHint) return;
@@ -100,19 +97,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     void (async () => {
       startNavigation(logoutTarget);
       await logout();
-      router.replace(logoutTarget);
+      window.location.href = logoutTarget;
     })();
-  }, [error, isError, isFetched, logout, logoutTarget, router, sessionHint, startNavigation]);
+  }, [error, isError, isFetched, logout, logoutTarget, sessionHint, startNavigation]);
 
   async function handleLogout() {
     startNavigation(logoutTarget);
     await logout();
-    if (logoutTarget === pathname) {
-      router.refresh();
-      return;
-    }
-
-    router.replace(logoutTarget);
+    window.location.href = logoutTarget;
   }
 
   useEffect(() => {
@@ -159,31 +151,31 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen overflow-x-hidden pb-12">
       <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6 lg:px-8">
-        <header className="rounded-[1.75rem] border border-border/70 bg-background/78 px-3 py-1 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.65)] backdrop-blur sm:rounded-[2rem] sm:px-4 sm:py-2 xl:px-6 sticky top-2 sm:top-4 z-50">
+        <header className="rounded-[1.75rem] border border-border/70 bg-background/78 px-3 py-0.5 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.65)] backdrop-blur sm:rounded-[2rem] sm:px-4 sm:py-0.5 xl:px-6 sticky top-2 z-50">
           <div className="flex items-center justify-between gap-3 sm:hidden">
-            <Link href="/" onClick={handleHomeNavigation} className="shrink-0">
-              <ArcetisLogo className="h-[40px]" />
+            <Link href="/" onClick={handleHomeNavigation} className="shrink-0 flex items-center h-9 ml-1 overflow-visible">
+              <ArcetisLogo className="h-[45px]" />
             </Link>
 
-            <div className="flex items-center gap-2">
-              <CurrencyToggle iconOnly className="h-10 w-10 rounded-2xl border-border/70 bg-background/70" />
-              <ThemeToggle iconOnly className="h-10 w-10 rounded-2xl border-border/70 bg-background/70" />
+            <div className="flex items-center gap-1.5">
+              <CurrencyToggle iconOnly className="h-9 w-9 rounded-2xl border-border/70 bg-background/70" />
+              <ThemeToggle iconOnly className="h-9 w-9 rounded-2xl border-border/70 bg-background/70" />
               <GuestOrdersDrawer />
               <NotificationCenter />
               <button
                 type="button"
                 onClick={() => setIsMobileNavOpen(true)}
                 aria-label="Open navigation"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-border/70 bg-background/70 text-foreground transition-colors hover:bg-card/80"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-border/70 bg-background/70 text-foreground transition-colors hover:bg-card/80"
               >
-                <Menu className="h-5 w-5" />
+                <Menu className="h-4 w-4" />
               </button>
             </div>
           </div>
 
           <div className="hidden sm:flex sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
-            <Link href="/" onClick={handleHomeNavigation} className="shrink-0">
-              <ArcetisLogo className="h-[60px] md:h-[80px]" />
+            <Link href="/" onClick={handleHomeNavigation} className="shrink-0 flex items-center h-10 ml-2 mr-2 overflow-visible">
+              <ArcetisLogo className="h-[68px]" />
             </Link>
 
             <nav className="-mx-1 flex flex-1 items-center gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
@@ -205,8 +197,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </nav>
 
             <div className="flex w-full items-center justify-end gap-2 sm:ml-auto sm:w-auto">
-              <CurrencyToggle iconOnly className="h-12 w-12 rounded-2xl border-border/70 bg-background/70" />
-              <ThemeToggle iconOnly className="h-12 w-12 rounded-2xl border-border/70 bg-background/70" />
+              <CurrencyToggle iconOnly className="h-10 w-10 rounded-2xl border-border/70 bg-background/70" />
+              <ThemeToggle iconOnly className="h-10 w-10 rounded-2xl border-border/70 bg-background/70" />
               <GuestOrdersDrawer />
               <NotificationCenter />
               <UserMenu user={user ?? undefined} onLogout={() => void handleLogout()} />

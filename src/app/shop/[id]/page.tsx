@@ -8,7 +8,6 @@ import { PageHeader } from "@/components/common/page-header";
 import { useCurrency } from "@/components/common/currency-provider";
 import { useLanguage } from "@/components/i18n/language-provider";
 import { RewardThumbnail } from "@/components/rewards/reward-thumbnail";
-import { RedemptionConfirmModal } from "@/components/rewards/redemption-confirm-modal";
 import { KashyPaymentModal } from "@/components/rewards/kashy-payment-modal";
 import { Spinner } from "@/components/common/spinner";
 import { SyncBanner } from "@/components/common/sync-banner";
@@ -93,7 +92,6 @@ export default function RewardDetailPage() {
   const reward = rewardQuery.data;
   const hasRewardData = !!reward || !!stats.data;
   const showSyncBanner = useSmoothBusy(hasRewardData && (rewardQuery.isFetching || stats.isFetching));
-  const points = stats.data?.user.points ?? 0;
   const level = stats.data?.user.level ?? 1;
   const accountAgeDays = getAccountAgeDays(stats.data?.user.createdAt);
 
@@ -102,7 +100,6 @@ export default function RewardDetailPage() {
   const [deliveryInfo, setDeliveryInfo] = useState<Record<string, string>>({});
   const [isTndModalOpen, setTndModalOpen] = useState(false);
   const [isKashyModalOpen, setKashyModalOpen] = useState(false);
-  const [isRedeemConfirmOpen, setRedeemConfirmOpen] = useState(false);
   const guestOrders = useGuestOrders();
 
   useEffect(() => {
@@ -123,7 +120,6 @@ export default function RewardDetailPage() {
   const hasSensitiveDeliveryField = deliveryFields.some(
     (field) => field.type === "SECRET" || field.retention === "until_processed"
   );
-  const remainingPoints = selectedPlan ? Math.max(selectedPlan.pointsCost - points, 0) : 0;
   const missingRequiredInfo = deliveryFields.some(
     (field) => (field.required ?? true) && !deliveryInfo[field.id]?.trim()
   );
@@ -379,33 +375,7 @@ export default function RewardDetailPage() {
         </Card>
       ) : null}
 
-      {reward && selectedPlan ? (
-        <RedemptionConfirmModal
-          open={isRedeemConfirmOpen}
-          rewardTitle={reward.title}
-          planLabel={selectedPlan.label}
-          pointsCost={selectedPlan.pointsCost}
-          isPending={redeem.isPending}
-          onClose={() => setRedeemConfirmOpen(false)}
-          onConfirm={async () => {
-            try {
-              const created = await redeem.mutateAsync({
-                rewardId: reward.id,
-                planId: selectedPlan.id,
-                requestedInfo: deliveryInfo
-              });
 
-              setRedeemConfirmOpen(false);
-              const nextPath = `/orders/${created.id}`;
-              toast.success(t("requestCreated"), t("requestPageReady"));
-              startNavigation(nextPath);
-              router.push(nextPath);
-            } catch (error) {
-              toast.error(t("requestFailed"), getApiError(error));
-            }
-          }}
-        />
-      ) : null}
 
       {reward && selectedPlan && selectedPlan.paymentLink ? (
         <KashyPaymentModal

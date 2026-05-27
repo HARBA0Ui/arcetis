@@ -7,7 +7,6 @@ import { ArrowLeft, ArrowRight, Clock3, Coins, CreditCard, Search, ShieldCheck }
 import { DeferredSection } from "@/components/common/deferred-section";
 import { PageHeader } from "@/components/common/page-header";
 import { useLanguage } from "@/components/i18n/language-provider";
-import { RedemptionConfirmModal } from "@/components/rewards/redemption-confirm-modal";
 import { RewardThumbnail } from "@/components/rewards/reward-thumbnail";
 import { Spinner } from "@/components/common/spinner";
 import { SyncBanner } from "@/components/common/sync-banner";
@@ -49,12 +48,6 @@ export default function RewardsPage() {
   const redeem = useRedeemReward();
   const toast = useToast();
   const { t } = useLanguage();
-  const [confirmState, setConfirmState] = useState<{
-    rewardId: string;
-    rewardTitle: string;
-    pointsCost: number;
-    planLabel?: string | null;
-  } | null>(null);
   const hasRewardData = !!rewards.data || !!stats.data;
   const showSyncBanner = useSmoothBusy(
     hasRewardData && (rewards.isFetching || stats.isFetching || rewardsCatalog.isFetching)
@@ -252,28 +245,7 @@ export default function RewardsPage() {
         </div>
       ) : null}
 
-      {confirmState ? (
-        <RedemptionConfirmModal
-          open={!!confirmState}
-          rewardTitle={confirmState.rewardTitle}
-          planLabel={confirmState.planLabel}
-          pointsCost={confirmState.pointsCost}
-          isPending={redeem.isPending}
-          onClose={() => setConfirmState(null)}
-          onConfirm={async () => {
-            try {
-              const created = await redeem.mutateAsync({ rewardId: confirmState.rewardId });
-              setConfirmState(null);
-              const nextPath = `/orders/${created.id}`;
-              toast.success("Request created", "Your product request page is ready.");
-              startNavigation(nextPath);
-              router.push(nextPath);
-            } catch (error) {
-              toast.error("Redemption failed", getApiError(error));
-            }
-          }}
-        />
-      ) : null}
+
     </>
   );
 }

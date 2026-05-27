@@ -267,7 +267,7 @@ export default function BackofficeProductDetailsPage() {
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="font-medium">Service plans</p>
-                    <p className="text-sm text-muted-foreground">Each plan can carry its own points value and TND price.</p>
+                    <p className="text-sm text-muted-foreground">Each plan can carry its own TND/USD price.</p>
                   </div>
                   <Button type="button" variant="outline" size="sm" onClick={() => setPlans((prev) => [...prev, createPlan(prev.length + 1)])}>
                     <Plus className="mr-2 h-4 w-4" /> Add plan
@@ -374,7 +374,6 @@ export default function BackofficeProductDetailsPage() {
             </div>
 
             <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-              <Badge variant="outline">From {formatNumber(getRewardStartingPointsCost(reward.data))} pts</Badge>
                 {typeof getRewardStartingTndPrice(reward.data) === "number" ? <Badge variant="outline">From {formatNumber(getRewardStartingTndPrice(reward.data) ?? 0, { maximumFractionDigits: 2 })} TND</Badge> : null}
               <Badge variant="outline">Level {reward.data.minLevel}+</Badge>
               <Badge variant="outline">{reward.data.minAccountAge} day age</Badge>

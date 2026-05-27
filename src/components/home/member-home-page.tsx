@@ -961,7 +961,6 @@ export function MemberHomePage() {
                 <div className="rounded-[1.3rem] border border-white/10 bg-white/[0.06] px-4 py-3 text-right">
                   <p className="text-[10px] uppercase tracking-[0.24em] text-white/46">{copy.gain}</p>
                   <p className="mt-2 text-lg font-semibold">+{levelUpState.awardedXp} XP</p>
-                  <p className="text-sm text-white/66">+{levelUpState.awardedPoints} {copy.pointsUnit}</p>
                 </div>
               </div>
 

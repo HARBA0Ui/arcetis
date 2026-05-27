@@ -79,7 +79,7 @@ export function NotificationCenter({ className }: { className?: string }) {
       >
         <Bell className={cn("h-4 w-4", unreadCount > 0 && "text-red-100")} />
         {unreadCount > 0 ? (
-          <span className="absolute -right-1.5 -top-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-background bg-[linear-gradient(180deg,#fb7185,#e11d48)] px-1 text-[10px] font-bold leading-none text-white shadow-[0_14px_22px_-16px_rgba(225,29,72,0.95)]">
+          <span className="absolute -right-1.5 -top-1.5 z-10 inline-flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-background bg-gradient-to-b from-rose-400 to-rose-600 px-1 text-[10px] font-bold leading-none text-white shadow-[0_14px_22px_-16px_rgba(225,29,72,0.95)]">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         ) : null}
