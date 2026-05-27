@@ -159,10 +159,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen overflow-x-hidden pb-12">
       <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6 lg:px-8">
-        <header className="rounded-[1.75rem] border border-border/70 bg-background/78 px-3 py-3 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.65)] backdrop-blur sm:rounded-[2rem] sm:px-4 sm:py-4 xl:px-6 sticky top-4 z-50">
+        <header className="rounded-[1.75rem] border border-border/70 bg-background/78 px-3 py-2 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.65)] backdrop-blur sm:rounded-[2rem] sm:px-4 sm:py-4 xl:px-6 sticky top-4 z-50">
           <div className="flex items-center justify-between gap-3 sm:hidden">
             <Link href="/" onClick={handleHomeNavigation} className="shrink-0">
-              <ArcetisLogo className="h-12.5" />
+              <ArcetisLogo className="h-9" />
             </Link>
 
             <div className="flex items-center gap-2">
