@@ -214,11 +214,7 @@ export function PublicLandingPage({ rewards }: { rewards: Reward[] }) {
         <section id="shop-preview" className="mt-6 space-y-4">
           <div className="hidden flex-wrap items-end justify-between gap-4 sm:flex">
             <div>
-              <p className="text-xs uppercase tracking-[0.26em] text-muted-foreground">{copy.spotlightEyebrow}</p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">{copy.spotlightTitle}</h2>
-              <p className="mt-2 max-w-2xl text-xs leading-5 text-muted-foreground sm:text-sm sm:leading-6">
-                {copy.spotlightDescription}
-              </p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Product Spotlight</h2>
             </div>
             <Button asChild variant="outline" className="w-full rounded-full sm:w-auto">
               <Link href={rewardsRedirect}>
