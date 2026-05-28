@@ -206,6 +206,7 @@ export default function ProfilePage() {
         <CardContent>
           <Table>
             <TableHeader>
+              <TableRow>
                 <TableHead>{copy.rank}</TableHead>
                 <TableHead>{copy.user}</TableHead>
                 <TableHead>{copy.level}</TableHead>
