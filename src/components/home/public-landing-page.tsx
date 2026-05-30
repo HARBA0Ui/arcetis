@@ -120,13 +120,13 @@ function getLandingCopy(language: AppLanguage) {
     introBadge: "Rewards with momentum",
     introTitle: "A reason to sign in before the day gets away from you.",
     introDescription:
-      "Arcetis turns everyday actions into streaks, XP, spins, and real reward momentum. Sign in to keep climbing, or create an account and start from your first win.",
+      "Arcetis turns everyday actions into XP, spins, and real reward momentum. Sign in to keep climbing, or create an account and start from your first win.",
     introPrimary: "Sign in and continue",
     introSecondary: "Create account",
-    introHighlights: ["Daily quests", "Referral boosts", "Reward drops"],
+    introHighlights: ["Referral boosts", "Reward drops"],
     introMetricsTitle: "Why people stay",
     proofStrip: [
-      { label: "Live loop", value: "Tasks, streaks, spins" },
+      { label: "Live loop", value: "Spins, rewards, progression" },
       { label: "Fast entry", value: "Email or Google sign-in" },
       { label: "Clear upside", value: "XP, product requests" }
     ],
@@ -134,18 +134,6 @@ function getLandingCopy(language: AppLanguage) {
     nextSessionTitle: "What unlocks when you sign in",
     live: "Live",
     sessionPreview: [
-      {
-        title: "Daily check-in",
-        value: "+25 XP",
-        description: "Keep your streak alive before the timer resets.",
-        icon: Zap
-      },
-      {
-        title: "Quest completed",
-        value: "+120 XP",
-        description: "Finish a challenge and move closer to your next claim.",
-        icon: Star
-      },
       {
         title: "Bonus spin",
         value: "Unlocked",
@@ -158,13 +146,13 @@ function getLandingCopy(language: AppLanguage) {
     pillars: [
       {
         title: "Daily momentum",
-        description: "Fresh quests, quick wins, and streak pressure give people a reason to come back tomorrow.",
+        description: "Quick wins and streak pressure give people a reason to come back tomorrow.",
         icon: Flame
       },
       {
-        title: "Rewards that feel earned",
-        description: "XP and surprise drops keep progress visible instead of hiding value behind menus.",
-        icon: Gift
+        title: "Real value",
+        description: "XP translates directly to progression, so users actually care about their status.",
+        icon: Gem
       },
       {
         title: "Easy to share",
@@ -178,7 +166,7 @@ function getLandingCopy(language: AppLanguage) {
       {
         step: "01",
         title: "Sign in",
-        description: "Return to your streak, unfinished quests, and the next reward you were already chasing."
+        description: "Return to your streak and the next reward you were already chasing."
       },
       {
         step: "02",
@@ -194,7 +182,7 @@ function getLandingCopy(language: AppLanguage) {
     ctaBadge: "Keep the loop moving",
     ctaTitle: "Sign in if you already started. Create an account if you want the next session to matter.",
     ctaDescription:
-      "Arcetis makes progress obvious from the start: quests to complete, streaks to protect, and rewards worth coming back for. The next move should feel easy."
+      "Arcetis makes progress obvious from the start: levels to clear, streaks to protect, and rewards worth coming back for. The next move should feel easy."
   };
 }
 

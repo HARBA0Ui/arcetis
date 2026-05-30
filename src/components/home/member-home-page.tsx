@@ -29,16 +29,10 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCountdown } from "@/hooks/use-countdown";
 import { useSmoothBusy } from "@/hooks/use-smooth-busy";
-import { useCompleteQuest, useGiveaways, useQuests, useRewards, useSpinStatus, useUserStats } from "@/hooks/usePlatform";
+import { useGiveaways, useRewards, useSpinStatus, useUserStats } from "@/hooks/usePlatform";
 import { getApiError } from "@/lib/api";
 import { clearPendingLevelUp, getPendingLevelUp } from "@/lib/auth";
 import { formatNumber } from "@/lib/format";
-import {
-  completedToday,
-  DAILY_LOGIN_POINTS_REWARD,
-  DAILY_LOGIN_XP_REWARD,
-  isDailyLoginQuest
-} from "@/lib/quests";
 import { getNextRewardTarget, type RewardTarget } from "@/lib/rewards";
 
 type LevelUpState = {
@@ -317,8 +311,7 @@ export function MemberHomePage() {
   const rewards = useRewards();
   const giveaways = useGiveaways();
   const spinStatus = useSpinStatus();
-  const quests = useQuests();
-  const completeQuest = useCompleteQuest();
+  const spinStatus = useSpinStatus();
   const [levelUpState, setLevelUpState] = useState<LevelUpState | null>(null);
   const hasCachedData = !!stats.data || !!rewards.data || !!giveaways.data || !!spinStatus.data || !!quests.data;
   const showSyncBanner = useSmoothBusy(
@@ -340,26 +333,7 @@ export function MemberHomePage() {
   const copy = useMemo(() => getHomeCopy(language), [language]);
   const spinCountdown = useCountdown(spinStatus.data?.nextAvailableAt);
   const giveawayCountdown = useCountdown(activeGiveaway?.endsAt);
-  const dailyLoginQuest = useMemo(
-    () => (quests.data ?? []).find((quest) => isDailyLoginQuest(quest)) ?? null,
-    [quests.data]
-  );
-  const dailyLoginClaimed = completedToday(dailyLoginQuest?.lastCompletedAt ?? stats.data?.user.lastLogin ?? null);
-  const dailyLoginHref = dailyLoginQuest ? `/tasks/${dailyLoginQuest.id}` : "/tasks";
-  const dailyLoginStatus = !quests.data
-    ? copy.checking
-    : !dailyLoginQuest
-      ? copy.unavailable
-      : dailyLoginClaimed
-        ? copy.claimed
-        : copy.ready;
-  const dailyLoginSummary = !quests.data
-    ? copy.syncingDailyLogin
-    : !dailyLoginQuest
-      ? copy.dailyLoginUnavailable
-      : dailyLoginClaimed
-        ? copy.dailyLoginClaimed
-        : copy.dailyLoginReady;
+  const giveawayCountdown = useCountdown(activeGiveaway?.endsAt);
 
   const spinLabel = !spinStatus.data
     ? copy.checking
@@ -405,30 +379,6 @@ export function MemberHomePage() {
         description: copy.dailySpinUnlockedDescription(spinStatus.data.cooldownHours),
         href: "/spin",
         cta: copy.openSpin
-      });
-    }
-
-    const unlockedTasks = (quests.data ?? []).filter(
-      (quest) =>
-        !isDailyLoginQuest(quest) &&
-        quest.minLevel > previousLevel &&
-        quest.minLevel <= currentLevel
-    );
-
-    if (unlockedTasks.length) {
-      unlocks.push({
-        title: unlockedTasks.length === 1 ? copy.newTaskUnlocked : copy.tasksUnlocked(unlockedTasks.length),
-        description:
-          unlockedTasks.length === 1
-            ? copy.unlockedTaskDescription(unlockedTasks[0].title)
-            : copy.unlockedTasksDescription(
-                unlockedTasks
-                  .slice(0, 2)
-                  .map((quest) => quest.title)
-                  .join(language === "ar" ? " و " : " and ")
-              ),
-        href: "/tasks",
-        cta: copy.viewTasks
       });
     }
 
@@ -517,18 +467,6 @@ export function MemberHomePage() {
     };
   }, [levelUpState]);
 
-  async function handleDailyLoginClaim() {
-    if (!dailyLoginQuest || dailyLoginClaimed || completeQuest.isPending) {
-      return;
-    }
-
-    try {
-      await completeQuest.mutateAsync(dailyLoginQuest.id);
-      toast.success(copy.dailyLoginClaimedToast, copy.dailyLoginClaimedToastHint);
-    } catch (error) {
-      toast.error(copy.dailyLoginFailedToast, getApiError(error));
-    }
-  }
 
 
   const progressSnapshotPanel = stats.data ? (
@@ -563,60 +501,6 @@ export function MemberHomePage() {
               ? copy.xpLeft(formatCompactNumber(remainingXp))
               : copy.progressAfterSync}
           </p>
-        </div>
-
-        <div className="rounded-[1.35rem] border border-[rgba(255,122,24,0.22)] bg-[linear-gradient(145deg,rgba(255,122,24,0.16),rgba(255,255,255,0.03))] p-3.5">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/58">
-                {copy.dailyLogin}
-              </p>
-              <div className="mt-2 flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-[hsl(var(--arcetis-ember))]" />
-                <p className="text-base font-semibold tracking-tight">
-                  {dailyLoginClaimed ? copy.securedToday : copy.claimReady}
-                </p>
-              </div>
-            </div>
-            <Badge
-              variant="outline"
-              className={
-                dailyLoginClaimed
-                  ? "shrink-0 border-white/14 bg-white/[0.06] text-white"
-                  : "shrink-0 border-[rgba(255,122,24,0.24)] bg-[rgba(255,122,24,0.16)] text-white"
-              }
-            >
-              {dailyLoginStatus}
-            </Badge>
-          </div>
-
-          <p className="mt-2 line-clamp-2 text-sm leading-5 text-white/68">{dailyLoginSummary}</p>
-
-          <div className="mt-3 flex flex-wrap gap-2">
-            {dailyLoginQuest && !dailyLoginClaimed ? (
-              <Button
-                type="button"
-                size="sm"
-                onClick={handleDailyLoginClaim}
-                disabled={completeQuest.isPending}
-                className="rounded-lg bg-[hsl(var(--arcetis-ember))] text-black hover:bg-[rgba(255,122,24,0.92)]"
-              >
-                {completeQuest.isPending ? copy.claiming : copy.claimDailyLogin}
-              </Button>
-            ) : (
-              <Button
-                asChild
-                size="sm"
-                variant="outline"
-                className="rounded-lg border-white/12 bg-white/[0.06] text-white hover:bg-white/[0.12]"
-              >
-                <Link href={dailyLoginHref}>
-                  {dailyLoginQuest ? copy.openDailyLogin : copy.openTasks}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            )}
-          </div>
         </div>
       </CardContent>
     </Card>
